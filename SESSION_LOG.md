@@ -43,4 +43,7 @@ the screening work are now indexed together.
 I prepared the repository for GitHub transfer. I added `.gitignore` and
 `README.md`, then initialised Git and committed the full working state. The
 purpose is to make the repository pullable on another machine without losing
-the current document structure, code, screening sheet or test state.
+the current document structure, code, screening sheet or test state. The local
+history was then pushed to
+`https://github.com/anixn/queuing-lowflow-hydrology.git`, and branch `main` now
+tracks `origin/main`.
