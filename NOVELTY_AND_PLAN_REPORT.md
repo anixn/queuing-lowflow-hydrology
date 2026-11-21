@@ -15,7 +15,15 @@ This report does two jobs.
 
 The honesty rule for this whole project: queueing theory and water storage have been connected since 1958. We are **not** claiming to invent that connection. Our claim is much smaller and much more specific. We will say **"we found no study, in the sources and strings listed below, that does X"** — never "no such study exists".
 
-**Status of the novelty hunt:** strong but not finished. Scopus access is confirmed and all Scopus searches are complete (295 records screened, no gap-changing study). The remaining gap is record-level screening of four Web of Science searches whose results page failed to render titles. That is an open task, not a buried problem. It is listed as Step 1 in §5.
+**Status of the novelty hunt:** complete at record level as of 21 November
+2026. All Scopus searches are complete (295 records screened, no gap-changing
+study) and the four Web of Science sets whose results page failed to render
+titles were screened on 21 November 2026 by exporting every record set to
+Excel with abstracts (93 records, zero retained;
+`analysis/P01/wos_screening_2026-11-21.md`). The dated gap sentence is frozen
+(`AGENTS.md` §2). The remaining Phase A item is "Cited by"/"Times Cited"
+tracing inside WoS/Scopus (§5 step 2 below), where the OpenAlex trace is a
+substitute.
 
 ---
 
@@ -95,9 +103,21 @@ We already checked this three ways: an exact mathematical solution, a numerical 
 | Web of Science Core Collection | 20–21 Nov 2026 | Institutional login; Topic-field Boolean searches S1, S2, S3, S4, S5 plus three extra direct tests | Scoping search, all editions/years/document types |
 | Scopus | 21 Nov 2026 | Institutional IP access (no login); basic search box with bare Boolean, page size 200; S1–S5 + Extra A/C | Scoping search, `TITLE-ABS-KEY` applied by Scopus; no filters |
 
-**Important interface note:** the current WoS Topic field rejects `TS=(...)` and returns "Invalid query". The bare Boolean expression must be pasted instead.
+**Important interface note (updated 21 November 2026):** on 20 November the
+WoS Topic field rejected `TS=(...)` with "Invalid query" and the bare Boolean
+expression had to be pasted. On 21 November the interface changed: the
+Advanced Search **Query Builder** textarea accepts and requires the `TS=(...)`
+prefix, and the bare Boolean string returns "Invalid field tag". The S4/S5/
+Extra A/C runs on 21 November used `TS=(<bare Boolean>)`.
 
-**What was NOT done, and must be said out loud:** no full-text screening of all hits; WoS record-level screening for S4, S5 and the two extra direct tests (the results renderer stalled after the hit counts were captured); no Scopus or WoS "Cited by" tracing (the OpenAlex citation trace is a substitute); no language restrictions were applied, so non-English records may be missed by the indexing.
+**What was NOT done, and must be said out loud:** no full-text screening of
+all hits (the full-text screen of the retained set is empty because zero
+records were retained at title/abstract level); no Scopus or WoS "Cited by"
+tracing (the OpenAlex citation trace is a substitute); no language
+restrictions were applied, so non-English records may be missed by the
+indexing. The WoS record-level screening for S4, S5 and the two extra direct
+tests was completed on 21 November 2026 by export
+(`analysis/P01/wos_screening_2026-11-21.md`).
 
 ### 3.2 Search results, with numbers
 
@@ -106,11 +126,11 @@ We already checked this three ways: an exact mathematical solution, a numerical 
 | S1 | queue terms AND drought/low flow/water storage/unmet demand/water deficit | 25 | 25 | No hydrology-drought queue study. Mostly telecom, transport, healthcare. |
 | S2 | queueing theory AND hydrology/water/river/reservoir/irrigation/groundwater | 24 | 24 | 4 new prior-art records + 2 P3-relevant records. |
 | S3 | drought AND recovery time/first passage/busy period AND queue/congestion/backlog | **0** | — | Complete null. |
-| S4 | non-stationary/time-varying AND queue AND hydrology/drought/water/irrigation | 6 | hit count only | Record-level screen pending. |
-| S5 | unmet demand/deficit accumulation/demand backlog AND drought/irrigation/water supply | 66 | hit count only | Record-level screen pending. |
-| Extra A | drought AND queue/queu | 8 | hit count only | Decisive direct test — **must be screened**. |
+| S4 | non-stationary/time-varying AND queue AND hydrology/drought/water/irrigation | 6 | 6 | All telecom/OR; Bogachev 2024 already recorded for P3. Screened 21 Nov 2026 by export. |
+| S5 | unmet demand/deficit accumulation/demand backlog AND drought/irrigation/water supply | 66 | 66 | WEAP-type deficit modelling throughout; no queueing. Screened 21 Nov 2026 by export. |
+| Extra A | drought AND queue/queu | 8 | 8 | Decisive direct test — **screened 21 Nov 2026: zero retained**; two institutional "queuing system" echoes (water rights). |
 | Extra B | drought AND first passage/busy period AND reservoir/storage/deficit | **0** | — | Complete null. |
-| Extra C | water deficit/unmet demand AND queue/queu | 13 | hit count only | Decisive direct test — **must be screened**. |
+| Extra C | water deficit/unmet demand AND queue/queu | 13 | 13 | Decisive direct test — **screened 21 Nov 2026: zero retained**; production-inventory/healthcare/transport queueing only. |
 
 The same strings were then run in Scopus (21 November 2026). Scopus accepted
 the bare Boolean in its basic search box and applied `TITLE-ABS-KEY` itself;
@@ -133,7 +153,16 @@ and pre-specified validation.
 
 OpenAlex cross-checks: `title.search` for queueing + drought returned **0** in every spelling tried (queueing, queuing, queue). `title.search:drought, abstract.search:queue` returned 4, all irrelevant (plant drought memory, bird ecology, water collection, emergency response). `abstract.search:drought, abstract.search:queueing` returned 41, dominated by false matches where "queue" means a waiting line of people, not a stochastic queue.
 
-**Reading of the numbers:** the decisive direct tests are now complete in Scopus (15 and 17 records, both clean). The WoS versions (8 and 13 hits) still need a record-level screen because WoS indexes a different set. That single task is the most important unfinished job; until it is done, the gap statement stays narrow and provisional.
+**Reading of the numbers (updated 21 November 2026):** the decisive direct
+tests are complete in **both** databases — Scopus (15 and 17 records) and WoS
+(8 and 13 records, screened by export the same day). Across 437 screened
+records, zero gap-changing findings. The WoS sets echo the Scopus verdict:
+telecom/transport/healthcare/production queueing plus WEAP-type deficit
+modelling; the only drought-adjacent "queuing" language found at record level
+is institutional water-rights priority (Extra A records 5 and 6), which is an
+allocation rule, not a stochastic queue state. The gap statement is frozen
+(`AGENTS.md` §2); the remaining Phase A job is WoS/Scopus "Cited by" tracing
+(OpenAlex trace below is a substitute).
 
 ### 3.3 Forward-citation trace (what happened to the seed papers)
 
@@ -272,11 +301,16 @@ Everything below is in the order I intend to do it. Each phase ends with a decis
 
 ## 5. The five things I will do first, in order
 
-1. Screen WoS Extra A (8 hits), Extra C (13 hits), S4 (6) and S5 (66). Scopus is done; this is the last database screen.
-2. Freeze the gap sentence using the completed WoS/Scopus scope. Mouche & Harel (2016) and Prajamwong et al. (1997) are already in `paper1/literature_audit.md` and the P1 prior-art table, so no addition is needed.
+1. ~~Screen WoS Extra A (8 hits), Extra C (13 hits), S4 (6) and S5 (66).~~
+   **Done 21 November 2026** — 93/93 screened by export, zero retained
+   (`analysis/P01/wos_screening_2026-11-21.md`).
+2. ~~Freeze the gap sentence using the completed WoS/Scopus scope.~~
+   **Done 21 November 2026** — frozen and dated in `AGENTS.md` §2,
+   `START_HERE.md` §5 and `field/README.md` §8.
 3. Claim convention is recorded in both papers (50,000 ha; 10⁷ m³ = 20 mm per claim; K=20 = 400 mm). No further decision needed.
-4. Full-text screen the retained prior-art set and record keep/drop reasons.
-5. Only then edit P1 §2.3, §4 and §6 for the final scope wording.
+4. Full-text screen the retained prior-art set: nothing was retained, so this
+   step is empty; the already-verified prior-art records remain cited as is.
+5. Now edit P1 §2.3, §4 and §6 for the final scope wording (Phase B).
 
 ---
 

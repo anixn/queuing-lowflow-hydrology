@@ -10,6 +10,159 @@
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: 1.5em;}
     div.column{flex: auto;}
@@ -28,7 +181,6 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="../protocol.css" />
 </head>
 <body>
 <header id="title-block-header">
@@ -37,32 +189,6 @@
 low-flow analysis</p>
 <p class="date">21 November 2026</p>
 </header>
-<nav id="TOC" role="doc-toc">
-<ul>
-<li><a href="#field-level-initial-state-p01-and-p03"
-id="toc-field-level-initial-state-p01-and-p03">Field-level initial
-state: P01 and P03</a>
-<ul>
-<li><a href="#field-aim" id="toc-field-aim">1. Field aim</a></li>
-<li><a href="#initial-state-of-the-work"
-id="toc-initial-state-of-the-work">2. Initial state of the work</a></li>
-<li><a href="#objectives-formulated-for-p01"
-id="toc-objectives-formulated-for-p01">3. Objectives formulated for
-P01</a></li>
-<li><a href="#objectives-formulated-for-p03"
-id="toc-objectives-formulated-for-p03">4. Objectives formulated for
-P03</a></li>
-<li><a href="#what-is-not-an-objective"
-id="toc-what-is-not-an-objective">5. What is not an objective</a></li>
-<li><a href="#current-blockers" id="toc-current-blockers">6. Current
-blockers</a></li>
-<li><a href="#organized-file-map" id="toc-organized-file-map">7.
-Organized file map</a></li>
-<li><a href="#exact-next-action" id="toc-exact-next-action">8. Exact
-next action</a></li>
-</ul></li>
-</ul>
-</nav>
 <h1 id="field-level-initial-state-p01-and-p03">Field-level initial
 state: P01 and P03</h1>
 <h2 id="field-aim">1. Field aim</h2>
@@ -115,8 +241,9 @@ accounting, non-stationary rates and pre-specified validation
 </tr>
 <tr>
 <td>WoS screen</td>
-<td>93 records pending: S4 6, S5 66, Extra A 8, Extra C 13</td>
-<td><code>paper1/scopus_wos_search_plan.md:70-74</code></td>
+<td>Complete: 93 records screened 21 Nov 2026, no gap-changing
+study</td>
+<td><code>analysis/P01/wos_screening_2026-11-21.md</code></td>
 </tr>
 <tr>
 <td>P01 draft</td>
@@ -143,10 +270,11 @@ accounting, non-stationary rates and pre-specified validation
 </tr>
 </tbody>
 </table>
-<p>The next database action is still the WoS record-level screen. No WoS
-records have been read in this session; the screening sheet is empty
-until institutional sign-in is available
-(<code>analysis/P01/wos_screening_2026-11-21.md:18-58</code>).</p>
+<p>The last database action is done: the WoS record-level screen of all
+93 remaining records (S4 6, S5 66, Extra A 8, Extra C 13) was completed
+on 21 November 2026 via WoS Excel exports — no institutional profile
+sign-in was needed, the IP-entitled session allowed search and export
+(<code>analysis/P01/wos_screening_2026-11-21.md:14-33</code>).</p>
 <h2 id="objectives-formulated-for-p01">3. Objectives formulated for
 P01</h2>
 <p>P01 is the review/perspective paper for <em>Water Resources
@@ -348,9 +476,10 @@ under the stated assumptions (<code>START_HERE.md:87-92</code>).</li>
 </thead>
 <tbody>
 <tr>
-<td>WoS sign-in</td>
-<td>93 records still unread; gap sentence cannot be frozen yet</td>
-<td><code>analysis/P01/wos_screening_2026-11-21.md:18-24</code></td>
+<td><del>WoS sign-in</del></td>
+<td>Resolved 21 Nov 2026: 93 records exported and screened without
+profile sign-in; gap sentence frozen</td>
+<td><code>analysis/P01/wos_screening_2026-11-21.md</code></td>
 </tr>
 <tr>
 <td>Zero-flow meaning for gauge 4026</td>
@@ -427,9 +556,27 @@ under the stated assumptions (<code>START_HERE.md:87-92</code>).</li>
 </tbody>
 </table>
 <h2 id="exact-next-action">8. Exact next action</h2>
-<p>Complete institutional sign-in to Web of Science, screen the 93
-records in <code>analysis/P01/wos_screening_2026-11-21.md</code>,
-transfer keep/drop reasons to <code>paper1/literature_audit.md</code>,
-then freeze the dated gap sentence.</p>
+<p>DONE 21 November 2026 — the WoS record-level screen of the 93 records
+in <code>analysis/P01/wos_screening_2026-11-21.md</code> is complete,
+keep/drop reasons are transferred to
+<code>paper1/literature_audit.md</code>, and the dated gap sentence is
+frozen as follows.</p>
+<p><strong>Frozen gap sentence, 21 November 2026</strong> (canonical
+copy in <code>AGENTS.md</code> §2; also in <code>START_HERE.md</code> §5
+and <code>paper1/literature_audit.md</code>):</p>
+<blockquote>
+<p>“Within Crossref, OpenAlex, the complete WoS S1–S5 / Extra A/B/C
+screens (142 records) and the completed Scopus S1–S5 / Extra A/C screens
+(295 records), plus the citation traces, we found no study that puts all
+four of these together: (1) drought as an accumulated unmet-demand
+backlog with a finite-capacity state; (2) queue-state indicators
+reported as drought quantities; (3) non-stationary rates estimated from
+hydroclimatic covariates; (4) validation against exact reference
+solutions and pre-specified drought tests.”</p>
+</blockquote>
+<p>Next action (Phase A tail): forward-citation tracing inside
+WoS/Scopus for the seed list in
+<code>paper1/scopus_wos_search_plan.md</code> §2, where the OpenAlex
+trace remains a substitute; then Phase B (finish P1).</p>
 </body>
 </html>

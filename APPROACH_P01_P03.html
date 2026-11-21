@@ -4,11 +4,164 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Approach: P01 and P03</title>
+  <title>APPROACH_P01_P03</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: 1.5em;}
     div.column{flex: auto;}
@@ -27,81 +180,38 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="protocol.css" />
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">Approach: P01 and P03</h1>
-</header>
-<nav id="TOC" role="doc-toc">
-<ul>
-<li><a href="#approach-preparation-for-paper-01-and-paper-03"
-id="toc-approach-preparation-for-paper-01-and-paper-03"><span
-class="toc-section-number">1</span> Approach preparation for Paper 01
-and Paper 03</a>
-<ul>
-<li><a href="#where-the-project-stands"
-id="toc-where-the-project-stands"><span
-class="toc-section-number">1.1</span> 1. Where the project
-stands</a></li>
-<li><a href="#numbers-trusted-today-21-november-2026"
-id="toc-numbers-trusted-today-21-november-2026"><span
-class="toc-section-number">1.2</span> 2. Numbers trusted today, 21
-November 2026</a></li>
-<li><a href="#paper-01-approach-from-here"
-id="toc-paper-01-approach-from-here"><span
-class="toc-section-number">1.3</span> 3. Paper 01: approach from
-here</a>
-<ul>
-<li><a href="#finish-gate-a-first" id="toc-finish-gate-a-first"><span
-class="toc-section-number">1.3.1</span> 3.1 Finish Gate A first</a></li>
-<li><a href="#then-finish-p01-gate-b"
-id="toc-then-finish-p01-gate-b"><span
-class="toc-section-number">1.3.2</span> 3.2 Then finish P01 (Gate
-B)</a></li>
-</ul></li>
-<li><a href="#paper-03-preparation-to-hold-until-gate-b"
-id="toc-paper-03-preparation-to-hold-until-gate-b"><span
-class="toc-section-number">1.4</span> 4. Paper 03: preparation to hold
-until Gate B</a></li>
-<li><a href="#current-blockers-and-decisions"
-id="toc-current-blockers-and-decisions"><span
-class="toc-section-number">1.5</span> 5. Current blockers and
-decisions</a></li>
-</ul></li>
-</ul>
-</nav>
-<h1 data-number="1"
-id="approach-preparation-for-paper-01-and-paper-03"><span
-class="header-section-number">1</span> Approach preparation for Paper 01
-and Paper 03</h1>
+<h1 id="approach-preparation-for-paper-01-and-paper-03">Approach
+preparation for Paper 01 and Paper 03</h1>
 <p>Prepared 21 November 2026. This is a working note, not a manuscript
 edit. It does not change the frozen gap sentence in
 <code>AGENTS.md</code> §2.</p>
-<h2 data-number="1.1" id="where-the-project-stands"><span
-class="header-section-number">1.1</span> 1. Where the project
-stands</h2>
-<p>We are in <strong>Phase A: finish the gap hunt</strong>. The
-remaining database job is the record-level screen of four Web of Science
-sets: S4 (6 records), S5 (66), Extra A (8) and Extra C (13), 93 records
-in total (<code>AGENTS.md:174-180</code>;
-<code>paper1/scopus_wos_search_plan.md:70-74</code>). The repository
-also states that P01 comes first and P03 starts only after P01 is stable
+<h2 id="where-the-project-stands">1. Where the project stands</h2>
+<p>We are in <strong>Phase A: finish the gap hunt</strong> —
+record-level screens are now complete (21 November 2026). The last
+database job, the record-level screen of four Web of Science sets (S4: 6
+records, S5: 66, Extra A: 8, Extra C: 13 — 93 in total), was done on 21
+November 2026 by export; zero records retained
+(<code>analysis/P01/wos_screening_2026-11-21.md</code>;
+<code>paper1/literature_audit.md</code>). The repository also states
+that P01 comes first and P03 starts only after P01 is stable
 (<code>AGENTS.md:21-28</code>, <code>:192</code>;
 <code>START_HERE.md:125-137</code>).</p>
-<p><strong>Single next action:</strong> screen those 93 WoS records and
-write one keep/drop reason per record in
-<code>paper1/literature_audit.md</code>. Scopus is complete: 295 records
-screened, no gap-changing finding
-(<code>paper1/literature_audit.md:88-120</code>).</p>
+<p><strong>Single next action:</strong> forward-citation tracing inside
+WoS/Scopus for the seed list
+(<code>paper1/scopus_wos_search_plan.md</code> §2) — the OpenAlex trace
+was a substitute. The 93-record WoS screen is done (21 November 2026,
+zero retained); Scopus is complete: 295 records screened, no
+gap-changing finding (<code>paper1/literature_audit.md:88-120</code>).
+The gap sentence is frozen.</p>
 <p><strong>P03 status:</strong> preparation only. Do not start Phase C
 work before Gate B. Gate B requires the gap sentence to be frozen, all
 prior art to be cited, and every numerical claim to have a reproducible
 script (<code>AGENTS.md:184-190</code>;
 <code>NOVELTY_AND_PLAN_REPORT.md:234-246</code>).</p>
-<h2 data-number="1.2" id="numbers-trusted-today-21-november-2026"><span
-class="header-section-number">1.2</span> 2. Numbers trusted today, 21
-November 2026</h2>
+<h2 id="numbers-trusted-today-21-november-2026">2. Numbers trusted
+today, 21 November 2026</h2>
 <p>All values below are synthetic or pipeline-check outputs unless
 marked otherwise. They were regenerated on 21 November 2026 using
 <code>C:\Users\deshm\miniconda3\envs\drought\python.exe</code>. Units
@@ -227,11 +337,9 @@ mm, K = 20 claims, service cap 3 claims/day, firm share 0.5
 <code>paper1/data_access_spec.md:19-39</code>). Pilot numbers stay
 labelled “illustrative, under the stated assumptions” until real
 canal/crop records or a documented sensitivity envelope exist.</p>
-<h2 data-number="1.3" id="paper-01-approach-from-here"><span
-class="header-section-number">1.3</span> 3. Paper 01: approach from
+<h2 id="paper-01-approach-from-here">3. Paper 01: approach from
 here</h2>
-<h3 data-number="1.3.1" id="finish-gate-a-first"><span
-class="header-section-number">1.3.1</span> 3.1 Finish Gate A first</h3>
+<h3 id="finish-gate-a-first">3.1 Finish Gate A first</h3>
 <ol type="1">
 <li>Add a screening table to <code>paper1/literature_audit.md</code>
 with columns: search set, title, year, DOI or stable identifier,
@@ -260,9 +368,7 @@ exclusion reasons.</li>
 <p><strong>Gate A done when:</strong> one dated sentence exists and
 every retained record has a keep/drop reason
 (<code>AGENTS.md:181-182</code>).</p>
-<h3 data-number="1.3.2" id="then-finish-p01-gate-b"><span
-class="header-section-number">1.3.2</span> 3.2 Then finish P01 (Gate
-B)</h3>
+<h3 id="then-finish-p01-gate-b">3.2 Then finish P01 (Gate B)</h3>
 <p>Work in the order already fixed by the plan
 (<code>NOVELTY_AND_PLAN_REPORT.md:234-246</code>).</p>
 <table>
@@ -351,10 +457,8 @@ code/data availability statement
 <p><strong>Gate B done when:</strong> gap sentence frozen, all prior art
 cited, every numerical claim script-backed
 (<code>AGENTS.md:189-190</code>).</p>
-<h2 data-number="1.4"
-id="paper-03-preparation-to-hold-until-gate-b"><span
-class="header-section-number">1.4</span> 4. Paper 03: preparation to
-hold until Gate B</h2>
+<h2 id="paper-03-preparation-to-hold-until-gate-b">4. Paper 03:
+preparation to hold until Gate B</h2>
 <p>P03’s role is to estimate λ(t) and μ(t) from covariates, validate
 against exact references, and test whether queue indicators add drought
 information beyond baselines
@@ -472,8 +576,7 @@ a solid null result is written honestly
 </tr>
 </tbody>
 </table>
-<h2 data-number="1.5" id="current-blockers-and-decisions"><span
-class="header-section-number">1.5</span> 5. Current blockers and
+<h2 id="current-blockers-and-decisions">5. Current blockers and
 decisions</h2>
 <ul>
 <li><strong>Database access:</strong> the WoS record cards for the four

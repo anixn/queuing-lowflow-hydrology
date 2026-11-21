@@ -104,69 +104,13 @@ analysis plans</p>
 <p class="author">Ankit Deshmukh</p>
 <p class="date">21 November 2026</p>
 </header>
-<nav id="TOC" role="doc-toc">
-<ul>
-<li><a href="#research-protocol-p01-and-p03"
-id="toc-research-protocol-p01-and-p03"><span
-class="toc-section-number">1</span> Research protocol: P01 and P03</a>
-<ul>
-<li><a href="#name-map" id="toc-name-map"><span
-class="toc-section-number">1.1</span> 0. Name map</a></li>
-<li><a href="#phase-position" id="toc-phase-position"><span
-class="toc-section-number">1.2</span> 1. Phase position</a></li>
-<li><a href="#p01-key-objective" id="toc-p01-key-objective"><span
-class="toc-section-number">1.3</span> 2. P01 — key objective</a></li>
-<li><a href="#p01-analysis-protocol"
-id="toc-p01-analysis-protocol"><span
-class="toc-section-number">1.4</span> 3. P01 — analysis protocol</a>
-<ul>
-<li><a href="#search-and-screening" id="toc-search-and-screening"><span
-class="toc-section-number">1.4.1</span> 3.1 Search and
-screening</a></li>
-<li><a href="#synthesis" id="toc-synthesis"><span
-class="toc-section-number">1.4.2</span> 3.2 Synthesis</a></li>
-<li><a href="#language-and-gate-check"
-id="toc-language-and-gate-check"><span
-class="toc-section-number">1.4.3</span> 3.3 Language and gate
-check</a></li>
-</ul></li>
-<li><a href="#p03-key-objective" id="toc-p03-key-objective"><span
-class="toc-section-number">1.5</span> 4. P03 — key objective</a></li>
-<li><a href="#p03-pre-registered-analysis-protocol"
-id="toc-p03-pre-registered-analysis-protocol"><span
-class="toc-section-number">1.6</span> 5. P03 — pre-registered analysis
-protocol</a>
-<ul>
-<li><a href="#work-order" id="toc-work-order"><span
-class="toc-section-number">1.6.1</span> 5.1 Work order</a></li>
-<li><a href="#metrics-and-baselines"
-id="toc-metrics-and-baselines"><span
-class="toc-section-number">1.6.2</span> 5.2 Metrics and
-baselines</a></li>
-</ul></li>
-<li><a href="#shared-operating-rules"
-id="toc-shared-operating-rules"><span
-class="toc-section-number">1.7</span> 6. Shared operating rules</a></li>
-<li><a href="#exact-next-action" id="toc-exact-next-action"><span
-class="toc-section-number">1.8</span> 7. Exact next action</a></li>
-<li><a href="#analysis-workspace" id="toc-analysis-workspace"><span
-class="toc-section-number">1.9</span> 8. Analysis workspace</a></li>
-<li><a href="#reproducibility-commands"
-id="toc-reproducibility-commands"><span
-class="toc-section-number">1.10</span> 9. Reproducibility
-commands</a></li>
-</ul></li>
-</ul>
-</nav>
-<h1 data-number="1" id="research-protocol-p01-and-p03"><span
-class="header-section-number">1</span> Research protocol: P01 and
+<h1 id="research-protocol-p01-and-p03">Research protocol: P01 and
 P03</h1>
 <p>This file is the organising protocol for the two active papers. It
 uses the canonical names <strong>P01</strong> and <strong>P03</strong>.
 The old labels P1 and P3 still appear in existing file paths and source
 files, but they are no longer the preferred human-facing names.</p>
-<h2 data-number="1.1" id="name-map"><span
-class="header-section-number">1.1</span> 0. Name map</h2>
+<h2 id="name-map">0. Name map</h2>
 <table>
 <colgroup>
 <col style="width: 25%" />
@@ -211,16 +155,17 @@ imports and documented run commands continue to work
 (<code>paper3/src/evaluate_estimators.py:30-35</code>;
 <code>START_HERE.md:141-152</code>). The detailed working note is
 <code>APPROACH_P01_P03.md</code>.</p>
-<h2 data-number="1.2" id="phase-position"><span
-class="header-section-number">1.2</span> 1. Phase position</h2>
+<h2 id="phase-position">1. Phase position</h2>
 <p>We are in <strong>Phase A: finish the gap hunt</strong>
-(<code>AGENTS.md:174-180</code>; <code>START_HERE.md:125-130</code>).
-The last database task is the record-level screen of four Web of Science
-sets: S4 6 records, S5 66 records, Extra A 8 records and Extra C 13
-records — 93 records in total
-(<code>paper1/scopus_wos_search_plan.md:70-74</code>). Scopus is
+(<code>AGENTS.md:174-180</code>; <code>START_HERE.md:125-130</code>) —
+the record-level screens are now complete. The last database task, the
+record-level screen of four Web of Science sets (S4 6 records, S5 66
+records, Extra A 8 records, Extra C 13 records — 93 in total), was
+completed on 21 November 2026 by export with zero records retained
+(<code>analysis/P01/wos_screening_2026-11-21.md</code>). Scopus is
 complete: 295 records screened, with no gap-changing record
-(<code>paper1/literature_audit.md:88-120</code>).</p>
+(<code>paper1/literature_audit.md:88-120</code>). In total 437 records
+screened across both databases.</p>
 <p>The order of gates is fixed:</p>
 <ol type="1">
 <li><strong>Gate A:</strong> one dated, scoped gap sentence and
@@ -234,8 +179,7 @@ held-out data, or an honest null result is written
 </ol>
 <p>P03 analysis is prepared here but is not started before Gate B
 (<code>AGENTS.md:28</code>, <code>:192</code>).</p>
-<h2 data-number="1.3" id="p01-key-objective"><span
-class="header-section-number">1.3</span> 2. P01 — key objective</h2>
+<h2 id="p01-key-objective">2. P01 — key objective</h2>
 <p><strong>Plain objective:</strong> explain why drought can be read as
 a queue state, cite the existing water–queue lineage accurately, and set
 out tests that can show whether queue-derived indicators add drought
@@ -266,32 +210,31 @@ a 17× difference (<code>paper1/P1_draft_v2.md:266-292</code>).</li>
 baselines, null-result clause and guardrails
 (<code>paper1/P1_draft_v2.md:294-347</code>).</li>
 </ol>
-<h2 data-number="1.4" id="p01-analysis-protocol"><span
-class="header-section-number">1.4</span> 3. P01 — analysis protocol</h2>
+<h2 id="p01-analysis-protocol">3. P01 — analysis protocol</h2>
 <p>This is a scoping-review protocol, not a full systematic review; the
 distinction is already recorded in the audit
 (<code>paper1/literature_audit.md:12-18</code>).</p>
-<h3 data-number="1.4.1" id="search-and-screening"><span
-class="header-section-number">1.4.1</span> 3.1 Search and screening</h3>
+<h3 id="search-and-screening">3.1 Search and screening</h3>
 <ol type="1">
 <li>Use the exact search strings and interface notes in
 <code>paper1/scopus_wos_search_plan.md:10-61</code>.</li>
 <li>Record for each search: database, interface, date, exact string,
 filters, raw hits, screened count, retained count and exclusion reasons
 (<code>paper1/scopus_wos_search_plan.md:126-139</code>).</li>
-<li>Screen the four pending WoS sets and write one keep/drop reason per
-record in <code>paper1/literature_audit.md</code>
-(<code>paper1/scopus_wos_search_plan.md:70-74</code>,
-<code>:141-148</code>).</li>
+<li><del>Screen the four pending WoS sets and write one keep/drop reason
+per record</del> <strong>Done 21 November 2026</strong> — 93/93
+screened, zero retained; the table is in
+<code>analysis/P01/wos_screening_2026-11-21.md</code> §5 and the summary
+in <code>paper1/literature_audit.md</code>.</li>
 <li>Add the required citation-trace seeds: Yang 2019, Harel &amp; Mouche
 2014, Mouche &amp; Harel 2016 and Prajamwong 1997
 (<code>AGENTS.md:176-180</code>;
-<code>NOVELTY_AND_PLAN_REPORT.md:225-230</code>).</li>
-<li>Full-text screen the retained set and keep the keep/drop table in
-the audit file (<code>paper1/literature_audit.md:196-204</code>).</li>
+<code>NOVELTY_AND_PLAN_REPORT.md:225-230</code>) — recorded as prior art
+already; tracing inside WoS/Scopus remains open.</li>
+<li><del>Full-text screen the retained set</del> — empty by definition:
+nothing was retained at title/abstract level.</li>
 </ol>
-<h3 data-number="1.4.2" id="synthesis"><span
-class="header-section-number">1.4.2</span> 3.2 Synthesis</h3>
+<h3 id="synthesis">3.2 Synthesis</h3>
 <ol type="1">
 <li>Build the concept map from queue term to hydrological meaning and
 caveat (<code>paper1/P1_draft_v2.md:103-150</code>).</li>
@@ -309,16 +252,13 @@ assumptions” (<code>AGENTS.md:47-52</code>;
 <li>Do not use raw CMIP6 output in any published number
 (<code>AGENTS.md:53-55</code>).</li>
 </ol>
-<h3 data-number="1.4.3" id="language-and-gate-check"><span
-class="header-section-number">1.4.3</span> 3.3 Language and gate
-check</h3>
+<h3 id="language-and-gate-check">3.3 Language and gate check</h3>
 <p>Search the draft for strong claim words and “no study” phrases; check
 each against the scoped, dated gap sentence
 (<code>AGENTS.md:30-45</code>; <code>paper1/P1_draft_v2.md:44</code>,
 <code>:349-362</code>). P01 is stable only when Gate B is met
 (<code>AGENTS.md:189-190</code>).</p>
-<h2 data-number="1.5" id="p03-key-objective"><span
-class="header-section-number">1.5</span> 4. P03 — key objective</h2>
+<h2 id="p03-key-objective">4. P03 — key objective</h2>
 <p><strong>Plain objective:</strong> estimate changing demand and supply
 rates from data, verify the estimates against exact mathematics, and
 test whether queue state adds drought information beyond standard
@@ -344,13 +284,11 @@ beyond baselines (<code>AGENTS.md:59-61</code>;
 correlated arrivals as our contribution (<code>AGENTS.md:62-66</code>;
 <code>paper1/literature_audit.md:144-174</code>).</li>
 </ol>
-<h2 data-number="1.6" id="p03-pre-registered-analysis-protocol"><span
-class="header-section-number">1.6</span> 5. P03 — pre-registered
+<h2 id="p03-pre-registered-analysis-protocol">5. P03 — pre-registered
 analysis protocol</h2>
 <p>The metrics, baselines and null rule must be fixed before results are
 examined (<code>NOVELTY_AND_PLAN_REPORT.md:258</code>).</p>
-<h3 data-number="1.6.1" id="work-order"><span
-class="header-section-number">1.6.1</span> 5.1 Work order</h3>
+<h3 id="work-order">5.1 Work order</h3>
 <table>
 <colgroup>
 <col style="width: 40%" />
@@ -457,9 +395,7 @@ climatological queue; record the null if none appears
 </tr>
 </tbody>
 </table>
-<h3 data-number="1.6.2" id="metrics-and-baselines"><span
-class="header-section-number">1.6.2</span> 5.2 Metrics and
-baselines</h3>
+<h3 id="metrics-and-baselines">5.2 Metrics and baselines</h3>
 <p>Use rate RMSE, peak E[Q] error, severe-state probability error,
 unmet-demand error, lead time and probabilistic scores such as Brier,
 AUC or CRPS where applicable
@@ -470,8 +406,7 @@ climatological queue (<code>paper3/README.md:119-123</code>;
 <code>NOVELTY_AND_PLAN_REPORT.md:260</code>). Use block
 cross-validation, never random-row splits
 (<code>paper1/queueing_howto.md:157-162</code>).</p>
-<h2 data-number="1.7" id="shared-operating-rules"><span
-class="header-section-number">1.7</span> 6. Shared operating rules</h2>
+<h2 id="shared-operating-rules">6. Shared operating rules</h2>
 <ol type="1">
 <li>Run all 18 tests after every change and before reporting
 (<code>AGENTS.md:78-86</code>). On 21 November 2026 all 18 passed with
@@ -490,25 +425,26 @@ the existing <code>drought</code> environment
 <li>Keep the claim convention fixed in all four documented locations
 (<code>AGENTS.md:73-76</code>).</li>
 </ol>
-<h2 data-number="1.8" id="exact-next-action"><span
-class="header-section-number">1.8</span> 7. Exact next action</h2>
-<p>Sign in to Web of Science in the open Clarivate tab, then screen the
-93 pending WoS records in
-<code>analysis/P01/wos_screening_2026-11-21.md</code> and transfer the
-completed keep/drop table to <code>paper1/literature_audit.md</code>
-(<code>APPROACH_P01_P03.md:15-17</code>). After Gate A, freeze the
-scoped gap sentence and start the P01 work sequence
-(<code>APPROACH_P01_P03.md:57-99</code>).</p>
-<h2 data-number="1.9" id="analysis-workspace"><span
-class="header-section-number">1.9</span> 8. Analysis workspace</h2>
+<h2 id="exact-next-action">7. Exact next action</h2>
+<p>DONE 21 November 2026 — the 93-record WoS screen is complete and the
+keep/drop table is transferred
+(<code>analysis/P01/wos_screening_2026-11-21.md</code> §5 →
+<code>paper1/literature_audit.md</code>). The gap sentence is frozen and
+dated (<code>AGENTS.md</code> §2; <code>field/README.md</code> §8). The
+remaining Phase A item is forward-citation tracing inside WoS/Scopus
+(<code>paper1/scopus_wos_search_plan.md</code> §2); then start the P01
+work sequence (<code>APPROACH_P01_P03.md:57-99</code>).</p>
+<h2 id="analysis-workspace">8. Analysis workspace</h2>
 <p>The working analysis files are organised under
 <code>analysis/</code>:</p>
 <ul>
 <li><code>analysis/README.md</code> — index and status.</li>
 <li><code>analysis/P01/README.md</code> — P01 file list and decision
 rule.</li>
-<li><code>analysis/P01/wos_screening_2026-11-21.md</code> — live
-93-record WoS screen.</li>
+<li><code>analysis/P01/wos_screening_2026-11-21.md</code> — completed
+93-record WoS screen (21 November 2026, zero retained).</li>
+<li><code>analysis/P01/exports/</code> — the five WoS Excel exports
+behind the screen.</li>
 <li><code>analysis/P03/README.md</code> — P03 outputs to create after
 Gate B.</li>
 <li><code>field/README.md</code> — field-level initial state and
@@ -517,9 +453,7 @@ formulated objectives for P01 and P03.</li>
 <p>The P01 screening sheet records the access blocker honestly; no
 records are invented. It will be filled only from signed-in WoS result
 pages (<code>analysis/P01/wos_screening_2026-11-21.md:9-16</code>).</p>
-<h2 data-number="1.10" id="reproducibility-commands"><span
-class="header-section-number">1.10</span> 9. Reproducibility
-commands</h2>
+<h2 id="reproducibility-commands">9. Reproducibility commands</h2>
 <p>Use the existing <code>drought</code> Conda environment; the default
 <code>python</code> has no NumPy
 (<code>START_HERE.md:141-148</code>).</p>

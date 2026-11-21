@@ -27,15 +27,21 @@ Two papers come out of this:
 
 P1 first, P3 second. That order is fixed.
 
-## 2. The frozen novelty sentence (NEVER edit without redoing the search)
+## 2. The frozen novelty sentence (frozen 21 November 2026)
 
-> "Within Crossref, OpenAlex, WoS S1–S3 and the completed Scopus S1–S5 /
-> Extra A/C screens (295 records), plus the citation traces, we found no
-> study that puts all four of these together: (1) drought as an accumulated
-> unmet-demand backlog with a finite-capacity state; (2) queue-state
-> indicators reported as drought quantities; (3) non-stationary rates
-> estimated from hydroclimatic covariates; (4) validation against exact
-> reference solutions and pre-specified drought tests."
+> "Within Crossref, OpenAlex, the complete WoS S1–S5 / Extra A/B/C screens
+> (142 records) and the completed Scopus S1–S5 / Extra A/C screens
+> (295 records), plus the citation traces, we found no study that puts all
+> four of these together: (1) drought as an accumulated unmet-demand backlog
+> with a finite-capacity state; (2) queue-state indicators reported as
+> drought quantities; (3) non-stationary rates estimated from hydroclimatic
+> covariates; (4) validation against exact reference solutions and
+> pre-specified drought tests."
+>
+> — Frozen 21 November 2026, after the WoS record-level screen of S4/S5/Extra
+> A/C completed both databases (437 records in total, zero gap-changing
+> findings; `analysis/P01/wos_screening_2026-11-21.md`,
+> `paper1/literature_audit.md`).
 
 An agent must never:
 
@@ -173,13 +179,18 @@ Rules:
 
 ## 8. Phase pointer (where the work is, and what "done" means)
 
-**Phase A — finish the novelty hunt (current).**
-Remaining: record-level screen of WoS S4 (6), S5 (66), Extra A (8),
-Extra C (13); full-text screen of the retained set; add Yang 2019,
-Harel & Mouche 2014, Mouche & Harel 2016, Prajamwong 1997 as citation-trace
-seeds; freeze the gap sentence with date + scope.
-*Done when:* one dated sentence exists and every retained record has a
-keep/drop reason.
+**Phase A — finish the novelty hunt (record-level screens complete 21
+November 2026).**
+Done on 21 November 2026: record-level screen of WoS S4 (6), S5 (66),
+Extra A (8), Extra C (13) — 93/93 screened, zero retained
+(`analysis/P01/wos_screening_2026-11-21.md`); gap sentence frozen with date
+and scope (§2 above). Still open in Phase A: forward-citation tracing inside
+WoS/Scopus for the seeds in `paper1/scopus_wos_search_plan.md` §2 (including
+Yang 2019, Harel & Mouche 2014, Mouche & Harel 2016, Prajamwong 1997 as
+tracing anchors); the full-text screen of the retained set is empty because
+nothing was retained.
+*Done when:* one dated sentence exists (yes, §2) and every retained record
+has a keep/drop reason (yes — zero retained).
 
 **Phase B — finish P1.**
 Remaining: mapping section tightening (§2), prior-art expansion,

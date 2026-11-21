@@ -54,9 +54,10 @@ If you clone this repository on another machine:
 
 ## Current work status
 
-- Phase A is active: finish the literature gap hunt.
-- Scopus screening is complete: 295 records, no gap-changing study.
-- Web of Science screening is blocked until institutional sign-in is available.
+- Phase A is active: the record-level literature screens are complete
+  (Scopus 295 + WoS 93 records; zero retained) and the gap sentence is frozen
+  (21 November 2026). Remaining Phase A item: "Cited by"/"Times Cited"
+  tracing inside WoS/Scopus.
 - P03 analysis is prepared only and starts after P01 reaches Gate B.
 
 See `SESSION_LOG.md` for the session-by-session changes.

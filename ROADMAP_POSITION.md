@@ -31,14 +31,15 @@ fine, as long as Phase A gets closed before the manuscript is finalised.
 
 ## 3. The next ten actions, in exact order
 
-1. **Initialise git** (`git init` + first commit). One command; protects
-   every artefact; the plan requires it before submission anyway.
-2. **Screen the four pending WoS searches** (S4: 6, S5: 66, Extra A: 8,
-   Extra C: 13 hits). This is the single most important unfinished task —
-   the frozen gap sentence depends on it.
-3. **Full-text screen the retained prior-art set**; record keep/drop reasons
-   in `literature_audit.md`.
-4. **Freeze the gap sentence** with date + scope (Gate A).
+1. ~~**Initialise git**~~ — done (repo initialised, committed, pushed to
+   GitHub; branch `master`).
+2. ~~**Screen the four pending WoS searches**~~ — done 21 November 2026:
+   93/93 records screened by export, zero retained
+   (`analysis/P01/wos_screening_2026-11-21.md`).
+3. ~~**Full-text screen the retained prior-art set**~~ — empty by definition:
+   nothing was retained.
+4. ~~**Freeze the gap sentence** with date + scope (Gate A)~~ — done 21
+   November 2026 (`AGENTS.md` §2).
 5. **Check the zero-flow semantics** for gauge 4026: open
    `CAMELS_IND_Data_Description.pdf` (in the CAMELS-IND Zenodo record) and
    search for how zero discharge is defined; cross-check the LSTM-predicted

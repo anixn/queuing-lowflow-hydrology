@@ -30,15 +30,17 @@ rates and pre-specified validation (`paper1/P1_draft_v2.md:74-89`;
 |---|---|---|
 | Phase | Phase A, gap hunt | `AGENTS.md:174-180`; `START_HERE.md:125-130` |
 | Scopus screen | Complete: 295 records, no gap-changing study | `paper1/literature_audit.md:88-120` |
-| WoS screen | 93 records pending: S4 6, S5 66, Extra A 8, Extra C 13 | `paper1/scopus_wos_search_plan.md:70-74` |
+| WoS screen | Complete: 93 records screened 21 Nov 2026, no gap-changing study | `analysis/P01/wos_screening_2026-11-21.md` |
 | P01 draft | Draft v2 exists; language and package still to finish | `paper1/P1_draft_v2.md:1-10`; `NOVELTY_AND_PLAN_REPORT.md:234-246` |
 | P03 analysis | Prepared only; starts after Gate B | `AGENTS.md:28`, `:192`; `analysis/P03/README.md:3` |
 | Engine | 18/18 tests pass | `AGENTS.md:78-86`; `SESSION_LOG.md:8-10` |
 | CMIP6 output | Pipeline check only; not usable in published numbers | `AGENTS.md:53-55`; `paper3/README.md:141-143` |
 
-The next database action is still the WoS record-level screen. No WoS records
-have been read in this session; the screening sheet is empty until institutional
-sign-in is available (`analysis/P01/wos_screening_2026-11-21.md:18-58`).
+The last database action is done: the WoS record-level screen of all 93
+remaining records (S4 6, S5 66, Extra A 8, Extra C 13) was completed on
+21 November 2026 via WoS Excel exports — no institutional profile sign-in was
+needed, the IP-entitled session allowed search and export
+(`analysis/P01/wos_screening_2026-11-21.md:14-33`).
 
 ## 3. Objectives formulated for P01
 
@@ -100,7 +102,7 @@ data, or an honest null result is written (`AGENTS.md:198-199`).
 
 | Blocker | Why it matters | Source |
 |---|---|---|
-| WoS sign-in | 93 records still unread; gap sentence cannot be frozen yet | `analysis/P01/wos_screening_2026-11-21.md:18-24` |
+| ~~WoS sign-in~~ | Resolved 21 Nov 2026: 93 records exported and screened without profile sign-in; gap sentence frozen | `analysis/P01/wos_screening_2026-11-21.md` |
 | Zero-flow meaning for gauge 4026 | 68% zero-flow days affect interpretation of ρ | `paper1/data_access_spec.md:59-61` |
 | Canal/crop records | Replace the 50,000 ha / 10⁷ m³ provisional convention | `paper1/data_access_spec.md:80-97` |
 | CMIP6 bias correction | Raw future climate output must not be published | `AGENTS.md:53-55` |
@@ -120,6 +122,23 @@ data, or an honest null result is written (`AGENTS.md:198-199`).
 
 ## 8. Exact next action
 
-Complete institutional sign-in to Web of Science, screen the 93 records in
-`analysis/P01/wos_screening_2026-11-21.md`, transfer keep/drop reasons to
-`paper1/literature_audit.md`, then freeze the dated gap sentence.
+DONE 21 November 2026 — the WoS record-level screen of the 93 records in
+`analysis/P01/wos_screening_2026-11-21.md` is complete, keep/drop reasons are
+transferred to `paper1/literature_audit.md`, and the dated gap sentence is
+frozen as follows.
+
+**Frozen gap sentence, 21 November 2026** (canonical copy in `AGENTS.md` §2;
+also in `START_HERE.md` §5 and `paper1/literature_audit.md`):
+
+> "Within Crossref, OpenAlex, the complete WoS S1–S5 / Extra A/B/C screens
+> (142 records) and the completed Scopus S1–S5 / Extra A/C screens
+> (295 records), plus the citation traces, we found no study that puts all
+> four of these together: (1) drought as an accumulated unmet-demand backlog
+> with a finite-capacity state; (2) queue-state indicators reported as
+> drought quantities; (3) non-stationary rates estimated from hydroclimatic
+> covariates; (4) validation against exact reference solutions and
+> pre-specified drought tests."
+
+Next action (Phase A tail): forward-citation tracing inside WoS/Scopus for the
+seed list in `paper1/scopus_wos_search_plan.md` §2, where the OpenAlex trace
+remains a substitute; then Phase B (finish P1).

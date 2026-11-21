@@ -31,11 +31,13 @@ commands continue to work (`paper3/src/evaluate_estimators.py:30-35`;
 ## 1. Phase position
 
 We are in **Phase A: finish the gap hunt** (`AGENTS.md:174-180`;
-`START_HERE.md:125-130`). The last database task is the record-level screen of
-four Web of Science sets: S4 6 records, S5 66 records, Extra A 8 records and
-Extra C 13 records — 93 records in total
-(`paper1/scopus_wos_search_plan.md:70-74`). Scopus is complete: 295 records
+`START_HERE.md:125-130`) — the record-level screens are now complete. The last
+database task, the record-level screen of four Web of Science sets (S4 6
+records, S5 66 records, Extra A 8 records, Extra C 13 records — 93 in total),
+was completed on 21 November 2026 by export with zero records retained
+(`analysis/P01/wos_screening_2026-11-21.md`). Scopus is complete: 295 records
 screened, with no gap-changing record (`paper1/literature_audit.md:88-120`).
+In total 437 records screened across both databases.
 
 The order of gates is fixed:
 
@@ -89,14 +91,16 @@ is already recorded in the audit (`paper1/literature_audit.md:12-18`).
 2. Record for each search: database, interface, date, exact string, filters,
    raw hits, screened count, retained count and exclusion reasons
    (`paper1/scopus_wos_search_plan.md:126-139`).
-3. Screen the four pending WoS sets and write one keep/drop reason per record
-   in `paper1/literature_audit.md`
-   (`paper1/scopus_wos_search_plan.md:70-74`, `:141-148`).
+3. ~~Screen the four pending WoS sets and write one keep/drop reason per record~~
+   **Done 21 November 2026** — 93/93 screened, zero retained; the table is in
+   `analysis/P01/wos_screening_2026-11-21.md` §5 and the summary in
+   `paper1/literature_audit.md`.
 4. Add the required citation-trace seeds: Yang 2019, Harel & Mouche 2014,
    Mouche & Harel 2016 and Prajamwong 1997
-   (`AGENTS.md:176-180`; `NOVELTY_AND_PLAN_REPORT.md:225-230`).
-5. Full-text screen the retained set and keep the keep/drop table in the audit
-   file (`paper1/literature_audit.md:196-204`).
+   (`AGENTS.md:176-180`; `NOVELTY_AND_PLAN_REPORT.md:225-230`) — recorded as
+   prior art already; tracing inside WoS/Scopus remains open.
+5. ~~Full-text screen the retained set~~ — empty by definition: nothing was
+   retained at title/abstract level.
 
 ### 3.2 Synthesis
 
@@ -192,11 +196,12 @@ splits (`paper1/queueing_howto.md:157-162`).
 
 ## 7. Exact next action
 
-Sign in to Web of Science in the open Clarivate tab, then screen the 93 pending
-WoS records in `analysis/P01/wos_screening_2026-11-21.md` and transfer the
-completed keep/drop table to `paper1/literature_audit.md`
-(`APPROACH_P01_P03.md:15-17`). After Gate A, freeze the scoped gap sentence and
-start the P01 work sequence (`APPROACH_P01_P03.md:57-99`).
+DONE 21 November 2026 — the 93-record WoS screen is complete and the keep/drop
+table is transferred (`analysis/P01/wos_screening_2026-11-21.md` §5 →
+`paper1/literature_audit.md`). The gap sentence is frozen and dated
+(`AGENTS.md` §2; `field/README.md` §8). The remaining Phase A item is
+forward-citation tracing inside WoS/Scopus (`paper1/scopus_wos_search_plan.md`
+§2); then start the P01 work sequence (`APPROACH_P01_P03.md:57-99`).
 
 ## 8. Analysis workspace
 
@@ -204,7 +209,9 @@ The working analysis files are organised under `analysis/`:
 
 - `analysis/README.md` — index and status.
 - `analysis/P01/README.md` — P01 file list and decision rule.
-- `analysis/P01/wos_screening_2026-11-21.md` — live 93-record WoS screen.
+- `analysis/P01/wos_screening_2026-11-21.md` — completed 93-record WoS screen
+  (21 November 2026, zero retained).
+- `analysis/P01/exports/` — the five WoS Excel exports behind the screen.
 - `analysis/P03/README.md` — P03 outputs to create after Gate B.
 - `field/README.md` — field-level initial state and formulated objectives for
   P01 and P03.

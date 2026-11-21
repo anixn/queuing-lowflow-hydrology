@@ -5,16 +5,20 @@ not change the frozen gap sentence in `AGENTS.md` §2.
 
 ## 1. Where the project stands
 
-We are in **Phase A: finish the gap hunt**. The remaining database job is the
-record-level screen of four Web of Science sets: S4 (6 records), S5 (66),
-Extra A (8) and Extra C (13), 93 records in total (`AGENTS.md:174-180`;
-`paper1/scopus_wos_search_plan.md:70-74`). The repository also states that P01
+We are in **Phase A: finish the gap hunt** — record-level screens are now
+complete (21 November 2026). The last database job, the record-level screen of
+four Web of Science sets (S4: 6 records, S5: 66, Extra A: 8, Extra C: 13 — 93
+in total), was done on 21 November 2026 by export; zero records retained
+(`analysis/P01/wos_screening_2026-11-21.md`; `paper1/literature_audit.md`).
+The repository also states that P01
 comes first and P03 starts only after P01 is stable (`AGENTS.md:21-28`,
 `:192`; `START_HERE.md:125-137`).
 
-**Single next action:** screen those 93 WoS records and write one keep/drop
-reason per record in `paper1/literature_audit.md`. Scopus is complete: 295
-records screened, no gap-changing finding (`paper1/literature_audit.md:88-120`).
+**Single next action:** forward-citation tracing inside WoS/Scopus for the
+seed list (`paper1/scopus_wos_search_plan.md` §2) — the OpenAlex trace was a
+substitute. The 93-record WoS screen is done (21 November 2026, zero
+retained); Scopus is complete: 295 records screened, no gap-changing finding
+(`paper1/literature_audit.md:88-120`). The gap sentence is frozen.
 
 **P03 status:** preparation only. Do not start Phase C work before Gate B. Gate B
 requires the gap sentence to be frozen, all prior art to be cited, and every

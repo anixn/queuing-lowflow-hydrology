@@ -93,8 +93,9 @@ the literature verdict or the novelty claim.
 
 ## 5. The narrow claim we are testing
 
-Within Crossref, OpenAlex, Web of Science S1–S3 and the completed Scopus
-S1–S5/Extra A/C screens (295 records), plus the citation traces, we found no
+Within Crossref, OpenAlex, the complete Web of Science S1–S5/Extra A/B/C
+screens (142 records) and the completed Scopus S1–S5/Extra A/C screens
+(295 records), plus the citation traces, we found no
 study that puts all four of these together:
 
 1. drought as an accumulated unmet-demand backlog with a finite-capacity state;
@@ -105,6 +106,10 @@ study that puts all four of these together:
 
 We always write "we found no study in these sources", never "no such study
 exists". That wording must not change without redoing the search.
+
+**This sentence is frozen as of 21 November 2026**: both database screens are
+complete (437 records in total), every record has a keep/drop reason, and the
+frozen dated copy lives in `AGENTS.md` §2.
 
 ## 6. Which document to read, in what order
 

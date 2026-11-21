@@ -54,3 +54,46 @@ GitHub. The purpose is to keep one canonical branch and avoid confusion when
 the repository is pulled on another computer. The merge preserves the complete
 P01/P03 documentation, code and screening workspace; only the old branch name
 changed.
+
+## 21 November 2026 — WoS 93-record screen complete, gap sentence frozen
+
+I resumed the blocked WoS screen. The session browser was IP-entitled
+(Clarivate splash "Register to personalize your Web of Science experience",
+IP 14.139.122.139), so **no institutional profile sign-in was needed**: search,
+results and Export all worked without a profile. Two interface facts changed
+since 20 November and are recorded in `paper1/scopus_wos_search_plan.md`: the
+Advanced Search Query Builder now **requires** the `TS=(...)` prefix (the bare
+Boolean returns "Invalid field tag"), and the earlier record-card
+`loading-cover` stall was bypassed entirely by exporting each result set with
+**Export → Excel** (record content "Author, Title, Source, Abstract"). S5
+exceeded the page size of 50, so it was exported in two pages (1–50, 51–66);
+the "Records from 1 to 66" range option did not take.
+
+All 93 records were screened at title/abstract level: **S4 = 6, S5 = 66,
+Extra A = 8, Extra C = 13, zero retained.** The full record table with a
+one-line reason per record is in `analysis/P01/wos_screening_2026-11-21.md`
+§5; the five raw export files and the row-building script are kept in
+`analysis/P01/exports/`. The exports were additionally keyword-scanned for
+`queue`, `queing`, `waiting time`, `backlog`, `service rate`, `arrival rate`
+and `backlogged`; the only match is a healthcare logistics paper (S5 record 50
+/ Extra C record 5). Two institutional echoes are noted but not gap-changing:
+water-rights allocation described as a priority "queuing system" (Extra A
+records 5 and 6).
+
+I transferred the result to the audit trail: `paper1/literature_audit.md` now
+records the resolved renderer limitation, the completed WoS screen (142 WoS +
+295 Scopus = 437 records, zero gap-changing findings) and the frozen sentence;
+`paper1/scopus_wos_search_plan.md` has a new §1c and updated run-log rows;
+`NOVELTY_AND_PLAN_REPORT.md` §3 and §5 were updated; `AGENTS.md` §2 now holds
+the **frozen, dated gap sentence** ("Frozen 21 November 2026"), §8 marks the
+Phase A record-level screens done; `START_HERE.md` §5 and `field/README.md`
+§2/§6/§8 carry the same frozen sentence and resolved blocker. The four-part
+enumeration in the sentence is unchanged; only the completed-scope clause was
+updated, which is the Phase A freeze action.
+
+Tests: 18/18 pass (5 + 6 + 7; `python paper1/src/test_queue_core.py`,
+`python paper3/src/test_nonstationary_bench.py`,
+`python paper3/src/test_rate_estimators.py`). No new test was added — this
+session changed only documents and WoS exports, no solver code. Next action:
+forward-citation tracing inside WoS/Scopus (`scopus_wos_search_plan.md` §2),
+then Phase B (finish P1).

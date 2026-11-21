@@ -5,7 +5,7 @@ two active papers.
 
 | Paper | Folder | Status |
 |---|---|---|
-| P01 | `P01/` | Active. Gap-hunt screen is the current task. |
+| P01 | `P01/` | Active. 93-record WoS screen complete 21 Nov 2026; gap sentence frozen. |
 | P03 | `P03/` | Prepared only. Analysis starts after Gate B. |
 
 The organising protocol is `../RESEARCH_PROTOCOL.md`. The rendered HTML is

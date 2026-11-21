@@ -54,13 +54,14 @@ should be used without `TS=` in this interface.
 | Extra B | `(drought AND ("first passage" OR "busy period") AND (reservoir* OR storage OR deficit))` | 0 | — | 0 |
 | Extra C | `(("water deficit" OR "unmet demand") AND (queue* OR queu*))` | 13 | hit count only — renderer stalled | pending — **highest priority** |
 
-**Record-level screening limitation (21 November 2026).** For S4, S5 and Extra
-A/C the WoS results page returned hit counts but the record cards never left
-the `loading-cover` state (cookie consent, page-size change, sort change and
-reload were all tried). OpenAlex title/abstract cross-checks were substituted
-but are not equivalent. These four sets must be exported or re-screened before
-the gap statement is frozen. This limitation is recorded in
-`NOVELTY_AND_PLAN_REPORT.md` §3.2.
+**Record-level screening limitation (21 November 2026) — RESOLVED 21
+November 2026.** For S4, S5 and Extra A/C the WoS results page initially
+returned hit counts but the record cards never left the `loading-cover`
+state. The limitation was bypassed the same day by exporting every result set
+with WoS "Export → Excel" (record content: Author, Title, Source, Abstract)
+without any profile sign-in; all 93 records were then screened at
+title/abstract level. See "WoS record-level screen" below and
+`../analysis/P01/wos_screening_2026-11-21.md`.
 
 **S1 screening result.** No hydrology-drought queue study. The hits were
 mostly telecommunications, transport and healthcare queueing that matched
@@ -141,6 +142,46 @@ not index identical sets.
 
 Full bibliographic detail for all resolved records is in `P1_draft_v2.md` References.
 
+## WoS record-level screen — 21 November 2026
+
+The four pending WoS sets were run with the `TS=(...)` prefix the interface now
+requires, and every result set was exported to Excel with abstracts
+(`../analysis/P01/exports/wos_extraA_2026-11-21.xls`,
+`wos_s4_2026-11-21.xls`, `wos_s5_2026-11-21.xls`, `wos_s5_p2_2026-11-21.xls`,
+`wos_extraC_2026-11-21.xls`). All **93 records (S4 = 6, S5 = 66, Extra A = 8,
+Extra C = 13) were screened at title/abstract level; zero records retained**.
+Per-record decisions and one-line reasons are in
+`../analysis/P01/wos_screening_2026-11-21.md` §5. The titles + abstracts +
+keywords of all four exports were additionally keyword-scanned for `queue`,
+`queing`, `waiting time`, `backlog`, `service rate`, `arrival rate` and
+`backlogged`; the only match is the healthcare logistics paper also listed in
+Extra C (record 5).
+
+Result: the WoS record-level screen confirms the Scopus finding — no located
+study combines drought-as-queue-backlog, queue-state drought indicators,
+covariate-learned non-stationary rates and exact validation. Two institutional
+echoes are recorded but do not change the gap:
+
+1. Water-rights allocation described as a priority "queuing system" (Extra A:
+   the 2006 water-markets review and the 2018 Tunisia allocation study) — an
+   institutional rule, not a stochastic queue state with drought indicators.
+2. Healthcare emergency-care queueing for capacity (S5 record 50 / Extra C
+   record 5) — same service-capacity machinery, applied to patients.
+
+**Database screens are now complete in both WoS (142 records screened:
+25 + 24 + 0 + 6 + 66 + 8 + 0 + 13) and Scopus (295 records); 437 records in
+total, zero gap-changing findings.**
+
+**Frozen gap sentence (21 November 2026):** "Within Crossref, OpenAlex, the
+complete WoS S1–S5 / Extra A/B/C screens (142 records) and the completed
+Scopus S1–S5 / Extra A/C screens (295 records), plus the citation traces, we
+found no study that puts all four of these together: (1) drought as an
+accumulated unmet-demand backlog with a finite-capacity state; (2) queue-state
+indicators reported as drought quantities; (3) non-stationary rates estimated
+from hydroclimatic covariates; (4) validation against exact reference
+solutions and pre-specified drought tests." Canonical copies: `../AGENTS.md`
+§2, `../START_HERE.md` §5, `../field/README.md` §8.
+
 ## Non-stationary queueing is mature in operations research
 
 Verified works include Galliher & Wheeler (1958, DOI 10.1287/opre.6.2.264),
@@ -191,13 +232,13 @@ analysis and must **not** be cited as queueing prior art.
 | Candidate 2 (runoff generation queues) | Rejected as novel — Harel & Mouche 2013 | Reframe as spatial non-stationarity extension |
 | Topic 1 irrigation queues | Weakened further — Palková & Hennyeyová 2012; Palková et al. 2010/2011/2012; Yang et al. 2019 | Gap = unmet-demand indicators + non-stationarity + learned rates |
 | Topic 7 groundwater queues | Rejected as novel — Batabyal 1996; Al-Sifao et al. 2026 | Gap = multi-year deficit backlog + GRACE validation |
-| ML-parameterised non-stationary queue for drought | No hits in Crossref/OpenAlex, WoS S1–S3 or Scopus S1–S5/Extra A/C (295 records screened); plausible gap | Keep as headline, with scope caveat |
+| ML-parameterised non-stationary queue for drought | No hits in Crossref/OpenAlex, WoS S1–S5/Extra A/C (142 records) or Scopus S1–S5/Extra A/C (295 records): 437 records screened in total; plausible gap | Keep as headline, with scope caveat |
 
 ## Still required before submission
 
-1. WoS record-level screening of S4 (6), S5 (66), Extra A (8) and Extra C (13);
-   export the records or reopen in a session where the cards render. The
-   Scopus equivalents are complete, but WoS indexes different records.
+1. ~~WoS record-level screening of S4 (6), S5 (66), Extra A (8) and Extra C
+   (13)~~ **Done 21 November 2026** — 93/93 records exported and screened,
+   zero retained (`../analysis/P01/wos_screening_2026-11-21.md`).
 2. Forward-citation tracing inside WoS/Scopus ("Times Cited" / "Cited by") for
    the seed list in `scopus_wos_search_plan.md`. The OpenAlex trace is a
    substitute, not an equivalent.
