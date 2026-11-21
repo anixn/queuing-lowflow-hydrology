@@ -47,3 +47,10 @@ the current document structure, code, screening sheet or test state. The local
 history was then pushed to
 `https://github.com/anixn/queuing-lowflow-hydrology.git`, and branch `main` now
 tracks `origin/main`.
+
+The repository is now consolidated on `master`. I merged the earlier `main`
+history into `master`, pushed `master`, and deleted `main` locally and on
+GitHub. The purpose is to keep one canonical branch and avoid confusion when
+the repository is pulled on another computer. The merge preserves the complete
+P01/P03 documentation, code and screening workspace; only the old branch name
+changed.
