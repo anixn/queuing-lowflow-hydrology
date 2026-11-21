@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Ankit Deshmukh" />
+  <meta name="dcterms.date" content="2026-11-21" />
+  <title>Research protocol: P01 and P03</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="protocol.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Research protocol: P01 and P03</h1>
+<p class="subtitle">Queue-based drought science — objectives, gates and
+analysis plans</p>
+<p class="author">Ankit Deshmukh</p>
+<p class="date">21 November 2026</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#research-protocol-p01-and-p03"
+id="toc-research-protocol-p01-and-p03"><span
+class="toc-section-number">1</span> Research protocol: P01 and P03</a>
+<ul>
+<li><a href="#name-map" id="toc-name-map"><span
+class="toc-section-number">1.1</span> 0. Name map</a></li>
+<li><a href="#phase-position" id="toc-phase-position"><span
+class="toc-section-number">1.2</span> 1. Phase position</a></li>
+<li><a href="#p01-key-objective" id="toc-p01-key-objective"><span
+class="toc-section-number">1.3</span> 2. P01 — key objective</a></li>
+<li><a href="#p01-analysis-protocol"
+id="toc-p01-analysis-protocol"><span
+class="toc-section-number">1.4</span> 3. P01 — analysis protocol</a>
+<ul>
+<li><a href="#search-and-screening" id="toc-search-and-screening"><span
+class="toc-section-number">1.4.1</span> 3.1 Search and
+screening</a></li>
+<li><a href="#synthesis" id="toc-synthesis"><span
+class="toc-section-number">1.4.2</span> 3.2 Synthesis</a></li>
+<li><a href="#language-and-gate-check"
+id="toc-language-and-gate-check"><span
+class="toc-section-number">1.4.3</span> 3.3 Language and gate
+check</a></li>
+</ul></li>
+<li><a href="#p03-key-objective" id="toc-p03-key-objective"><span
+class="toc-section-number">1.5</span> 4. P03 — key objective</a></li>
+<li><a href="#p03-pre-registered-analysis-protocol"
+id="toc-p03-pre-registered-analysis-protocol"><span
+class="toc-section-number">1.6</span> 5. P03 — pre-registered analysis
+protocol</a>
+<ul>
+<li><a href="#work-order" id="toc-work-order"><span
+class="toc-section-number">1.6.1</span> 5.1 Work order</a></li>
+<li><a href="#metrics-and-baselines"
+id="toc-metrics-and-baselines"><span
+class="toc-section-number">1.6.2</span> 5.2 Metrics and
+baselines</a></li>
+</ul></li>
+<li><a href="#shared-operating-rules"
+id="toc-shared-operating-rules"><span
+class="toc-section-number">1.7</span> 6. Shared operating rules</a></li>
+<li><a href="#exact-next-action" id="toc-exact-next-action"><span
+class="toc-section-number">1.8</span> 7. Exact next action</a></li>
+<li><a href="#analysis-workspace" id="toc-analysis-workspace"><span
+class="toc-section-number">1.9</span> 8. Analysis workspace</a></li>
+<li><a href="#reproducibility-commands"
+id="toc-reproducibility-commands"><span
+class="toc-section-number">1.10</span> 9. Reproducibility
+commands</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 data-number="1" id="research-protocol-p01-and-p03"><span
+class="header-section-number">1</span> Research protocol: P01 and
+P03</h1>
+<p>This file is the organising protocol for the two active papers. It
+uses the canonical names <strong>P01</strong> and <strong>P03</strong>.
+The old labels P1 and P3 still appear in existing file paths and source
+files, but they are no longer the preferred human-facing names.</p>
+<h2 data-number="1.1" id="name-map"><span
+class="header-section-number">1.1</span> 0. Name map</h2>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Canonical name</th>
+<th>Old label</th>
+<th>Physical folder</th>
+<th>Current work product</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P01</strong></td>
+<td>Paper 1 / P1</td>
+<td><code>paper1/</code></td>
+<td><code>paper1/P1_draft_v2.md</code></td>
+</tr>
+<tr>
+<td><strong>P03</strong></td>
+<td>Paper 3 / P3</td>
+<td><code>paper3/</code></td>
+<td>Methods package in <code>paper3/</code></td>
+</tr>
+<tr>
+<td>Not used</td>
+<td>Paper 02 / P2</td>
+<td>—</td>
+<td>No such paper is defined in the repository</td>
+</tr>
+</tbody>
+</table>
+<p>The repository defines two papers, P1 and P3, and fixes the order P1
+first, P3 second (<code>AGENTS.md:21-28</code>;
+<code>START_HERE.md:21-28</code>). The physical folders stay as
+<code>paper1/</code> and <code>paper3/</code> so the tested Python
+imports and documented run commands continue to work
+(<code>paper3/src/evaluate_estimators.py:30-35</code>;
+<code>START_HERE.md:141-152</code>). The detailed working note is
+<code>APPROACH_P01_P03.md</code>.</p>
+<h2 data-number="1.2" id="phase-position"><span
+class="header-section-number">1.2</span> 1. Phase position</h2>
+<p>We are in <strong>Phase A: finish the gap hunt</strong>
+(<code>AGENTS.md:174-180</code>; <code>START_HERE.md:125-130</code>).
+The last database task is the record-level screen of four Web of Science
+sets: S4 6 records, S5 66 records, Extra A 8 records and Extra C 13
+records — 93 records in total
+(<code>paper1/scopus_wos_search_plan.md:70-74</code>). Scopus is
+complete: 295 records screened, with no gap-changing record
+(<code>paper1/literature_audit.md:88-120</code>).</p>
+<p>The order of gates is fixed:</p>
+<ol type="1">
+<li><strong>Gate A:</strong> one dated, scoped gap sentence and
+keep/drop reasons for every retained record
+(<code>AGENTS.md:181-182</code>).</li>
+<li><strong>Gate B:</strong> P01 stable — gap sentence frozen, prior art
+cited, every number script-backed (<code>AGENTS.md:184-190</code>).</li>
+<li><strong>Gate C:</strong> P03 ready — estimator beats climatology on
+held-out data, or an honest null result is written
+(<code>AGENTS.md:198-199</code>).</li>
+</ol>
+<p>P03 analysis is prepared here but is not started before Gate B
+(<code>AGENTS.md:28</code>, <code>:192</code>).</p>
+<h2 data-number="1.3" id="p01-key-objective"><span
+class="header-section-number">1.3</span> 2. P01 — key objective</h2>
+<p><strong>Plain objective:</strong> explain why drought can be read as
+a queue state, cite the existing water–queue lineage accurately, and set
+out tests that can show whether queue-derived indicators add drought
+information.</p>
+<p>P01 is a review/perspective for <em>Water Resources Research</em>
+(<code>NOVELTY_AND_PLAN_REPORT.md:55-70</code>;
+<code>START_HERE.md:21-28</code>). Its objectives are:</p>
+<ol type="1">
+<li>Reclaim the historical link between storage theory and queueing,
+beginning with Langbein 1958, rather than presenting that link as ours
+(<code>paper1/P1_draft_v2.md:74-89</code>).</li>
+<li>Map queue quantities to drought quantities: arrivals to demand,
+service to supply, backlog to unmet demand, capacity to a system limit,
+and reneging to abandoned demand
+(<code>paper1/P1_draft_v2.md:103-150</code>).</li>
+<li>Keep two dual representations separate: stored water as the buffer
+and unmet demand as the backlog
+(<code>paper1/P1_draft_v2.md:123-150</code>).</li>
+<li>Cite the established hydrology, irrigation, groundwater, runoff and
+reliability literature without overstating the gap
+(<code>paper1/literature_audit.md:122-174</code>;
+<code>paper1/P1_draft_v2.md:152-187</code>).</li>
+<li>Show why time-varying rates matter. As of 21 November 2026, the
+synthetic Box 1 gives 2.130 claims peak E[Q] versus 0.916 claims
+stationary, a 2.3× difference, and peak Pr(Q≥6) of 0.0733 versus 0.0043,
+a 17× difference (<code>paper1/P1_draft_v2.md:266-292</code>).</li>
+<li>State a falsifiable research programme with pre-specified metrics,
+baselines, null-result clause and guardrails
+(<code>paper1/P1_draft_v2.md:294-347</code>).</li>
+</ol>
+<h2 data-number="1.4" id="p01-analysis-protocol"><span
+class="header-section-number">1.4</span> 3. P01 — analysis protocol</h2>
+<p>This is a scoping-review protocol, not a full systematic review; the
+distinction is already recorded in the audit
+(<code>paper1/literature_audit.md:12-18</code>).</p>
+<h3 data-number="1.4.1" id="search-and-screening"><span
+class="header-section-number">1.4.1</span> 3.1 Search and screening</h3>
+<ol type="1">
+<li>Use the exact search strings and interface notes in
+<code>paper1/scopus_wos_search_plan.md:10-61</code>.</li>
+<li>Record for each search: database, interface, date, exact string,
+filters, raw hits, screened count, retained count and exclusion reasons
+(<code>paper1/scopus_wos_search_plan.md:126-139</code>).</li>
+<li>Screen the four pending WoS sets and write one keep/drop reason per
+record in <code>paper1/literature_audit.md</code>
+(<code>paper1/scopus_wos_search_plan.md:70-74</code>,
+<code>:141-148</code>).</li>
+<li>Add the required citation-trace seeds: Yang 2019, Harel &amp; Mouche
+2014, Mouche &amp; Harel 2016 and Prajamwong 1997
+(<code>AGENTS.md:176-180</code>;
+<code>NOVELTY_AND_PLAN_REPORT.md:225-230</code>).</li>
+<li>Full-text screen the retained set and keep the keep/drop table in
+the audit file (<code>paper1/literature_audit.md:196-204</code>).</li>
+</ol>
+<h3 data-number="1.4.2" id="synthesis"><span
+class="header-section-number">1.4.2</span> 3.2 Synthesis</h3>
+<ol type="1">
+<li>Build the concept map from queue term to hydrological meaning and
+caveat (<code>paper1/P1_draft_v2.md:103-150</code>).</li>
+<li>Keep prior-art rows with three columns: representation, what it
+does, what it leaves open
+(<code>paper1/P1_draft_v2.md:159-175</code>).</li>
+<li>Use only script-backed synthetic numbers. The anchor three-way check
+is exact E[Q] 0.91607 claims, RK4 E[Q] 0.91607 claims and DES
+time-average E[Q] 0.91295 claims, a 0.34% difference on 21 November 2026
+(<code>AGENTS.md:87-90</code>;
+<code>paper1/README.md:41-49</code>).</li>
+<li>Label every pilot number “illustrative, under the stated
+assumptions” (<code>AGENTS.md:47-52</code>;
+<code>START_HERE.md:87-92</code>).</li>
+<li>Do not use raw CMIP6 output in any published number
+(<code>AGENTS.md:53-55</code>).</li>
+</ol>
+<h3 data-number="1.4.3" id="language-and-gate-check"><span
+class="header-section-number">1.4.3</span> 3.3 Language and gate
+check</h3>
+<p>Search the draft for strong claim words and “no study” phrases; check
+each against the scoped, dated gap sentence
+(<code>AGENTS.md:30-45</code>; <code>paper1/P1_draft_v2.md:44</code>,
+<code>:349-362</code>). P01 is stable only when Gate B is met
+(<code>AGENTS.md:189-190</code>).</p>
+<h2 data-number="1.5" id="p03-key-objective"><span
+class="header-section-number">1.5</span> 4. P03 — key objective</h2>
+<p><strong>Plain objective:</strong> estimate changing demand and supply
+rates from data, verify the estimates against exact mathematics, and
+test whether queue state adds drought information beyond standard
+baselines.</p>
+<p>P03 is a methods paper for <em>Hydrology and Earth System
+Sciences</em> later in the roadmap
+(<code>NOVELTY_AND_PLAN_REPORT.md:72-84</code>;
+<code>paper3/README.md:1-11</code>). Its objectives are:</p>
+<ol type="1">
+<li>Estimate λ(t) from demand covariates and μ(t) from flow and climate
+covariates (<code>NOVELTY_AND_PLAN_REPORT.md:76-81</code>).</li>
+<li>Validate against exact references: stationary-at-mean, Floquet
+periodic, MMPP/2 and discrete-event simulation
+(<code>paper3/README.md:24-35</code>, <code>:65-88</code>).</li>
+<li>Compare against constant rate, climatological rates, SPI/SPEI/SSI
+and low-flow statistics (<code>paper3/README.md:113-130</code>).</li>
+<li>Use held-out years, held-out basins and named drought events
+(<code>NOVELTY_AND_PLAN_REPORT.md:258-263</code>).</li>
+<li>Report a null result if queue indicators do not add information
+beyond baselines (<code>AGENTS.md:59-61</code>;
+<code>NOVELTY_AND_PLAN_REPORT.md:260-263</code>).</li>
+<li>Do not present machine learning for queues, time-varying arrivals or
+correlated arrivals as our contribution (<code>AGENTS.md:62-66</code>;
+<code>paper1/literature_audit.md:144-174</code>).</li>
+</ol>
+<h2 data-number="1.6" id="p03-pre-registered-analysis-protocol"><span
+class="header-section-number">1.6</span> 5. P03 — pre-registered
+analysis protocol</h2>
+<p>The metrics, baselines and null rule must be fixed before results are
+examined (<code>NOVELTY_AND_PLAN_REPORT.md:258</code>).</p>
+<h3 data-number="1.6.1" id="work-order"><span
+class="header-section-number">1.6.1</span> 5.1 Work order</h3>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: right;">Order</th>
+<th>Work package</th>
+<th>Deliverable and stop rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>μ error near ρ≈1</td>
+<td>Fix the dominant estimator weakness first
+(<code>NOVELTY_AND_PLAN_REPORT.md:250</code>). Current synthetic
+diagnostics show μ RMSE about 0.098/day and mass-calibrated
+overprediction under warming; treat both as diagnostics, not findings
+(<code>paper3/README.md:81-84</code>;
+<code>paper3/src/evaluate_estimators.py:127-133</code>). Add a
+test.</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>Floquet convergence</td>
+<td>Vary dt; report residual and peak-indicator stability. Keep the RK4
+cap: generator reaches about 8.5/day and dt×</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>MMPP sweep</td>
+<td>Sweep switching rate and high/low contrast. The 1.16× amplification
+is one setting only (<code>paper3/README.md:74-79</code>;
+<code>NOVELTY_AND_PLAN_REPORT.md:252</code>).</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>Multi-gauge R pipeline</td>
+<td>Add gauge 4064 Yadgir while keeping linear BLOCK-1 scripts and base
+R (<code>paper1/data_access_spec.md:47-55</code>;
+<code>NOVELTY_AND_PLAN_REPORT.md:253</code>).</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td>Zero-flow semantics</td>
+<td>Resolve gauge 4026 zero-flow meaning against the CAMELS-India
+documentation. There are 9,710 zero-flow days out of 14,308 non-missing
+days, 68%, and ρ must not be interpreted on those days until resolved
+(<code>paper1/data_access_spec.md:59-61</code>;
+<code>AGENTS.md:163-166</code>).</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td>Claim convention</td>
+<td>Find real canal/crop records or run a documented sensitivity
+envelope; keep pilot numbers illustrative meanwhile
+(<code>paper1/data_access_spec.md:19-39</code>, <code>:80-97</code>).
+Change the convention in all required places in one step
+(<code>AGENTS.md:73-76</code>).</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td>CMIP6 bias correction</td>
+<td>Bias-correct against IMD/CAMELS before use; raw CMIP6 and Hargreaves
+ET0 are pipeline checks only (<code>AGENTS.md:53-55</code>;
+<code>paper1/data_access_spec.md:91-93</code>).</td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td>Future μ(t)</td>
+<td>Use delta-change scaling of observed streamflow or a rainfall–runoff
+transfer function; CMIP6 extraction gives pr and temperature, not
+streamflow (<code>paper3/README.md:144-146</code>).</td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td>Validation design</td>
+<td>Pre-register held-out years, basins, events, metrics and baselines
+(<code>NOVELTY_AND_PLAN_REPORT.md:258</code>).</td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td>Uncertainty</td>
+<td>Propagate bootstrap intervals from rate estimates into E[Q],
+Pr(Q≥6), U and recovery time
+(<code>NOVELTY_AND_PLAN_REPORT.md:259</code>;
+<code>paper3/README.md:30</code>).</td>
+</tr>
+<tr>
+<td style="text-align: right;">11</td>
+<td>Ablation</td>
+<td>Test incremental information beyond SPI/SPEI/SSI and a
+climatological queue; record the null if none appears
+(<code>AGENTS.md:59-61</code>;
+<code>NOVELTY_AND_PLAN_REPORT.md:260</code>).</td>
+</tr>
+<tr>
+<td style="text-align: right;">12</td>
+<td>Writing</td>
+<td>Write only after Gate C (<code>AGENTS.md:198-199</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.6.2" id="metrics-and-baselines"><span
+class="header-section-number">1.6.2</span> 5.2 Metrics and
+baselines</h3>
+<p>Use rate RMSE, peak E[Q] error, severe-state probability error,
+unmet-demand error, lead time and probabilistic scores such as Brier,
+AUC or CRPS where applicable
+(<code>paper1/queueing_howto.md:170-180</code>;
+<code>paper3/README.md:117-130</code>). Baselines are constant rate,
+climatological rate, SPI/SPEI/SSI, low-flow statistics and a
+climatological queue (<code>paper3/README.md:119-123</code>;
+<code>NOVELTY_AND_PLAN_REPORT.md:260</code>). Use block
+cross-validation, never random-row splits
+(<code>paper1/queueing_howto.md:157-162</code>).</p>
+<h2 data-number="1.7" id="shared-operating-rules"><span
+class="header-section-number">1.7</span> 6. Shared operating rules</h2>
+<ol type="1">
+<li>Run all 18 tests after every change and before reporting
+(<code>AGENTS.md:78-86</code>). On 21 November 2026 all 18 passed with
+the existing <code>drought</code> environment
+(<code>SESSION_LOG.md:8-10</code>).</li>
+<li>Keep three-way agreement between exact solution, RK4 and DES
+(<code>AGENTS.md:87-91</code>).</li>
+<li>Every manuscript number has a named script
+(<code>AGENTS.md:92-94</code>).</li>
+<li>Report with file and line sources
+(<code>AGENTS.md:94-98</code>).</li>
+<li>Label assumptions and measurements when first used
+(<code>AGENTS.md:222-227</code>).</li>
+<li>Never hand-edit generated <code>data/*.csv</code> files
+(<code>AGENTS.md:123-124</code>).</li>
+<li>Keep the claim convention fixed in all four documented locations
+(<code>AGENTS.md:73-76</code>).</li>
+</ol>
+<h2 data-number="1.8" id="exact-next-action"><span
+class="header-section-number">1.8</span> 7. Exact next action</h2>
+<p>Sign in to Web of Science in the open Clarivate tab, then screen the
+93 pending WoS records in
+<code>analysis/P01/wos_screening_2026-11-21.md</code> and transfer the
+completed keep/drop table to <code>paper1/literature_audit.md</code>
+(<code>APPROACH_P01_P03.md:15-17</code>). After Gate A, freeze the
+scoped gap sentence and start the P01 work sequence
+(<code>APPROACH_P01_P03.md:57-99</code>).</p>
+<h2 data-number="1.9" id="analysis-workspace"><span
+class="header-section-number">1.9</span> 8. Analysis workspace</h2>
+<p>The working analysis files are organised under
+<code>analysis/</code>:</p>
+<ul>
+<li><code>analysis/README.md</code> — index and status.</li>
+<li><code>analysis/P01/README.md</code> — P01 file list and decision
+rule.</li>
+<li><code>analysis/P01/wos_screening_2026-11-21.md</code> — live
+93-record WoS screen.</li>
+<li><code>analysis/P03/README.md</code> — P03 outputs to create after
+Gate B.</li>
+<li><code>field/README.md</code> — field-level initial state and
+formulated objectives for P01 and P03.</li>
+</ul>
+<p>The P01 screening sheet records the access blocker honestly; no
+records are invented. It will be filled only from signed-in WoS result
+pages (<code>analysis/P01/wos_screening_2026-11-21.md:9-16</code>).</p>
+<h2 data-number="1.10" id="reproducibility-commands"><span
+class="header-section-number">1.10</span> 9. Reproducibility
+commands</h2>
+<p>Use the existing <code>drought</code> Conda environment; the default
+<code>python</code> has no NumPy
+(<code>START_HERE.md:141-148</code>).</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="st">&#39;C:\Users\deshm\miniconda3\envs\drought\python.exe&#39;</span> paper1<span class="op">/</span>src<span class="op">/</span>test_queue_core<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="st">&#39;C:\Users\deshm\miniconda3\envs\drought\python.exe&#39;</span> paper3<span class="op">/</span>src<span class="op">/</span>test_nonstationary_bench<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="st">&#39;C:\Users\deshm\miniconda3\envs\drought\python.exe&#39;</span> paper3<span class="op">/</span>src<span class="op">/</span>test_rate_estimators<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="st">&#39;C:\Program Files\R\R-4.5.1\bin\x64\Rscript.exe&#39;</span> paper3<span class="op">/</span><span class="fu">R</span><span class="op">/</span>01_build_rates<span class="op">.</span><span class="fu">R</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="st">&#39;C:\Program Files\R\R-4.5.1\bin\x64\Rscript.exe&#39;</span> paper3<span class="op">/</span><span class="fu">R</span><span class="op">/</span>02_run_queue<span class="op">.</span><span class="fu">R</span></span></code></pre></div>
+<p>Render this protocol to HTML with:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pandoc RESEARCH_PROTOCOL<span class="op">.</span><span class="fu">md</span> <span class="op">-</span>o RESEARCH_PROTOCOL<span class="op">.</span><span class="fu">html</span> <span class="op">--</span>standalone <span class="op">--</span>toc <span class="op">--</span>number-sections <span class="op">--</span>css<span class="op">=</span>protocol<span class="op">.</span><span class="fu">css</span></span></code></pre></div>
+</body>
+</html>
