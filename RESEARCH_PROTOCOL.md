@@ -31,13 +31,16 @@ commands continue to work (`paper3/src/evaluate_estimators.py:30-35`;
 ## 1. Phase position
 
 We are in **Phase A: finish the gap hunt** (`AGENTS.md:174-180`;
-`START_HERE.md:125-130`) — the record-level screens are now complete. The last
-database task, the record-level screen of four Web of Science sets (S4 6
-records, S5 66 records, Extra A 8 records, Extra C 13 records — 93 in total),
-was completed on 21 November 2026 by export with zero records retained
-(`analysis/P01/wos_screening_2026-11-21.md`). Scopus is complete: 295 records
+`START_HERE.md:125-130`) — **Phase A closed 21 November 2026**. The record-level
+screens are complete: the four Web of Science sets (S4 6 records, S5 66
+records, Extra A 8 records, Extra C 13 records — 93 in total) were screened
+by export with zero records retained
+(`analysis/P01/wos_screening_2026-11-21.md`), and all seeds were traced in
+WoS/Scopus with 76 citing records screened
+(`analysis/P01/citation_trace_2026-11-21.md`). Scopus is complete: 295 records
 screened, with no gap-changing record (`paper1/literature_audit.md:88-120`).
-In total 437 records screened across both databases.
+In total 437 record-level hits + 76 citing records screened across both
+databases.
 
 The order of gates is fixed:
 
@@ -198,10 +201,12 @@ splits (`paper1/queueing_howto.md:157-162`).
 
 DONE 21 November 2026 — the 93-record WoS screen is complete and the keep/drop
 table is transferred (`analysis/P01/wos_screening_2026-11-21.md` §5 →
-`paper1/literature_audit.md`). The gap sentence is frozen and dated
-(`AGENTS.md` §2; `field/README.md` §8). The remaining Phase A item is
-forward-citation tracing inside WoS/Scopus (`paper1/scopus_wos_search_plan.md`
-§2); then start the P01 work sequence (`APPROACH_P01_P03.md:57-99`).
+`paper1/literature_audit.md`); the seed citation trace is complete
+(`analysis/P01/citation_trace_2026-11-21.md`). The gap sentence is frozen and
+dated (`AGENTS.md` §2; `field/README.md` §8). **Gate A passed — Phase B
+(finish P1) is current**: next action is the P1 mapping-section tightening
+and prior-art table update with the two new trace records
+(`APPROACH_P01_P03.md`).
 
 ## 8. Analysis workspace
 
@@ -211,7 +216,10 @@ The working analysis files are organised under `analysis/`:
 - `analysis/P01/README.md` — P01 file list and decision rule.
 - `analysis/P01/wos_screening_2026-11-21.md` — completed 93-record WoS screen
   (21 November 2026, zero retained).
-- `analysis/P01/exports/` — the five WoS Excel exports behind the screen.
+- `analysis/P01/citation_trace_2026-11-21.md` — completed seed forward-citation
+  trace in WoS/Scopus (76 citing records screened).
+- `analysis/P01/exports/` — the five WoS Excel exports behind the screen and
+  four citing-article exports.
 - `analysis/P03/README.md` — P03 outputs to create after Gate B.
 - `field/README.md` — field-level initial state and formulated objectives for
   P01 and P03.

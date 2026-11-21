@@ -85,8 +85,8 @@ result therefore applies to the narrower string.
 | 21 Nov 2026 | Scopus (basic box, bare Boolean) | S5 | 98 | 98 | 0 | Done — no gap-changing record |
 | 21 Nov 2026 | Scopus (basic box, bare Boolean) | Extra A: `drought AND (queue* OR queu*)` | 15 | 15 | 0 | Done — no gap-changing record |
 | 21 Nov 2026 | Scopus (basic box, bare Boolean) | Extra C: `("water deficit" OR "unmet demand") AND (queue* OR queu*)` | 17 | 17 | 0 | Done — no gap-changing record |
-| — | WoS Core Collection | Remaining forward-citation seeds | — | — | — | Pending |
-| — | Scopus | Forward-citation tracing ("Cited by") | — | — | — | Pending — OpenAlex substitute used |
+| 21 Nov 2026 | WoS Core Collection | Times-Cited trace: H&M 2013 (5), H&M 2014 (10), Lefebvre 2019 (1), Yang 2019 (23), Mouche & Harel 2016 (1) — 40 citing records | 40 | 0 | Done 21 Nov 2026 — Jones 2016 finite-hillslope + Jones 2019 found; no gap change (`../analysis/P01/citation_trace_2026-11-21.md`) |
+| 21 Nov 2026 | Scopus | Cited-by trace: Gamble 1990a (5), 1990b (6), Batabyal 1996 (14), Yang 2016 CSAE (11) — 36 citing records | 36 | 0 | Done 21 Nov 2026 — Yang 2016 CSAE conjunctive-allocation record found; no gap change; Langbein 1958 and Prajamwong 1997 confirmed unindexed |
 
 "Retained" means a new record that could change the gap statement. Known prior
 art surfaced again in Scopus S2/S4/S5/Extra A/C (including Prajamwong et al.
@@ -121,10 +121,11 @@ Extra C = 13); zero retained.** The per-record table lives in
 `literature_audit.md` ("WoS record-level screen"). With this, both databases
 are fully screened at record level: **142 WoS + 295 Scopus = 437 records,
 zero gap-changing findings**. The dated gap sentence is frozen in
-`../field/README.md` §8. The still-open Phase A item is forward-citation
-tracing inside WoS/Scopus (§2 below); the OpenAlex trace remains a substitute.
+`../field/README.md` §8. Forward-citation tracing is complete (see §2 below
+and `../analysis/P01/citation_trace_2026-11-21.md`); the OpenAlex trace is now
+a cross-check, not a substitute.
 
-## 2. Forward-citation tracing
+## 2. Forward-citation tracing — DONE 21 November 2026
 
 In WoS "Times Cited" / Scopus "Cited by", trace these five seeds and export the
 citing articles:
@@ -139,6 +140,11 @@ citing articles:
 
 For each seed record: number of citing articles, number that are hydrology/
 water/resources, and any that mention drought, deficit or unmet demand.
+
+**Result (21 November 2026):** all seeds traced or confirmed unindexed; 76
+citing records screened in total (40 WoS + 36 Scopus); two new prior-art
+records (Yang 2016 CSAE; Jones 2016 finite-hillslope), neither gap-changing.
+Seed-by-seed detail: `../analysis/P01/citation_trace_2026-11-21.md`.
 
 ## 3. What to record (for the methods section)
 

@@ -14,11 +14,12 @@ The repository also states that P01
 comes first and P03 starts only after P01 is stable (`AGENTS.md:21-28`,
 `:192`; `START_HERE.md:125-137`).
 
-**Single next action:** forward-citation tracing inside WoS/Scopus for the
-seed list (`paper1/scopus_wos_search_plan.md` §2) — the OpenAlex trace was a
-substitute. The 93-record WoS screen is done (21 November 2026, zero
-retained); Scopus is complete: 295 records screened, no gap-changing finding
-(`paper1/literature_audit.md:88-120`). The gap sentence is frozen.
+**Single next action (Phase B):** tighten the P1 mapping section and fold the
+two new citation-trace prior-art records (Yang 2016 CSAE; Jones 2016/2019
+runoff-runon) into the P1 prior-art table
+(`paper1/P1_draft_v2.md` §2; `paper1/literature_audit.md`). The 93-record WoS
+screen, the seed citation trace and the frozen gap sentence are all complete
+as of 21 November 2026.
 
 **P03 status:** preparation only. Do not start Phase C work before Gate B. Gate B
 requires the gap sentence to be frozen, all prior art to be cited, and every

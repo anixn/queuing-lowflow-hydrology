@@ -138,7 +138,9 @@ not index identical sets.
 | **Palková, Rodný & Kiedrowicz (2012)**, *Rocznik Ochrona Środowiska* 14, 161–171; **Palková & Rodný (2010/2011)**, *Scientific Papers / Technical Sciences* 10(1) / 11(1) | WoS S2 + OpenAlex verified; no DOI | Queueing for irrigation-system process control and optimal capacity | **New.** Confirms a sustained irrigation-queueing line, not a one-off. Design/control focus, no drought indicators. |
 | **Harel & Mouche (2014)**, *Earth Surface Processes and Landforms* 39(11), 1514–1525, DOI 10.1002/esp.3604 | WoS S2 + OpenAlex verified | Queueing-based runoff–runon connectivity on 2-D slopes | **New.** Extends the runoff queueing precedent; still steady state, no deficit accounting. |
 | **Mouche & Harel (2016)**, "Overland flow as a queueing process: The B/D/1 queue with an arbitrary service time", *Performance Evaluation*, DOI 10.1016/j.peva.2016.10.001 | OpenAlex forward-citation trace from Harel & Mouche 2013/2014 and Langbein 1958 | Overland flow represented as a B/D/1 queue | **New (found 21 Nov 2026 by citation tracing, not by keyword search).** Shows keyword searches alone undercount the hydrology-queue niche. Still no drought deficit state. |
-| **Prajamwong, Merkley & Allen (1997)**, "Decision Support Model for Irrigation Water Management", *J. Irrigation and Drainage Engineering* 123(2), 106, DOI 10.1061/(ASCE)0733-9437(1997)123:2(106) | OpenAlex `abstract.search:water deficit + queue` screen, 21 Nov 2026 | CADSM uses a queuing system to allocate available water to command areas and fields; root-zone water deficit in yield response | **New.** Pushes irrigation-queueing precedent back to 1997. Operational allocation, not drought state or learned rates. |
+| **Prajamwong, Merkley & Allen (1997)**, "Decision Support Model for Irrigation Water Management", *J. Irrigation and Drainage Engineering* 123(2), 106, DOI 10.1061/(ASCE)0733-9437(1997)123:2(106) | OpenAlex `abstract.search:water deficit + queue` screen, 21 Nov 2026; not indexed in WoS CC or Scopus (checked 21 Nov 2026) | CADSM uses a queuing system to allocate available water to command areas and fields; root-zone water deficit in yield response | **New.** Pushes irrigation-queueing precedent back to 1997. Operational allocation, not drought state or learned rates. |
+| **Yang, Gaiqiang; Guo, Ping; Li, Ruihuan; Li, Mo (2016)**, "Optimal allocation model of surface water and groundwater based on queuing theory in irrigation district", *Nongye Gongcheng Xuebao / Transactions of the Chinese Society of Agricultural Engineering* 32(6), DOI 10.11975/j.issn.1002-6819.2016.06.016 | Scopus Cited-by trace of Batabyal 1996, 21 Nov 2026 (11 citing records screened, `../analysis/P01/citation_trace_2026-11-21.md`) | Conjunctive surface-water/groundwater allocation of an irrigation district formulated as a queueing model | **New (found by citation tracing, not keyword search).** Extends the irrigation-queueing line to conjunctive-use allocation. Operational optimisation; no drought deficit state, indicators or learned rates. |
+| **Jones, Owen D.; Lane, Patrick N. J.; Sheridan, Garry J. (2016)**, "The stochastic runoff-runon process: Extending its analysis to a finite hillslope", *Journal of Hydrology*, DOI 10.1016/j.jhydrol.2016.06.056 | WoS Times-Cited trace of Harel & Mouche 2013, 21 Nov 2026 (3 citing records screened, `../analysis/P01/citation_trace_2026-11-21.md`) | Extends the Harel–Mouche queue-based stochastic runoff-runon theory to finite hillslopes (asymptotics + Monte Carlo) | **New (found by citation tracing, not keyword search).** The runoff-runon queue lineage is still active mathematically (see also Jones 2019, *J. Applied Probability* 56(4):1065–1085, "Runoff on rooted trees"). Still runoff generation, not drought deficit accounting. |
 
 Full bibliographic detail for all resolved records is in `P1_draft_v2.md` References.
 
@@ -181,6 +183,29 @@ indicators reported as drought quantities; (3) non-stationary rates estimated
 from hydroclimatic covariates; (4) validation against exact reference
 solutions and pre-specified drought tests." Canonical copies: `../AGENTS.md`
 §2, `../START_HERE.md` §5, `../field/README.md` §8.
+
+## WoS/Scopus forward-citation trace — 21 November 2026
+
+The seed list of `scopus_wos_search_plan.md` §2 was traced inside WoS "Times
+Cited" and Scopus "Cited by" on 21 November 2026, replacing the OpenAlex
+substitute for every seed the databases index. Full seed-by-seed result,
+export files and the screening basis are in
+`../analysis/P01/citation_trace_2026-11-21.md`. Summary:
+
+- Traced with citing records screened: Gamble 1990a (5, Scopus), Gamble 1990b
+  (6, Scopus), Batabyal 1996 (14, Scopus), Harel & Mouche 2013 (5, WoS CC),
+  Harel & Mouche 2014 (10, WoS CC), Lefebvre 2019 (1, WoS CC), Yang 2019
+  (23, WoS CC), Mouche & Harel 2016 (1, WoS CC), Yang 2016 CSAE (11, Scopus).
+- Confirmed not indexed in either subscription database: Langbein 1958 and
+  Prajamwong 1997; the OpenAlex trace remains their source.
+- **Two new prior-art records** (both added to the table above, both
+  found by tracing, neither gap-changing): Yang, Guo, Li & Li (2016) on
+  queueing-based conjunctive irrigation allocation, and Jones, Lane &
+  Sheridan (2016) extending the queue-based runoff-runon theory to finite
+  hillslopes (with the 2019 *J. Applied Probability* descendant).
+- **No citing record anywhere combines drought-as-queue-backlog with
+  queue-state indicators, covariate-learned rates and exact validation.** The
+  frozen gap sentence is unchanged.
 
 ## Non-stationary queueing is mature in operations research
 
@@ -239,9 +264,11 @@ analysis and must **not** be cited as queueing prior art.
 1. ~~WoS record-level screening of S4 (6), S5 (66), Extra A (8) and Extra C
    (13)~~ **Done 21 November 2026** — 93/93 records exported and screened,
    zero retained (`../analysis/P01/wos_screening_2026-11-21.md`).
-2. Forward-citation tracing inside WoS/Scopus ("Times Cited" / "Cited by") for
-   the seed list in `scopus_wos_search_plan.md`. The OpenAlex trace is a
-   substitute, not an equivalent.
+2. ~~Forward-citation tracing inside WoS/Scopus ("Times Cited" / "Cited by")
+   for the seed list in `scopus_wos_search_plan.md`~~ **Done 21 November
+   2026** — all seeds traced or confirmed unindexed; two new prior-art
+   records found, neither gap-changing
+   (`../analysis/P01/citation_trace_2026-11-21.md`).
 3. Full-text screen of the retained prior-art set (not every hit).
 4. Targeted search for "recovery time", "first passage" and "busy period" in
    hydrological drought (S3 returned zero in both WoS and Scopus).

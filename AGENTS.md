@@ -179,18 +179,18 @@ Rules:
 
 ## 8. Phase pointer (where the work is, and what "done" means)
 
-**Phase A — finish the novelty hunt (record-level screens complete 21
-November 2026).**
-Done on 21 November 2026: record-level screen of WoS S4 (6), S5 (66),
-Extra A (8), Extra C (13) — 93/93 screened, zero retained
-(`analysis/P01/wos_screening_2026-11-21.md`); gap sentence frozen with date
-and scope (§2 above). Still open in Phase A: forward-citation tracing inside
-WoS/Scopus for the seeds in `paper1/scopus_wos_search_plan.md` §2 (including
-Yang 2019, Harel & Mouche 2014, Mouche & Harel 2016, Prajamwong 1997 as
-tracing anchors); the full-text screen of the retained set is empty because
-nothing was retained.
-*Done when:* one dated sentence exists (yes, §2) and every retained record
-has a keep/drop reason (yes — zero retained).
+**Phase A — the novelty hunt is complete (21 November 2026).**
+Done: record-level screen of WoS S4 (6), S5 (66), Extra A (8), Extra C (13)
+— 93/93 screened, zero retained (`analysis/P01/wos_screening_2026-11-21.md`);
+forward-citation tracing of all seeds inside WoS "Times Cited" and Scopus
+"Cited by" — 76 citing records screened, two new non-gap-changing prior-art
+records found (`analysis/P01/citation_trace_2026-11-21.md`); gap sentence
+frozen with date and scope (§2 above); every retained record has a keep/drop
+reason (the retained set is empty). The full-text screen of the retained set
+is empty by definition.
+*Done when:* one dated sentence exists and every retained record has a
+keep/drop reason — **both met; Gate A passed. Phase B (finish P1) is the
+current phase.**
 
 **Phase B — finish P1.**
 Remaining: mapping section tightening (§2), prior-art expansion,

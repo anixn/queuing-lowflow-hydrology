@@ -40,7 +40,9 @@ The last database action is done: the WoS record-level screen of all 93
 remaining records (S4 6, S5 66, Extra A 8, Extra C 13) was completed on
 21 November 2026 via WoS Excel exports — no institutional profile sign-in was
 needed, the IP-entitled session allowed search and export
-(`analysis/P01/wos_screening_2026-11-21.md:14-33`).
+(`analysis/P01/wos_screening_2026-11-21.md:14-33`), and the forward-citation
+trace of all seeds inside WoS/Scopus is also complete
+(`analysis/P01/citation_trace_2026-11-21.md`).
 
 ## 3. Objectives formulated for P01
 
@@ -116,7 +118,8 @@ data, or an honest null result is written (`AGENTS.md:198-199`).
 | Field-level state | `field/README.md` | Objectives and initial state for the whole programme. |
 | Protocol | `../RESEARCH_PROTOCOL.md` | Phase, gates, P01/P03 analysis plans, reproducibility. |
 | Work sequence | `../APPROACH_P01_P03.md` | Ordered steps from Phase A through P03 writing. |
-| Screening | `../analysis/P01/wos_screening_2026-11-21.md` | Live 93-record WoS screen. |
+| Screening | `../analysis/P01/wos_screening_2026-11-21.md` | Completed 93-record WoS screen. |
+| Citation trace | `../analysis/P01/citation_trace_2026-11-21.md` | Completed seed trace in WoS/Scopus (76 citing records). |
 | Paper packages | `../paper1/`, `../paper3/` | Existing manuscript and methods code. |
 | Session trail | `../SESSION_LOG.md` | What changed and why. |
 
@@ -139,6 +142,11 @@ also in `START_HERE.md` §5 and `paper1/literature_audit.md`):
 > covariates; (4) validation against exact reference solutions and
 > pre-specified drought tests."
 
-Next action (Phase A tail): forward-citation tracing inside WoS/Scopus for the
-seed list in `paper1/scopus_wos_search_plan.md` §2, where the OpenAlex trace
-remains a substitute; then Phase B (finish P1).
+Next action (Phase A tail): ~~forward-citation tracing inside WoS/Scopus~~
+DONE 21 November 2026 — all seeds traced or confirmed unindexed; 76 citing
+records screened; two new non-gap-changing prior-art records found
+(`analysis/P01/citation_trace_2026-11-21.md`). The frozen sentence is
+unchanged by the trace. **Gate A is passed; Phase B (finish P1) is the
+current phase** — next action: tighten the mapping section (§2), expand prior
+art with the two new records, and continue the P01 work sequence
+(`../APPROACH_P01_P03.md`).

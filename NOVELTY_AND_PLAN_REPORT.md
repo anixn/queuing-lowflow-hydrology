@@ -15,15 +15,16 @@ This report does two jobs.
 
 The honesty rule for this whole project: queueing theory and water storage have been connected since 1958. We are **not** claiming to invent that connection. Our claim is much smaller and much more specific. We will say **"we found no study, in the sources and strings listed below, that does X"** — never "no such study exists".
 
-**Status of the novelty hunt:** complete at record level as of 21 November
-2026. All Scopus searches are complete (295 records screened, no gap-changing
-study) and the four Web of Science sets whose results page failed to render
-titles were screened on 21 November 2026 by exporting every record set to
-Excel with abstracts (93 records, zero retained;
-`analysis/P01/wos_screening_2026-11-21.md`). The dated gap sentence is frozen
-(`AGENTS.md` §2). The remaining Phase A item is "Cited by"/"Times Cited"
-tracing inside WoS/Scopus (§5 step 2 below), where the OpenAlex trace is a
-substitute.
+**Status of the novelty hunt:** complete as of 21 November 2026. All Scopus
+searches are complete (295 records screened, no gap-changing study) and the
+four Web of Science sets whose results page failed to render titles were
+screened on 21 November 2026 by exporting every record set to Excel with
+abstracts (93 records, zero retained; `analysis/P01/wos_screening_2026-11-21.md`).
+The forward-citation trace of all seeds inside WoS "Times Cited" / Scopus
+"Cited by" is also complete — 76 citing records screened, two new
+non-gap-changing prior-art records found
+(`analysis/P01/citation_trace_2026-11-21.md`). The dated gap sentence is
+frozen (`AGENTS.md` §2). Phase A is closed; Gate A is passed.
 
 ---
 
@@ -161,8 +162,9 @@ telecom/transport/healthcare/production queueing plus WEAP-type deficit
 modelling; the only drought-adjacent "queuing" language found at record level
 is institutional water-rights priority (Extra A records 5 and 6), which is an
 allocation rule, not a stochastic queue state. The gap statement is frozen
-(`AGENTS.md` §2); the remaining Phase A job is WoS/Scopus "Cited by" tracing
-(OpenAlex trace below is a substitute).
+(`AGENTS.md` §2); the WoS/Scopus "Cited by"/"Times Cited" trace of every seed
+was completed the same day
+(`analysis/P01/citation_trace_2026-11-21.md`), closing Phase A.
 
 ### 3.3 Forward-citation trace (what happened to the seed papers)
 

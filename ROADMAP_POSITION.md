@@ -40,7 +40,8 @@ fine, as long as Phase A gets closed before the manuscript is finalised.
    nothing was retained.
 4. ~~**Freeze the gap sentence** with date + scope (Gate A)~~ — done 21
    November 2026 (`AGENTS.md` §2).
-5. **Check the zero-flow semantics** for gauge 4026: open
+5. ~~**Check the zero-flow semantics**~~ — still next for P03 preparation:
+   open
    `CAMELS_IND_Data_Description.pdf` (in the CAMELS-IND Zenodo record) and
    search for how zero discharge is defined; cross-check the LSTM-predicted
    streamflow file on the same days. Decide: real intermittency/regulated
@@ -49,10 +50,11 @@ fine, as long as Phase A gets closed before the manuscript is finalised.
    canal, and irrigated-area variables. Anything useful there can replace
    parts of the provisional 50,000 ha / 10^7 m^3 convention. Whatever
    remains assumed → run the sensitivity envelope.
-7. **Finish P1 Phase B:** tighten §2 mapping, add prior-art rows (Mouche &
-   Harel 2016; Prajamwong et al. 1997), guardrails box, reproducible figures,
-   novelty-language pass, WRR package. Gate B = gap sentence frozen, all
-   prior art cited, all numbers regenerable.
+7. **Phase B (now current):** fold the two new citation-trace prior-art
+   records (Yang 2016 CSAE; Jones 2016 finite hillslope + Jones 2019) into
+   the P1 prior-art table; tighten §2 mapping, guardrails box, reproducible
+   figures, novelty-language pass, WRR package. Gate B = gap sentence frozen
+   (done), all prior art cited, all numbers regenerable.
 8. **Fix the μ-estimation error near ρ≈1** (monotone constraints,
    calibration); then the Floquet convergence study and MMPP sweep.
 9. **Multi-gauge pilot:** parameterise `01_build_rates.R` for gauge 4064;

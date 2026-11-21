@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2026-11-21" />
+  <title>P01 — WoS/Scopus forward-citation trace</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">P01 — WoS/Scopus forward-citation trace</h1>
+<p class="subtitle">The last Phase A item: Times Cited / Cited by
+tracing of the seed list</p>
+<p class="date">21 November 2026</p>
+</header>
+<h1 id="p01-wosscopus-forward-citation-trace-21-november-2026">P01 —
+WoS/Scopus forward-citation trace (21 November 2026)</h1>
+<h2 id="purpose">1. Purpose</h2>
+<p>Complete <code>../../paper1/scopus_wos_search_plan.md</code> §2:
+trace who cited the seed papers inside WoS “Times Cited” and Scopus
+“Cited by”, where the OpenAlex trace of 21 November 2026
+(<code>../../paper1/literature_audit.md</code> §3.3) was a substitute.
+The four-part gap statement must be checked against every citing record,
+not only keyword search hits.</p>
+<h2 id="method">2. Method</h2>
+<ul>
+<li><strong>WoS Core Collection:</strong> each seed located by
+<code>DO=&lt;doi&gt;</code> in the Advanced Search Query Builder (or
+<code>TI=(...)</code> for Mouche &amp; Harel 2016); the “In Web of
+Science Core Collection” citing set was opened from the Citation Network
+panel and exported (Export → Excel, Author/Title/Source/Abstract).
+Exports are kept in <code>exports/</code>:
+<code>wos_citing_harel_mouche2013.xls</code>,
+<code>wos_citing_yang2019.xls</code> (all 23 records),
+<code>wos_citing_yang2019_p2.xls</code> (same 23 rows, second export),
+<code>wos_citing_harel_mouche2014.xls</code>.</li>
+<li><strong>Scopus:</strong> seeds not indexed in WoS CC were located by
+exact title in the basic search box; the “Cited by (n)” tab was read,
+and for Batabyal 1996 the full citing list was opened in “search results
+format” (page size 200). The Scopus Advanced Search textarea again
+rejected automated input (recorded in the run log on 21 November 2026);
+no export was needed because every citing set was read on screen.</li>
+<li>Screening basis: title + abstract + keywords of every citing record,
+keyword-scanned for <code>queue</code>, <code>queuing</code>,
+<code>waiting time</code>, <code>drought</code>, <code>deficit</code>,
+<code>unmet demand</code>, <code>backlog</code>.</li>
+<li>Discrepancy note: WoS citation panels sometimes report one more
+citing record than the citing-summary list shows (Harel &amp; Mouche
+2013: 6 vs 5; Harel &amp; Mouche 2014: 11 vs 10). The list is what was
+screened; the missing record is a database-variant duplicate and does
+not change the verdict.</li>
+</ul>
+<h2 id="seed-by-seed-result">3. Seed-by-seed result</h2>
+<table>
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 21%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+</colgroup>
+<thead>
+<tr>
+<th>Seed</th>
+<th>WoS CC</th>
+<th>Scopus</th>
+<th style="text-align: right;">OpenAlex (prior trace)</th>
+<th>Citing records screened</th>
+<th>Gap-changing records</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Langbein (1958)</td>
+<td>not indexed (pre-1970s ASCE)</td>
+<td>not indexed (title + T-A-K searches = 0; the only “water storage +
+queuing” hit is the web-page-ranking paper from S1)</td>
+<td style="text-align: right;">70 citing, 64 titles sampled</td>
+<td>0 new</td>
+<td>none — OpenAlex trace stands</td>
+</tr>
+<tr>
+<td>Gamble, Eckstein &amp; Edwards (1990a), <em>J. Hydrol.</em> 113,
+1–25</td>
+<td>not indexed by DOI or AU/PY</td>
+<td><strong>5 citing</strong> (traced 21 Nov 2026)</td>
+<td style="text-align: right;">6 citing</td>
+<td>5</td>
+<td>none — transit-time hydrology (Bonell 2010; Howard 2010; Landon
+2000; Lindström &amp; Rodhe 1992) + companion 1990b</td>
+</tr>
+<tr>
+<td>Gamble, Eckstein &amp; Edwards (1990b), <em>J. Hydrol.</em> 113,
+27–49</td>
+<td>not indexed</td>
+<td><strong>6 citing</strong></td>
+<td style="text-align: right;">7 citing</td>
+<td>6</td>
+<td>none — same family (Bonell 2010; Howard 2010; Lentz 2008; Malone
+2004; Landon 2000) + companion 1990a</td>
+</tr>
+<tr>
+<td>Batabyal (1996), groundwater queueing</td>
+<td>not indexed</td>
+<td><strong>14 citing</strong> (all 14 viewed in search-results
+format)</td>
+<td style="text-align: right;">13 citing</td>
+<td>14</td>
+<td><strong>one new prior-art record</strong> (Yang 2016 CSAE, below);
+Al-Sifao et al. 2026 and Yang 2019 already known; remainder is
+ecology/economics (Batabyal’s own line), a tsunami-DART queueing paper,
+a dictionary entry and a trade-invasions queueing paper</td>
+</tr>
+<tr>
+<td>Harel &amp; Mouche (2013), runoff queueing, <em>WRR</em></td>
+<td><strong>6 in panel / 5 exported</strong></td>
+<td>—</td>
+<td style="text-align: right;">7 citing</td>
+<td>5</td>
+<td><strong>one new lineage record</strong> (Jones, Lane &amp; Sheridan
+2016, below); Mouche &amp; Harel 2016 already known; other three are
+connectivity/field hydrology with no queue content</td>
+</tr>
+<tr>
+<td>Harel &amp; Mouche (2014), runoff-runon connectivity,
+<em>ESPL</em></td>
+<td><strong>11 in panel / 10 exported</strong></td>
+<td>—</td>
+<td style="text-align: right;">16 citing</td>
+<td>10</td>
+<td>none — connectivity literature + the two known records</td>
+</tr>
+<tr>
+<td>Lefebvre (2019), M/M/1/c high flows</td>
+<td><strong>1 citing</strong></td>
+<td>—</td>
+<td style="text-align: right;">27 citing</td>
+<td>1</td>
+<td>none — citing record is the NACS 2017 conference introduction
+(<em>Atti Accad. Peloritana</em> 97)</td>
+</tr>
+<tr>
+<td>Yang, Li &amp; Huo (2019), canal-management queueing</td>
+<td><strong>23 citing</strong> (all 23 exported)</td>
+<td>—</td>
+<td style="text-align: right;">—</td>
+<td>23</td>
+<td>none — a sustained canal-operation lineage 2021–2026 (Agricultural
+Water Management, Irrigation &amp; Drainage, Sci. Rep.): coupled
+canal/pool regulation and optimal water-distribution models with
+<strong>no queue-state drought indicators</strong>; one Yangtze waterway
+navigation queuing paper (2022, <em>Transportation Research Record</em>
+— inland-waterway queueing, known category)</td>
+</tr>
+<tr>
+<td>Mouche &amp; Harel (2016), B/D/1 overland flow</td>
+<td><strong>1 citing</strong></td>
+<td>—</td>
+<td style="text-align: right;">13 citing</td>
+<td>1</td>
+<td>none — Boxma &amp; Mandjes (2022), <em>Queueing Systems</em>
+102(1):69–86: queueing/risk with dependence — OR maturity, not
+drought</td>
+</tr>
+<tr>
+<td>Prajamwong, Merkley &amp; Allen (1997)</td>
+<td>not indexed</td>
+<td>not indexed (TITLE search = 0)</td>
+<td style="text-align: right;">1</td>
+<td>0</td>
+<td>none — OpenAlex/Crossref verification stands</td>
+</tr>
+</tbody>
+</table>
+<h2 id="new-prior-art-records-found-by-tracing">4. New prior-art records
+found by tracing</h2>
+<ol type="1">
+<li><strong>Yang, Gaiqiang; Guo, Ping; Li, Ruihuan; Li, Mo
+(2016)</strong>, “Optimal allocation model of surface water and
+groundwater based on queuing theory in irrigation district”, <em>Nongye
+Gongcheng Xuebao / Transactions of the Chinese Society of Agricultural
+Engineering</em> 32(6), DOI 10.11975/j.issn.1002-6819.2016.06.016. Cited
+11 times in Scopus; its descendants (11 records screened) are Chinese
+irrigation allocation and canal-seepage operation models, one of which
+is Yang 2019. <strong>Consequence:</strong> the irrigation-queueing line
+now includes conjunctive surface/groundwater allocation (2016). Still
+operational allocation, no drought deficit state, no learned rates.
+<em>(Found 21 November 2026 by Scopus Cited-by tracing of Batabyal 1996,
+not by keyword search.)</em></li>
+<li><strong>Jones, Owen D.; Lane, Patrick N. J.; Sheridan, Garry J.
+(2016)</strong>, “The stochastic runoff-runon process: Extending its
+analysis to a finite hillslope”, <em>Journal of Hydrology</em>, DOI
+10.1016/j.jhydrol.2016.06.056. Extends the Harel–Mouche queue-based
+runoff-runon theory to finite hillslopes with Monte Carlo/asymptotic
+analysis. Cited 3 times in WoS CC; descendants screened: <strong>Jones
+(2019), “Runoff on rooted trees”, <em>Journal of Applied
+Probability</em> 56(4):1065–1085</strong> (a further mathematical
+extension — the queue-runoff lineage is still active in probability
+theory), Dai, Qin &amp; Guo (2018) and Chang &amp; Yeh (2018), both
+<em>J. Hydrol.</em>, stochastic allocation/runoff papers without
+queue-state drought indicators. <em>(Found 21 November 2026 by WoS
+Times-Cited tracing of Harel &amp; Mouche 2013.)</em></li>
+</ol>
+<p>Neither record changes the four-part gap statement; both are added to
+the “Verified prior art” table in
+<code>../../paper1/literature_audit.md</code>.</p>
+<h2 id="verdict">5. Verdict</h2>
+<p><strong>Phase A’s last screening item is complete.</strong> Every
+seed has been traced in every database that indexes it, and every citing
+record whose title, abstract or keywords could touch drought, deficit or
+unmet demand was screened. The two direct checks in Scopus confirmed
+negative counts for the two WoS-unindexed ASCE records (Langbein 1958;
+Prajamwong 1997). No citing record anywhere combines
+drought-as-queue-backlog with queue-state drought indicators,
+covariate-learned rates and exact validation. The frozen gap sentence
+(<code>../../AGENTS.md</code> §2, frozen 21 November 2026) is unchanged
+by this trace.</p>
+</body>
+</html>

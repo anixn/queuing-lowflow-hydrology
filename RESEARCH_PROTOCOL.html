@@ -158,14 +158,17 @@ imports and documented run commands continue to work
 <h2 id="phase-position">1. Phase position</h2>
 <p>We are in <strong>Phase A: finish the gap hunt</strong>
 (<code>AGENTS.md:174-180</code>; <code>START_HERE.md:125-130</code>) —
-the record-level screens are now complete. The last database task, the
-record-level screen of four Web of Science sets (S4 6 records, S5 66
-records, Extra A 8 records, Extra C 13 records — 93 in total), was
-completed on 21 November 2026 by export with zero records retained
-(<code>analysis/P01/wos_screening_2026-11-21.md</code>). Scopus is
+<strong>Phase A closed 21 November 2026</strong>. The record-level
+screens are complete: the four Web of Science sets (S4 6 records, S5 66
+records, Extra A 8 records, Extra C 13 records — 93 in total) were
+screened by export with zero records retained
+(<code>analysis/P01/wos_screening_2026-11-21.md</code>), and all seeds
+were traced in WoS/Scopus with 76 citing records screened
+(<code>analysis/P01/citation_trace_2026-11-21.md</code>). Scopus is
 complete: 295 records screened, with no gap-changing record
-(<code>paper1/literature_audit.md:88-120</code>). In total 437 records
-screened across both databases.</p>
+(<code>paper1/literature_audit.md:88-120</code>). In total 437
+record-level hits + 76 citing records screened across both
+databases.</p>
 <p>The order of gates is fixed:</p>
 <ol type="1">
 <li><strong>Gate A:</strong> one dated, scoped gap sentence and
@@ -429,11 +432,13 @@ the existing <code>drought</code> environment
 <p>DONE 21 November 2026 — the 93-record WoS screen is complete and the
 keep/drop table is transferred
 (<code>analysis/P01/wos_screening_2026-11-21.md</code> §5 →
-<code>paper1/literature_audit.md</code>). The gap sentence is frozen and
-dated (<code>AGENTS.md</code> §2; <code>field/README.md</code> §8). The
-remaining Phase A item is forward-citation tracing inside WoS/Scopus
-(<code>paper1/scopus_wos_search_plan.md</code> §2); then start the P01
-work sequence (<code>APPROACH_P01_P03.md:57-99</code>).</p>
+<code>paper1/literature_audit.md</code>); the seed citation trace is
+complete (<code>analysis/P01/citation_trace_2026-11-21.md</code>). The
+gap sentence is frozen and dated (<code>AGENTS.md</code> §2;
+<code>field/README.md</code> §8). <strong>Gate A passed — Phase B
+(finish P1) is current</strong>: next action is the P1 mapping-section
+tightening and prior-art table update with the two new trace records
+(<code>APPROACH_P01_P03.md</code>).</p>
 <h2 id="analysis-workspace">8. Analysis workspace</h2>
 <p>The working analysis files are organised under
 <code>analysis/</code>:</p>
@@ -443,8 +448,11 @@ work sequence (<code>APPROACH_P01_P03.md:57-99</code>).</p>
 rule.</li>
 <li><code>analysis/P01/wos_screening_2026-11-21.md</code> — completed
 93-record WoS screen (21 November 2026, zero retained).</li>
+<li><code>analysis/P01/citation_trace_2026-11-21.md</code> — completed
+seed forward-citation trace in WoS/Scopus (76 citing records
+screened).</li>
 <li><code>analysis/P01/exports/</code> — the five WoS Excel exports
-behind the screen.</li>
+behind the screen and four citing-article exports.</li>
 <li><code>analysis/P03/README.md</code> — P03 outputs to create after
 Gate B.</li>
 <li><code>field/README.md</code> — field-level initial state and

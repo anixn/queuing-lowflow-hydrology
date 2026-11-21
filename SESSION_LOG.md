@@ -97,3 +97,39 @@ Tests: 18/18 pass (5 + 6 + 7; `python paper1/src/test_queue_core.py`,
 session changed only documents and WoS exports, no solver code. Next action:
 forward-citation tracing inside WoS/Scopus (`scopus_wos_search_plan.md` §2),
 then Phase B (finish P1).
+
+## 21 November 2026 — seed citation trace complete; Phase A closed (Gate A passed)
+
+I completed the last Phase A screening item: forward-citation tracing of the
+seed list inside WoS "Times Cited" and Scopus "Cited by", replacing the
+OpenAlex substitute for every seed the subscription databases index. In WoS CC
+(export → Excel with abstracts): Harel & Mouche 2013 (5 citing), Harel &
+Mouche 2014 (10), Lefebvre 2019 (1), Yang 2019 (23), Mouche & Harel 2016 (1).
+In Scopus (title search → "Cited by" tab, read on screen): Gamble 1990a (5),
+Gamble 1990b (6), Batabyal 1996 (14), and the newly found Yang 2016 CSAE
+record (11). Langbein 1958 and Prajamwong 1997 are confirmed unindexed in
+both WoS CC and Scopus; the OpenAlex trace remains their source. Total: 76
+citing records screened (40 WoS + 36 Scopus); every record was scanned at
+title/abstract/keyword level for queue, waiting time, drought, deficit, unmet
+demand and backlog.
+
+Result: no gap-changing citing record anywhere. Two new prior-art records,
+both added to the audit's verified table: Yang, Guo, Li & Li (2016,
+*Nongye Gongcheng Xuebao / Trans. CSAE* 32(6), DOI 10.11975/j.issn.1002-6819.
+2016.06.016) — queueing-based conjunctive surface/groundwater allocation of an
+irrigation district; and Jones, Lane & Sheridan (2016, *J. Hydrol.*, DOI
+10.1016/j.jhydrol.2016.06.056) — extending the Harel–Mouche queue-based
+runoff-runon theory to finite hillslopes, with the 2019 *Journal of Applied
+Probability* descendant ("Runoff on rooted trees") showing the lineage is
+still mathematically active. Yang 2019's citing set shows a sustained
+canal-operation lineage (2021–2026) with no drought indicators.
+
+I recorded the trace in `analysis/P01/citation_trace_2026-11-21.md` (with
+four citing-article exports in `analysis/P01/exports/`), updated
+`paper1/literature_audit.md` (new prior-art rows + a trace summary section +
+"still required" item 2 done), `paper1/scopus_wos_search_plan.md` (§2 marked
+done, run-log rows updated, 76-record total), `AGENTS.md` §8 (Phase A closed,
+Gate A passed, Phase B current), `NOVELTY_AND_PLAN_REPORT.md`, `README.md`,
+`RESEARCH_PROTOCOL.md`, `APPROACH_P01_P03.md`, `ROADMAP_POSITION.md`,
+`analysis/` READMEs and `field/README.md`. The frozen gap sentence needed no
+edit. Tests: 18/18 pass. No new test — documents and database exports only.
