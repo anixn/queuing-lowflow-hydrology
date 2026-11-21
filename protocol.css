@@ -1,0 +1,146 @@
+:root {
+  --body-font: "Roboto", "Segoe UI", Arial, sans-serif;
+  --code-font: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+  --ink: #1f2933;
+  --muted: #52606d;
+  --rule: #d9e2ec;
+  --accent: #1f6f8b;
+  --accent-soft: #e8f4f8;
+  --bg: #ffffff;
+  --bg-alt: #f7f9fa;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  max-width: 58rem;
+  margin: 2.5rem auto;
+  padding: 0 1.5rem 4rem;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: var(--body-font);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--body-font);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+h1 {
+  font-size: 2.1rem;
+  border-bottom: 3px solid var(--accent);
+  padding-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-top: 2.5rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.3rem;
+}
+
+h3 {
+  font-size: 1.2rem;
+  margin-top: 1.8rem;
+  color: var(--accent);
+}
+
+p, li, td, th {
+  font-family: var(--body-font);
+}
+
+code, pre, kbd, samp {
+  font-family: var(--code-font);
+}
+
+code {
+  font-size: 0.9em;
+  background: var(--bg-alt);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.05rem 0.25rem;
+}
+
+pre {
+  background: var(--bg-alt);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--accent);
+  border-radius: 4px;
+  padding: 1rem;
+  overflow-x: auto;
+  line-height: 1.45;
+}
+
+pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2rem 0;
+  font-size: 0.95rem;
+}
+
+thead {
+  background: var(--accent-soft);
+}
+
+th, td {
+  border: 1px solid var(--rule);
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+tbody tr:nth-child(even) {
+  background: var(--bg-alt);
+}
+
+blockquote {
+  margin: 1.2rem 0;
+  padding: 0.7rem 1rem;
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--muted);
+}
+
+#TOC {
+  background: var(--bg-alt);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1rem 1.5rem;
+}
+
+#TOC ul {
+  margin-bottom: 0;
+}
+
+a {
+  color: var(--accent);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 2rem 0;
+}
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    font-size: 11pt;
+  }
+
+  pre, table, blockquote {
+    break-inside: avoid;
+  }
+}

@@ -1,0 +1,213 @@
+@article{deshmukh2016physio,
+  title={Physio-climatic controls on vulnerability of watersheds to climate and land use change across the US},
+  author={Deshmukh, Ankit and Singh, Riddhi},
+  journal={Water Resources Research},
+  volume={52},
+  number={11},
+  pages={8775--8793},
+  year={2016}
+}
+
+@article{deshmukh2016watersheds,
+  title={How do watersheds physio-climatic characteristics control its vulnerability to climate and land use change?},
+  author={Deshmukh, Ankit and Singh, Riddhi and Veena, Sai},
+  year={2016}
+}
+
+@article{deshmukh2018identifying,
+  title={Identifying physio-climatic controls on watershed vulnerability to climate and land use change},
+  author={Deshmukh, Ankit and Singh, Riddhi},
+  year={2018}
+}
+
+@inproceedings{singh2015controls,
+  title={What controls vulnerability of watersheds to climate and land use change across the United States?},
+  author={Singh, R and Deshmukh, A},
+  booktitle={AGU Fall Meeting Abstracts},
+  volume={2015},
+  pages={H33I--1723},
+  year={2015}
+}
+
+@inproceedings{deshmukh2017towards,
+  title={Towards a robust framework for catchment classification},
+  author={Deshmukh, Ankit and Samal, Ashok and Singh, Riddhi},
+  booktitle={AGU Fall Meeting Abstracts},
+  volume={2017},
+  pages={H33C--1686},
+  year={2017}
+}
+
+@article{deshmukhh33l,
+  title={H33l-1723},
+  author={Deshmukh, Ankit and Singh, Riddhi}
+}
+
+@article{deshmukh2019whittaker,
+  title={A Whittaker biome-based framework to account for the impact of climate change on catchment behavior},
+  author={Deshmukh, Ankit and Singh, Riddhi},
+  journal={Water Resources Research},
+  volume={55},
+  number={12},
+  pages={11208--11224},
+  year={2019}
+}
+
+@inproceedings{singh2017relative,
+  title={Relative controls of natural and socio-economic drivers on water availability over India: an exploratory modelling analysis},
+  author={Singh, Riddhi and Deshmukh, Ankit and Kumar, Rohini},
+  booktitle={2017 Fall Meeting},
+  year={2017}
+}
+
+@inproceedings{deshmukh2015controls,
+  title={What controls vulnerability of watersheds to climate and land use change across the United States?},
+  author={Deshmukh, Ankit and Singh, Riddhi},
+  booktitle={2015 AGU Fall Meeting},
+  year={2015},
+  organization={AGU}
+}
+
+@inproceedings{kumari2020impact,
+  title={Impact of Climate Change on Meteorological Drought in Different Climate Zones Across the Indian Sub-Continent},
+  author={Kumari, Shweta and Deshmukh, Ankit},
+  booktitle={AGU Fall Meeting Abstracts},
+  volume={2020},
+  pages={H184--06},
+  year={2020}
+}
+
+@inproceedings{deshmukh2022impact,
+  title={The impact of climate change on meteorological drought across the indian sub-continent},
+  author={Deshmukh, Ankit and Kumari, S},
+  booktitle={18th Annual Meeting of the Asia Oceania Geosciences Society: Proceedings of the 18th Annual Meeting of the Asia Oceania Geosciences Society (AOGS 2021)},
+  pages={88--90},
+  year={2022}
+}
+
+@phdthesis{deshmukh2021assessing,
+  title={Assessing vulnerability of catchments to environmental changes},
+  author={Deshmukh, Ankit},
+  year={2021},
+  school={IIT HYERABAD}
+}
+
+@inproceedings{anand2022comparison,
+  title={Comparison of Image Processing Techniques to Identify the Land Use/Land Cover Changes in the Indian Semi-arid Region},
+  author={Anand, Nikhil and Kumari, Shweta and Deshmukh, Ankit},
+  booktitle={International Conference Innovation in Smart and Sustainable Infrastructure},
+  pages={41--50},
+  year={2022},
+  organization={Springer Nature Singapore, Singapore}
+}
+
+@inproceedings{rakhecha2022enhanced,
+  title={An enhanced bottom-up approach to assess the catchments’ vulnerability to climate change},
+  author={Rakhecha, Vishal and Deshmukh, Ankit},
+  booktitle={International Conference Innovation in Smart and Sustainable Infrastructure},
+  pages={427--441},
+  year={2022},
+  organization={Springer Nature Singapore, Singapore}
+}
+
+@article{deshmukh2022bottom,
+  title={A Bottom-Up Approach-Based Framework to Assess The Impact Of Metrological Drought Across Indian Sub-Continent},
+  author={Deshmukh, Ankit and Kumari, Shweta},
+  journal={Frontiers in Hydrology 2022},
+  pages={511--01},
+  year={2022}
+}
+
+@inproceedings{deshmukh2023prediction,
+  title={Prediction of Hydrological Drought Pattern and Duration in Data Scarce Catchments with Catchments’ Physio-Climatic Attributes},
+  author={Deshmukh, A},
+  booktitle={International Conference on Hydraulics, Water Resources and Coastal Engineering},
+  pages={373--386},
+  year={2023},
+  organization={Springer Nature Singapore, Singapore}
+}
+
+@inproceedings{deshmukh2025sustainable,
+  title={Sustainable Modeling Framework for the Prediction in Ungauged Catchments: Leveraging Large-Sample Hydrology Datasets with Machine Learning},
+  author={Deshmukh, Ankit and Thanki, Sujal and Sharma, Durga},
+  booktitle={2025 International Conference on Sustainable Energy Technologies and Computational Intelligence (SETCOM)},
+  pages={1--6},
+  year={2025},
+  organization={IEEE}
+}
+
+@inproceedings{deshmukh2025sustainable,
+  title={A Sustainable Framework for Drought Modeling using Meteorological Drought Indicators as Proxies for Hydrological Drought},
+  author={Deshmukh, Ankit and Najwani, Gourav and Kumari, Shweta and Tirupathi, Chanapathi},
+  booktitle={2025 International Conference on Sustainable Energy Technologies and Computational Intelligence (SETCOM)},
+  pages={1--6},
+  year={2025},
+  organization={IEEE}
+}
+
+@article{deshmukhhydro,
+  title={HYDRO 2024 INTERNATIONAL},
+  author={Deshmukh, Ankit}
+}
+
+@article{varshney2025novel,
+  title={Novel control strategies for electric vehicle charging stations using stochastic modeling and queueing analysis},
+  author={Varshney, Shreekant and Panda, Kaibalya Prasad and Shah, Manthan and Srinivas, Bhasuru Abhinaya and Deshmukh, Ankit and Choudhary, Kapil Kumar and Bajaj, Mohit and Prokop, Lukas and Rubanenko, Olena},
+  journal={Scientific Reports},
+  volume={15},
+  number={1},
+  pages={21391},
+  year={2025},
+  publisher={Nature Publishing Group UK, London}
+}
+
+@article{varshney2026stochastic,
+  title={Stochastic Modeling-Based Queueing Frameworks for Performance Enhancement and Economic Optimization of Hybrid Electric Vehicle Charging Networks},
+  author={Varshney, Shreekant and Srinivas, Bhasuru Abhinaya and Abraham, Sherwin and Shah, Manthan and Deshmukh, Ankit and Panda, Kaibalya Prasad and Bajaj, Mohit and Blazek, Vojtech and Prokop, Lukas},
+  journal={Results in Engineering},
+  pages={111066},
+  year={2026},
+  publisher={Elsevier}
+}
+
+@incollection{varshney2026parametric,
+  title={Parametric Investigation of Retrial Queueing Systems with Customer Feedback Mechanism and Independent Abandonments},
+  author={Varshney, Shreekant and Shah, Manthan and Srinivas, Bhasuru Abhinaya and Deshmukh, Ankit and Srivastava, Anurag Kumar},
+  booktitle={Operations Research},
+  pages={21--42},
+  year={2026},
+  publisher={CRC Press}
+}
+
+@article{varshney2026robust,
+  title={A Robust Stochastic Framework for Reliability and Cost-Optimized Planning of Electric Vehicle Charging Networks Under Service Uncertainty and Customer Impatience},
+  author={Varshney, Shreekant and Deshmukh, Ankit and Panda, Kaibalya Prasad and Bajaj, Mohit and Blazek, Vojtech and Prokop, Lukas},
+  journal={Energy Nexus},
+  pages={100833},
+  year={2026},
+  publisher={Elsevier}
+}
+
+@article{varshney2026stochastic,
+  title={Stochastic Modeling of Finite-Capacity Electric Vehicle Charging Infrastructures with Flexible Service Provisioning},
+  author={Varshney, Shreekant and Dhirubhai, Chauhan Bhavik and Jha, Umang and Kumar, Naveen and Deshmukh, Ankit and Choudhary, Kapil Kumar and Bajaj, Mohit and G{\"u}ven, Aykut Fatih and Rubanenko, Oleksandr},
+  journal={International Journal of Computational Intelligence Systems},
+  volume={1},
+  pages={3},
+  year={2026},
+  publisher={Springer Netherlands, Dordrecht}
+}
+
+@article{deshmukh2026understanding,
+  title={Understanding Spatiotemporal Dynamics of Urban Water Bodies via Multi-Classifier Machine Learning Approaches in Semi-Arid Ahmedabad City},
+  author={Deshmukh, Ankit and Varshney, Shreekant},
+  year={2026},
+  publisher={EarthArXiv}
+}
+
+@article{deshmukh2026drought,
+  title={Drought Intelligence Explorer: a 45-year district-level dataset of ten drought indicators for India and an open analytical platform},
+  author={Deshmukh, Ankit},
+  year={2026},
+  publisher={EarthArXiv}
+}
