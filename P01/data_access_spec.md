@@ -13,7 +13,8 @@ findings below were verified against the files on disk.
 | CAMELS-IND attributes | `...\attributes_csv\camels_ind_*.csv` | name, topo, hydro, climate, land, soil, anthology, geology | Present. `camels_ind_name.csv` gives basin/gauge names; `camels_ind_topo.csv` gives area and coordinates. |
 | Catchment shapefiles | `D:\Datasets\CIMP6_India\data_raw\catchments\` | 17 basin folders + `merged` | Present. For mapping only; not needed for the first queue run. |
 | CMIP6 historical | `D:\Datasets\CIMP6_India\data_raw\cmip6\{pr,tasmax,tasmin}` | 24 models × 34 years (1981–2014) | Present. |
-| CMIP6 SSP | `D:\Datasets\Download_CMIP\SSP\{pr,tasmax,tasmin}` | 14-model hybrid list × SSP1-2.6 / SSP2-4.5 / SSP3-7.0 / SSP5-8.5; years 2015–2040, 2041–2060, 2081–2100 | **Download in progress** (~75 GB so far). 28 model/SSP combinations already have all three variables and ≥60 years ready. See Section 5. |
+| CMIP6 SSP | `D:\Datasets\Download_CMIP\SSP\{pr,tasmax,tasmin}` | Raw SSP126/245/370/585 forcing; 3,564 files per variable | Present. Fallback/sensitivity forcing; bias correction required before published use. |
+| CAMELS-IND-Proj | `D:\Datasets\CAMELS_IND_Proj` | 13 CMIP6 models × historical + four SSPs; daily projected streamflow 1980–2100; bias-corrected forcing archive | Present. Gauge 4026 is complete in all 65 streamflow files. Conditional future μ ensemble after historical/provenance validation; do not double bias correct forcing. |
 
 ## 1. Claim convention — revisable working assumption (unlocked 25 November 2026)
 
@@ -79,22 +80,22 @@ trusted until the P02 output contract is corrected.
 
 ## 5. Still missing / next actions
 
-1. **Crop area and canal command area** — needed to replace the assumed
-   `command_area_ha` and `canal_share`. Search `attributes_csv/camels_ind_anth.csv`
-   first; if absent, this must come from CWC/India-WRIS records.
-2. **SSP scenario CMIP6 files are downloading** into `D:\Datasets\Download_CMIP\SSP`
-   (script: `D:\Datasets\Download_CMIP\download_cmip6_ssp.R`). Four scenarios and
-   a 14-model hybrid selection. **Ready now** (all three variables, ≥60 years):
-   ACCESS-ESM1-5, BCC-CSM2-MR, CanESM5, CNRM-CM6-1, EC-Earth3, EC-Earth3-Veg-LR,
-   NorESM2-MM for SSP1-2.6 / SSP2-4.5 / SSP5-8.5; BCC-CSM2-MR, ACCESS-ESM1-5,
-   CNRM-CM6-1 also have SSP3-7.0. Wait for more combinations before ensemble analysis.
-3. **Bias correction** — CMIP6 must be bias-corrected against IMD before use.
-   The R `ncdf4` package can read both formats; no Python NetCDF reader here.
+1. **Crop area, calendar and canal command area** — needed to replace the
+   district proxy and generic Kc curve. `camels_ind_anth.csv` supplies crop/dam
+   covariates but not command boundaries or daily operations; obtain district
+   agriculture and CWC/India-WRIS records.
+2. **CAMELS-IND-Proj historical validation** — projected streamflow is available
+   for 13 models and all scenarios. Validate the historical 1980–2014 simulations
+   against observed/LSTM streamflow before using the 2015–2100 ensemble as future μ.
+3. **Future forcing** — CAMELS-IND-Proj describes its forcing as bias-corrected,
+   but the forcing subset is not extracted and standard archive tools failed.
+   Recover/re-extract it; otherwise bias-correct raw SSP forcing against IMD.
 4. **GRACE/GRACE-FO** — not found; required only for independent storage validation.
 5. **Claim volume convention** — see Section 1.
-6. **Regulation status** — whether gauge 4026 flows are natural or regulated is
-   not documented in the files found. If regulated, μ is managed supply and must
-   include release/diversion records.
+6. **Regulation status** — CAMELS-IND attributes show 86 dams for gauge 4026
+   (total storage about 6.26×10⁹ m³; irrigation fraction 0.867) and 271 for gauge
+   4064 (about 1.51×10¹⁰ m³; irrigation fraction 0.927). This strongly suggests
+   managed influence, but operating rules still require release/diversion records.
 
 ## 6. Original file contracts (unchanged, for reference)
 

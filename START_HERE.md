@@ -55,10 +55,12 @@ the queue, but its legacy indicator summary was removed during housekeeping
 because the unit and server-accounting contract still needs correction. No
 pilot indicator number is currently trusted as a finding.
 
-**The future-data step.** `P02/R/03_extract_cmip6.R` extracts one CMIP6 SSP at
-the gauge and computes Hargreaves ET0. A previous pipeline check produced
-9,497 daily rows for 2015–2040; the raw CSV was removed as a regenerable
-artifact. Bias correction is not done, so no future result may be published.
+**The future-data step.** CAMELS-IND-Proj is present with daily projected
+streamflow for 13 CMIP6 models and four SSPs, 2015–2100; gauge 4026 is complete
+in all 65 files. It is the primary conditional future μ input after historical
+and LSTM-provenance validation; its documented bias-corrected forcing must not be
+corrected twice. `P02/R/03_extract_cmip6.R` and the raw SSP files remain a gated
+fallback. No future queue result may be published before those validation gates.
 
 **The documents.** This file plus the plan report, the audit trail, the search
 log, the data inventory and the two READMEs. Together they record what was

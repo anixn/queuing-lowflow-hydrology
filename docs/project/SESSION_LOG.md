@@ -1,5 +1,24 @@
 # Session log
 
+## 25 November 2026 — P02 model and data protocol
+
+I verified the local data holdings rather than starting a final indicator
+analysis. CAMELS-IND has 472 forcing files, two streamflow files and eight
+attribute files; IMD has 75 annual files per variable; raw CMIP6 historical/SSP
+forcing is present. CAMELS-IND-Proj adds 13 models × historical plus four SSPs
+of daily projected streamflow, with gauge 4026 complete in all 65 files from
+1980–2100. This makes projected streamflow the primary conditional future μ
+route after historical/provenance validation, not raw-CMIP6 delta-change.
+
+I wrote `analysis/P02_methods/MODELLING_PLAN.md`, `DATA_REQUIREMENTS.md` and a
+verified inventory CSV. The plan uses process-based λ until demand labels exist,
+aggregate μ with c=1 for the current pilot, a zero-aware hurdle μ nowcast only
+after zero-flow/regulation semantics are resolved, exact solver verification,
+simulation-based identification, time-dependent recovery probabilities and
+blocked held-out validation. Missing requirements are crop area/calendar,
+Drought Intelligence Explorer v2, zero-flow/regulation evidence and CAMELS-IND-Proj
+LSTM provenance. No final P02 result is claimed.
+
 ## 25 November 2026 — repository cleanup, P01/P02 naming and claim-convention refresh
 
 I created a safety checkpoint commit (`cb76835`) before restructuring the

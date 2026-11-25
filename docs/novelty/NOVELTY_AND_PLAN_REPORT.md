@@ -300,7 +300,7 @@ Everything below is in the order I intend to do it. Each phase ends with a decis
 20. **Resolve the zero-flow question** for gauge 4026: are the 9,710 zero-flow days real zeros or a fill value? Check CAMELS-India documentation before interpreting ρ.
 21. **Test the revisable command-area proxy and claim volume.** Search for gauge-specific canal/crop records; if found, replace the 45,000 ha / 9×10⁶ m³ proxy and re-run. If not, run the documented 45,000 / 174,000 / 190,000 ha envelope and keep every output labelled illustrative.
 22. **Implement CMIP6 bias correction** against IMD/CAMELS before using any future rate. The current Hargreaves ET0 output is uncorrected and must not be published.
-23. **Build future service rates μ(t).** CMIP6 provides precipitation and temperature, not streamflow. Use delta-change scaling of observed streamflow or a rainfall–runoff model.
+23. **Build future service rates μ(t).** Validate CAMELS-IND-Proj historical streamflow and LSTM provenance, then use its 13-model/four-SSP ensemble as the primary conditional projection. Raw CMIP6 remains pipeline-check-only; any bias-corrected delta-change comparison is secondary.
 24. **Set up held-out validation:** held-out years, held-out basins, and named drought events. Write the metrics and the baseline comparisons **before** looking at results (pre-registration in the project notes).
 25. **Propagate uncertainty** from rate estimates into backlog indicators using the bootstrap intervals already built into the estimator code.
 26. **Run the ablation that matters:** does the queue state add drought information beyond SPI/SPEI/SSI and a climatological queue? If not, record the null result.

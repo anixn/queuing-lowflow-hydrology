@@ -9,7 +9,7 @@ CAMELS-IND forcings + streamflow
     -> daily lambda(t), mu(t)
     -> src/shared/queue_core.py
     -> backlog, severe-state probability, served/abandoned demand and recovery
-    -> P02 held-out validation and, only after bias correction, future scenarios
+    -> P02 held-out validation and, after historical validation, CAMELS-IND-Proj future scenarios
 ```
 
 ## 1. Input inventory
@@ -21,7 +21,8 @@ CAMELS-IND forcings + streamflow
 | CAMELS-IND LSTM streamflow | Daily predicted flow for all catchments | Zero-flow cross-check and ungauged-basin comparison | Available |
 | CAMELS-IND attributes | 211 attributes, including 25 anthropogenic variables | Cross-basin explanation and convention replacement | Available |
 | IMD gridded climate | Daily P, Tmax, Tmin, 1951–2025 | Observational reference and CMIP6 bias-correction target | Available |
-| CMIP6 historical/SSP | Daily pr, tasmax, tasmin | Future covariates only after bias correction | Extraction available; bias correction not implemented |
+| CMIP6 historical/SSP | Daily pr, tasmax, tasmin | Fallback/sensitivity future covariates | Available; bias correction not implemented |
+| CAMELS-IND-Proj | 13 models × historical + four SSPs; daily projected streamflow 1980–2100 | Primary conditional future μ ensemble and preferred future λ forcing | Streamflow CSV complete for gauge 4026; forcing recovery, LSTM provenance and historical validation pending; no double bias correction |
 
 Pilot gauge: **4026 Kurundwad**. Second planned gauge: **4064 Yadgir**.
 
@@ -96,7 +97,7 @@ The R indicator summary must be regenerated with these units before any pilot nu
 ## 6. Prediction products
 
 1. **P02 nowcast/forecast:** estimate rates from covariates and score backlog/severe-state forecasts on held-out years and basins.
-2. **Future scenarios:** use bias-corrected CMIP6 and a documented future-μ construction; no raw CMIP6 number may be published.
+2. **Future scenarios:** after historical/provenance validation, use the CAMELS-IND-Proj 13-model/four-SSP streamflow ensemble as a conditional projection; no raw CMIP6 number may be published.
 3. **Cross-basin explanation:** compare queue indicators across eligible catchments and relate differences to catchment/anthropogenic attributes.
 
 Primary proposed endpoint: event-level Brier score for `Pr(Q ≥ q*)` by a declared deadline. A null result is acceptable.

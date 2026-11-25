@@ -7,6 +7,8 @@ P01 establishes why drought can be read as a queue state. P02 supplies the metho
 The shared engine is `../src/shared/queue_core.py`. The revisable working
 convention uses a 45,000 ha Sangli canal-irrigated proxy and 9×10⁶ m³ per 20 mm
 claim; source and envelope are in `../analysis/claim_convention_2026-11-25/`.
+The concrete model and data protocol is in
+`../analysis/P02_methods/MODELLING_PLAN.md`.
 
 ## Contents
 
@@ -57,7 +59,7 @@ Illustrative, under the stated assumptions:
 3. Fix μ estimation near congestion; complete Floquet convergence and MMPP sweeps.
 4. Resolve zero-flow and regulation semantics; extend to multiple gauges.
 5. Run the declared claim-scale envelope and replace the 45,000 ha proxy if gauge-specific records appear.
-6. Bias-correct CMIP6 before any future-rate analysis.
+6. Document CAMELS-IND-Proj LSTM provenance, avoid double bias correction, validate historical streamflow and then use its 13-model/four-SSP ensemble as the primary future μ input; raw CMIP6 remains pipeline-check-only.
 7. Pre-register held-out validation, uncertainty propagation and SPI/SPEI/SSI ablation.
 
 No raw CMIP6 number may be published. A null or non-identifiability result is an acceptable outcome.

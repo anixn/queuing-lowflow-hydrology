@@ -27,7 +27,7 @@ P01 comes first. P02 starts only after Gate B.
 | `analysis/P01_literature/` | Completed WoS screen, citation trace and raw exports |
 | `analysis/novelty_2026-11-25/` | Dated novelty-strengthening investigation and sensitivity outputs |
 | `analysis/claim_convention_2026-11-25/` | Official area evidence, WoS refresh and revisable claim convention |
-| `analysis/P02_methods/` | Planned P02 analysis outputs |
+| `analysis/P02_methods/` | P02 model protocol, data requirements, inventory and planned outputs |
 | `docs/` | Project protocol, session log, novelty plan and data specifications |
 | `references/` | Original roadmap source retained for historical provenance |
 | `P02/data/generated/` | Reproducible R outputs; never hand-edit |
@@ -49,6 +49,7 @@ All **23 tests** should pass. The exact interpreter path is recorded in `START_H
 - **Phase A complete:** 142 WoS and 295 Scopus records screened; citation traces complete; the 21 November 2026 gap sentence is frozen.
 - **Phase B current:** finish P01 figures, language pass and WRR package.
 - **Claim convention revised:** 45,000 ha district canal-irrigated proxy; 9×10⁶ m³ per 20 mm claim; 30-case scale envelope checked.
+- **P02 design protocol ready:** model stack, data requirements and CAMELS-IND-Proj future route documented in `analysis/P02_methods/`.
 - **Phase C not started:** P02 implementation begins only after Gate B.
 
 See `docs/project/SESSION_LOG.md` for the session-by-session record.

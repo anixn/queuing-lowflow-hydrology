@@ -10,11 +10,12 @@ CAMELS-IND publication record (ESSD 2025 / Zenodo v2.2).
 | Dataset | What it is (verified) | Feeds | Verdict |
 |---|---|---|---|
 | **CAMELS-IND** (Mangukiya et al. 2025, ESSD 17:461–491; Zenodo 14999580, CC BY 4.0) | 472 Peninsular-India catchments, daily **1980–2020**; 19 forcing variables (rainfall, temperatures, GLEAM PET/AET, soil moisture, radiation, wind, humidity); **211 catchment attributes** incl. **25 anthropogenic**; observed streamflow (242 streamflow-sufficient catchments in v2.2; the ESSD title's 228 refers to v2.1) + LSTM-predicted streamflow for all 472 | **μ(t) service** (observed streamflow → firm supply), demand covariates for **λ(t)**, basin comparison, attribute-conditioned analysis | **Sufficient — the observational backbone of P02.** Exactly the large-sample design the roadmap wanted; better than hand-assembled CWC basins |
-| **CMIP6 historical** (24 models, 1981–2014, on disk) + **SSP** (4 scenarios, 14-model hybrid list; 28 model/SSP combos already complete, download continuing) | Daily pr / tasmax / tasmin at catchment scale | **Future forcing** for climate-change non-stationarity: future λ(t) covariates, delta-change scaling for future μ(t) | **Sufficient for the P02 climate angle** — with two gates: bias correction, and the μ(t) construction step (models give weather, not streamflow) |
+| **CMIP6 historical** (24 models, 1981–2014, on disk) + **SSP** (four scenarios, raw forcing present) | Daily pr / tasmax / tasmin | Fallback/sensitivity future forcing | Present; bias correction required before published use |
+| **CAMELS-IND-Proj** | 13 CMIP6 models × historical + four SSPs; daily projected streamflow 1980–2100; bias-corrected forcing archive | **Primary conditional future μ(t) ensemble** and preferred future λ(t) forcing | Present; gauge 4026 complete in all 65 streamflow files; historical/provenance validation required; no double bias correction |
 | **IMD gridded** (1951–2025, daily P, Tmax, Tmin) | The observational reference climate record for India | Bias-correction target; λ(t) covariates; long pre-1980 context | **Sufficient** |
 
-**Bottom line: yes — your three datasets are sufficient for the P02 paper as
-designed, and for the P01 illustrations.** The real gaps are not "more
+**Bottom line: yes — the local observational and projected datasets are sufficient
+to start P02 method development.** The real gaps are not "more
 weather data"; they are (a) demand-side records, (b) two data-interpretation
 questions, (c) two processing steps you have not built yet.
 
@@ -42,53 +43,47 @@ claims/day; firm share 0.5) stands in for it. Three routes to do better, in orde
 | Question | Why it matters | How to close it |
 |---|---|---|
 | **Gauge 4026 zero-flow days (68%)** | ρ is meaningless on zero-flow days; if the zeros are a fill value, every downstream number changes | Read `CAMELS_IND_Data_Description.pdf` (in the Zenodo record) for zero-discharge semantics; cross-check the LSTM-predicted series on the same days; check upstream Krishna regulation. If fill → impute or switch to 4064 |
-| **Regulation status of the pilot gauges** | If flows are dam-released, μ(t) is *managed* supply, and the paper must say so (it changes the interpretation, not the maths) | CWC/India-WRIS basin notes; CAMELS-IND anth attributes (dam counts upstream) |
+| **Regulation status of the pilot gauges** | If flows are dam-released, μ(t) is *managed* supply, and the paper must say so | CAMELS-IND already shows 86 dams at 4026 and 271 at 4064; obtain CWC/India-WRIS release/diversion records for operating rules |
 
-## 4. Two processing steps to build (CMIP6 gates)
+## 4. Future-data gates
 
-1. **Bias correction** of CMIP6 against IMD (quantile mapping is the
-   standard first choice; do it per variable, per catchment, using the
-   historical overlap 1981–2014). Gate: corrected model climatology matches
-   IMD within stated tolerance before any future rate is computed.
-2. **Future μ(t):** models provide weather, not streamflow. Two accepted
-   routes — (a) **delta-change**: scale observed CAMELS-IND streamflow by
-   monthly model-vs-historical precipitation/ET change factors; or (b) run a
-   simple rainfall–runoff model driven by corrected CMIP6. Route (a) is
-   simpler and defensible for P02; write the choice down before computing.
+1. **Validate CAMELS-IND-Proj historical streamflow** against observed and
+   CAMELS-IND LSTM flow over 1980–2014 before using its 2015–2100 ensemble.
+2. **Recover the CAMELS-IND-Proj forcing subset** for gauges 4026/4064. Its
+   description says the forcing is bias-corrected; standard archive extraction
+   failed locally. If recovery fails, bias-correct raw SSP forcing against IMD.
+3. **Future μ(t):** use CAMELS-IND-Proj projected streamflow as the primary
+   scenario input. Raw CMIP6 remains pipeline-check-only; any bias-corrected
+   delta-change comparison is a secondary methodological check.
 
 ## 5. What you do NOT need (and should not chase now)
 
-- **GRACE/GRACE-FO** — only Topic 7 (groundwater, P4, 2029) needs it.
-- **More CMIP6 scenarios/models** — 28 complete combinations is already an
-  ensemble; wait for the download rather than blocking P02 on it.
-- **A Python NetCDF reader** — R (`ncdf4`, `terra`) already reads
-  everything; the Python loaders can stay stubs until the package (P5) stage.
-- **Canal operations records** — genuinely hard to obtain; the sensitivity
-  envelope is the designed answer, not a failure.
+- **GRACE/GRACE-FO** — only the later groundwater-storage extension needs it.
+- **More CMIP6 scenarios/models** — CAMELS-IND-Proj already provides 13 models
+  and four SSPs; do not block P02 on downloading more.
+- **A Python NetCDF reader** — R (`ncdf4`, `terra`) is available for raw forcing.
+- **Canal operations records** — not required to start, but required for strong
+  operational or demand-versus-supply attribution claims.
 
-## 6. Small corrections to make in the repo's data doc
+## 6. Data documentation rules
 
-1. `P01/data_access_spec.md` says "CAMELS-India"; the published name is
-   **CAMELS-IND** — use the official name and citation in the README and P01:
-   Mangukiya, N. K., Kumar, K. B., Dey, P., Sharma, S., Bejagam, V.,
-   Mujumdar, P. P., & Sharma, A. (2025). CAMELS-IND. *Earth System Science
-   Data*, 17, 461–491, doi:10.5194/essd-17-461-2025.
-2. Note the version nuance once: 472 catchments total; **242**
-   streamflow-sufficient in v2.2 (228 in v2.1, which the ESSD title cites).
-   Quote the version you actually use.
-3. When the zero-flow question is answered, write the answer (with the
-   page/section of the PDF that answers it) into `data_access_spec.md` §3 —
-   that entry then becomes a `[measurement]` instead of an open question.
+1. Use the official name **CAMELS-IND** and cite Mangukiya et al. (2025),
+   *Earth System Science Data*, 17, 461–491, doi:10.5194/essd-17-461-2025.
+2. State the version: 472 catchments total and 242 streamflow-sufficient in
+   v2.2; the ESSD title's 228 refers to v2.1.
+3. When zero-flow semantics are resolved, record the evidence in
+   `P01/data_access_spec.md` §3 and change the entry from unknown to measurement.
 
 ## 7. Data → queue mapping (the one diagram, in words)
 
 ```
-CAMELS-IND forcing CSV (rain, temp, GLEAM PET)  ──►  demand covariates ──► λ(t) [claims/day]
-CAMELS-IND observed streamflow (firm share 0.5)  ──►  service capacity  ──► μ(t) [claims/day]
-Locked convention (command area, claim volume)   ──►  units for λ, μ, K ──► the queue engine
-CMIP6 SSP (bias-corrected) + delta-change        ──►  future λ, μ        ──► future queue states
-IMD gridded (1951–2025)                          ──►  bias-correction target, pre-1980 context
+CAMELS-IND forcing + crop calendar          ──►  process demand ──► λ(t) [claims/day]
+CAMELS-IND observed streamflow + firm share  ──►  service capacity ──► μ(t) [claims/day]
+Revisable convention (area, claim volume)   ──►  units for λ, μ, K ──► the queue engine
+CAMELS-IND-Proj streamflow ensemble          ──►  conditional future μ(t)
+CAMELS-IND-Proj/raw SSP forcing + PET0        ──►  future λ(t)
+IMD gridded (1951–2025)                       ──►  observational/bias-correction reference
 ```
 
-Every arrow above is a line of `01_build_rates.R` today, except the last two
-(bias correction and delta-change), which are the next code to write.
+This is the target data-flow design. Historical reconstruction exists; future
+queue products remain gated by CAMELS-IND-Proj historical/provenance validation.

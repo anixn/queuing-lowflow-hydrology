@@ -207,8 +207,8 @@ regenerable.
 **Phase C — build P02 (starts only after Gate B).**
 Ordered: fix mu-error near rho~1; Floquet convergence study; MMPP sweep;
 multi-gauge R pipeline (add 4064 Yadgir); resolve zero-flow semantics;
-replace-or-envelope the claim convention; CMIP6 bias correction; delta-change
-future mu(t); pre-registered held-out validation; uncertainty propagation;
+replace-or-envelope the claim convention; CAMELS-IND-Proj provenance/historical
+validation and conditional future mu(t); pre-registered held-out validation; uncertainty propagation;
 ablation vs SPI/SSI; then write.
 *Done when:* estimator beats climatology on held-out data, or an honest
 null is written.
