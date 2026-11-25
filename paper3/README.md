@@ -43,13 +43,13 @@ machine has no NumPy.
 
 ```powershell
 # Exact benchmarks (synthetic)
-& 'C:\Users\deshm\miniconda3\envs\drought\python.exe' paper3/src/nonstationary_bench.py
-& 'C:\Users\deshm\miniconda3\envs\drought\python.exe' paper3/src/test_nonstationary_bench.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper3/src/nonstationary_bench.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper3/src/test_nonstationary_bench.py
 
 # Rate estimators (synthetic)
-& 'C:\Users\deshm\miniconda3\envs\drought\python.exe' paper3/src/rate_estimators.py
-& 'C:\Users\deshm\miniconda3\envs\drought\python.exe' paper3/src/evaluate_estimators.py
-& 'C:\Users\deshm\miniconda3\envs\drought\python.exe' paper3/src/test_rate_estimators.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper3/src/rate_estimators.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper3/src/evaluate_estimators.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper3/src/test_rate_estimators.py
 
 # Real-data pilot, in this order (R 4.5.1 path shown)
 & 'C:\Program Files\R\R-4.5.1\bin\x64\Rscript.exe' paper3/R/01_build_rates.R
@@ -103,6 +103,12 @@ firm-supply share 0.5, service cap 3 claims/day = 60 mm/day. See
 | Pr(Q≥6) mean | 0.0231 |
 | Pr(Q≥6) peak | 0.1560 |
 | Unmet demand U | 199.0 claim-days |
+
+**Unit warning:** the legacy R script integrates an abandonment rate but labels
+the result `claim-days`. The integral has units of **claims**; backlog exposure
+`∫E[Q]dt` has units of claim-days. The R/Python label and server-accounting
+correction is scheduled after Gate B. Do not cite the legacy U value in a
+manuscript.
 
 ρ is infinite on zero-flow days (68% of days for this gauge) by construction.
 These numbers demonstrate that the data → rates → queue chain runs on real

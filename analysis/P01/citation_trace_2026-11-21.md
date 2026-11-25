@@ -17,13 +17,14 @@ record, not only keyword search hits.
 
 ## 2. Method
 
-- **WoS Core Collection:** each seed located by `DO=<doi>` in the Advanced
+- **WoS Core Collection:** each seed was located by `DO=<doi>` in the Advanced
   Search Query Builder (or `TI=(...)` for Mouche & Harel 2016); the "In Web of
   Science Core Collection" citing set was opened from the Citation Network
-  panel and exported (Export → Excel, Author/Title/Source/Abstract). Exports
-  are kept in `exports/`: `wos_citing_harel_mouche2013.xls`,
-  `wos_citing_yang2019.xls` (all 23 records), `wos_citing_yang2019_p2.xls`
-  (same 23 rows, second export), `wos_citing_harel_mouche2014.xls`.
+  panel. Two exports are preserved in `exports/`:
+  `wos_citing_harel_mouche2013.xls` and `wos_citing_yang2019_p2.xls`. The
+  Harel–Mouche 2014 and first Yang-2019 exports are not present in the current
+  workspace; those sets were screened on screen and this preservation gap is
+  disclosed as a reproducibility limitation.
 - **Scopus:** seeds not indexed in WoS CC were located by exact title in the
   basic search box; the "Cited by (n)" tab was read, and for Batabyal 1996 the
   full citing list was opened in "search results format" (page size 200).
@@ -33,10 +34,10 @@ record, not only keyword search hits.
 - Screening basis: title + abstract + keywords of every citing record,
   keyword-scanned for `queue`, `queuing`, `waiting time`, `drought`,
   `deficit`, `unmet demand`, `backlog`.
-- Discrepancy note: WoS citation panels sometimes report one more citing
-  record than the citing-summary list shows (Harel & Mouche 2013: 6 vs 5;
-  Harel & Mouche 2014: 11 vs 10). The list is what was screened; the missing
-  record is a database-variant duplicate and does not change the verdict.
+- Discrepancy note: WoS citation panels reported one more citing record than
+  the exported/screened list for Harel & Mouche 2013 (6 vs 5) and Harel & Mouche
+  2014 (11 vs 10). The unresolved count differences are recorded as a limitation;
+  the extra records were not inspected, so no duplicate explanation is claimed.
 
 ## 3. Seed-by-seed result
 

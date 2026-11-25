@@ -1,5 +1,35 @@
 # Session log
 
+## 25 November 2026 — novelty strengthening and conservation contract
+
+I applied the attached evidence-driven novelty workflow without changing the
+frozen 21 November gap sentence. A supplementary OpenAlex/web search found
+Acosta et al. (2026) and Zhao et al. (2018) as important prior art; neither
+contains the full four-part queue-specific combination. I packaged the search,
+screening, candidate ranking and adversarial audit in
+`analysis/P02_novelty_2026-11-25/`. The recommended direction is an
+identifiability-first, conservation-constrained deficit-state model, with
+time-varying recovery distributions as the first P3 extension after Gate B.
+
+I corrected the shared Python indicator contract: blocked demand is now
+counted, served/abandoned/backlog-exposure quantities are separate, and a
+demand-conservation residual is returned. I added three tests and corrected the
+Box 1 spin-up from a fractional-year cut to one full year. P1 now distinguishes
+physical storage from backlog, replaces the stale search-status paragraph,
+adds the identification gate and pre-specified test table, and incorporates the
+new prior art. The frozen sentence is unchanged.
+
+Tests: **22/22 pass** (9 P1, 6 benchmark, 7 estimator). New tests cover blocked
+demand, ledger closure, stock/flux separation and the Box 1 sensitivity baseline. Synthetic anchors remain
+0.91607 claims exact/RK4 and 0.91295 claims DES; the non-stationary peak is
+2.12950 claims. The two-year post-spin-up abandoned-demand totals are 13.37 and
+15.90 claims, not claim-days. I added `paper1/src/box1_sensitivity.py` and a
+44-case synthetic grid: peak-backlog ratios range from 1.20 to 5.33 and
+critical-probability ratios from 2.06 to 92.9, with the direction preserved in
+every case. The largest absolute ledger residual is `1.7e-6` claims. P3 R-code
+unit/server/spin-up corrections remain blocked until Gate B. Exact next action:
+build the reproducible P1 figures and prepare the WRR package.
+
 ## 21 November 2026 — approach preparation
 
 I read the project orientation, phase plan, current P1 draft, literature audit,

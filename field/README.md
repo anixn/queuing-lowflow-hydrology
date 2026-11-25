@@ -28,12 +28,12 @@ rates and pre-specified validation (`paper1/P1_draft_v2.md:74-89`;
 
 | Area | State on 21 November 2026 | Source |
 |---|---|---|
-| Phase | Phase A, gap hunt | `AGENTS.md:174-180`; `START_HERE.md:125-130` |
+| Phase | Phase B, finish P01; Gate A passed 21 Nov 2026 | `AGENTS.md:182-201`; `START_HERE.md` §7 |
 | Scopus screen | Complete: 295 records, no gap-changing study | `paper1/literature_audit.md:88-120` |
 | WoS screen | Complete: 93 records screened 21 Nov 2026, no gap-changing study | `analysis/P01/wos_screening_2026-11-21.md` |
 | P01 draft | Draft v2 exists; language and package still to finish | `paper1/P1_draft_v2.md:1-10`; `NOVELTY_AND_PLAN_REPORT.md:234-246` |
 | P03 analysis | Prepared only; starts after Gate B | `AGENTS.md:28`, `:192`; `analysis/P03/README.md:3` |
-| Engine | 18/18 tests pass | `AGENTS.md:78-86`; `SESSION_LOG.md:8-10` |
+| Engine | 22/22 tests pass after the 25 Nov conservation-ledger and sensitivity additions | `analysis/P02_novelty_2026-11-25/13_reproducibility_report.md` |
 | CMIP6 output | Pipeline check only; not usable in published numbers | `AGENTS.md:53-55`; `paper3/README.md:141-143` |
 
 The last database action is done: the WoS record-level screen of all 93
@@ -109,7 +109,7 @@ data, or an honest null result is written (`AGENTS.md:198-199`).
 | Canal/crop records | Replace the 50,000 ha / 10⁷ m³ provisional convention | `paper1/data_access_spec.md:80-97` |
 | CMIP6 bias correction | Raw future climate output must not be published | `AGENTS.md:53-55` |
 | Regulation status of gauge 4026 | Unknown; affects whether μ is managed or natural supply | `paper1/data_access_spec.md:95-97` |
-| Git is not initialised | Required before further major edits | `AGENTS.md:201-203` |
+| ~~Git is not initialised~~ | Resolved: the workspace is a Git repository | `git status --short --branch`, 25 Nov 2026 |
 
 ## 7. Organized file map
 

@@ -107,7 +107,7 @@ the stated assumptions, not findings**:
 | Pr(Q ≥ 6) mean | share of days in severe state | **0.0231** (≈ 8.4 days/yr) |
 | Pr(Q ≥ 6) peak | worst-day severe-state probability | **0.156** |
 | ρ median (finite) | typical traffic intensity | 0.0096 (ρ = ∞ on zero-flow days by construction) |
-| U | total unmet demand | **199.0 claim-days** (≈ 1.99×10⁹ m³·days) |
+| U (legacy label) | cumulative abandoned demand | **199.0 claims**; the R script incorrectly labels this `claim-days` |
 | Recovery time | days to clear backlog after rains | computed per event (busy-period/first-passage) |
 
 Daily output CSV adds `date, lambda, mu, cwr_m3, q_m3s, q_imputed`; every
@@ -125,7 +125,7 @@ What the prediction problem looks like, in real numbers (my layman
 water-ledger demo on 2016–2020, 1,827 days — a deterministic daily
 accounting, NOT the CTMC engine; illustrative only):
 
-| Rates used | mean Q | peak Q | days Q≥6 | unmet (claim-days) |
+| Rates used | mean Q | peak Q | days Q≥6 | backlog exposure (claim-days) |
 |---|---|---|---|---|
 | **Oracle** (actual daily λ, μ) | 3.57 | 13.68 | **537 (29.4%)** | 57.2 |
 | **Climatology** (monthly means from 1980–2015) | 2.50 | 9.81 | **335 (18.3%)** | 48.9 |
@@ -140,7 +140,8 @@ honest possibility is a null result, which we then publish).
 future λ(t) covariates + delta-change-scaled future μ(t) → future
 E[Q], Pr(Q≥6), U for SSP1-2.6 / 2-4.5 / 3-7.0 / 5-8.5, quoted per scenario
 with ensemble spread (28 model/SSP combinations ready). Reference anchor
-today: Pr(Q≥6) peak 0.156, U 199 claim-days under observed 2001–2020.
+today: Pr(Q≥6) peak 0.156, legacy U 199 claims under observed 2001–2020
+(the R script's `claim-days` label is incorrect).
 
 **P3. Cross-basin explanation (the large-sample product).** The same
 pipeline over the eligible subset of 242 catchments → 242 × 211 attribute

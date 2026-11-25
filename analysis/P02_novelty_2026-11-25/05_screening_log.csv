@@ -1,0 +1,16 @@
+record_id,decision,reason,evidence_label,reviewer_note
+R001,RETAIN_AS_PRIOR_ART,Broad coupled state-space drought framework with unmet accessible demand; lacks queue backlog dynamics learned rates and exact queue validation,INDEPENDENTLY_VERIFIED,Full preprint inspected; narrows conceptual wording but does not change frozen sentence
+R002,RETAIN_AS_PRIOR_ART,Non-stationary supply-demand reservoir reliability model; not a finite-state stochastic deficit queue,INDEPENDENTLY_VERIFIED,Abstract and metadata inspected
+R003,RETAIN_AS_PRIOR_ART,Queue parameter and state estimation is mature,INDEPENDENTLY_VERIFIED,Prevents ML-for-queues novelty claim
+R004,RETAIN_AS_PRIOR_ART,Founding storage-queue hydrology precedent,INDEPENDENTLY_VERIFIED,Already in Phase-A audit
+R005,RETAIN_AS_PRIOR_ART,Runoff queueing precedent,INDEPENDENTLY_VERIFIED,Already in Phase-A audit
+R006,RETAIN_AS_PRIOR_ART,Finite-hillslope runoff-queue extension,INDEPENDENTLY_VERIFIED,Citation-trace addition
+R007,RETAIN_AS_PRIOR_ART,Further runoff-queue mathematics,INDEPENDENTLY_VERIFIED,DOI verified 25 Nov 2026
+R008,RETAIN_AS_PRIOR_ART,Conjunctive irrigation allocation queue,INDEPENDENTLY_VERIFIED,Citation-trace addition
+R009,RETAIN_AS_PRIOR_ART,Canal-management queue decision support,INDEPENDENTLY_VERIFIED,Already in Phase-A audit
+R010,RETAIN_AS_PRIOR_ART,Multi-source water-supply reliability queue,INDEPENDENTLY_VERIFIED,Prevents broad groundwater-queue novelty
+R011,RETAIN_AS_PRIOR_ART,Time-varying finite-capacity queue prior art,INDEPENDENTLY_VERIFIED,Prevents time-varying-queue novelty
+R012,RETAIN_AS_PRIOR_ART,Correlated arrival-rate queue prior art,INDEPENDENTLY_VERIFIED,Prevents correlated-arrival novelty
+R013,RETAIN_AS_PRIOR_ART,Cross-correlated arrival-rate queue prior art,INDEPENDENTLY_VERIFIED,Prevents correlated-arrival novelty
+R015,RETAIN_AS_PRIOR_ART,Irrigation allocation queue precedent,INDEPENDENTLY_VERIFIED,Already in Phase-A audit
+R016,RETAIN_AS_PRIOR_ART,Stochastic rainwater-harvesting control precedent,INDEPENDENTLY_VERIFIED,Already in Phase-A audit

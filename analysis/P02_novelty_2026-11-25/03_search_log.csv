@@ -1,0 +1,34 @@
+search_id,source,query_or_filter,session_timestamp,year_filter,document_filter,hits_reported,records_exported,access_level,notes
+S001,OpenAlex,title_and_abstract.search:drought queueing,2026-11-25T12:19:24+05:30,none,none,40,0,API metadata,Top 10 inspected; mostly false positives
+S002,OpenAlex,title_and_abstract.search:drought backlog,2026-11-25T12:19:24+05:30,none,none,25,0,API metadata,Top 10 inspected; no full four-part match
+S003,OpenAlex,title_and_abstract.search:drought "unmet demand",2026-11-25T12:19:24+05:30,none,none,25,0,API metadata,Supply-demand and deficit studies; no queue-state validation
+S004,OpenAlex,title_and_abstract.search:drought "first passage",2026-11-25T12:19:24+05:30,none,none,13,0,API metadata,Reservoir and storage first-passage precedents
+S005,OpenAlex,title_and_abstract.search:reservoir demand deficit queue,2026-11-25T12:19:24+05:30,none,none,0,0,API metadata,Complete null for this exact filter
+S006,OpenAlex,title_and_abstract.search:drought storage demand state space,2026-11-25T12:19:24+05:30,none,none,42,1,API metadata plus SSRN full text,Retained Acosta et al. 2026 as conceptual prior art
+S007,OpenAlex,title_and_abstract.search:coupled storage demand drought,2026-11-25T12:19:24+05:30,none,none,179,1,API metadata plus OSTI abstract,Retained Zhao et al. 2018 as supply-demand prior art
+S008,OpenAlex,title_and_abstract.search:drought "water debt",2026-11-25T12:19:24+05:30,none,none,6,0,API metadata,No stochastic backlog record
+S009,OpenAlex,title_and_abstract.search:drought "recovery time" queue,2026-11-25T12:19:24+05:30,none,none,0,0,API metadata,Complete null for this exact filter
+S010,OpenAlex,title.search:Runoff on rooted trees,2026-11-25T12:19:24+05:30,none,none,1,1,API metadata,Verified Jones 2019 DOI and bibliography
+S011,Crossref,query.bibliographic=drought queueing unmet demand backlog,2026-11-25T12:19:24+05:30,none,none,429,0,API error,Rate limited; no records exported
+S012,Crossref,query.bibliographic=drought first passage recovery queue,2026-11-25T12:19:24+05:30,none,none,429,0,API error,Rate limited; no records exported
+S013,Crossref,query.bibliographic=drought state space unmet accessible demand,2026-11-25T12:19:24+05:30,none,none,429,0,API error,Rate limited; no records exported
+S014,Crossref,query.bibliographic=queueing identifiability arrival service rates,2026-11-25T12:19:24+05:30,none,none,429,0,API error,Rate limited; no records exported
+S015,Crossref,query.bibliographic=water scarcity attribution demand supply,2026-11-25T12:19:24+05:30,none,none,429,0,API error,Rate limited; no records exported
+S016,Crossref,query.bibliographic=coupled human water drought state space,2026-11-25T12:19:24+05:30,none,none,429,0,API error,Rate limited; no records exported
+S017,Crossref,query.bibliographic=drought queue data assimilation,2026-11-25T12:19:24+05:30,none,none,429,0,API error,Rate limited; no records exported
+S018,WebSearch,drought "queueing" "unmet demand" backlog recovery time,2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,Supplementary discovery only
+S019,WebSearch,drought "water debt" OR "water deficit debt" queue backlog,2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,Supplementary discovery only
+S020,WebSearch,hydrological drought queue state estimation data assimilation backlog,2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,Supplementary discovery only
+S021,WebSearch,drought finite capacity reneging queue reservoir soil moisture,2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,Supplementary discovery only
+S022,WebSearch,"deficit accumulation" drought queueing theory,2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,Supplementary discovery only
+S023,WebSearch,"drought" "first-passage" queue reservoir storage,2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,Supplementary discovery only
+S024,WebSearch,queueing arrival service rate identifiability nonidentifiability parameter estimation,2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,Queue identification is mature prior art
+S025,WebSearch,drought attribution water demand supply identifiability backlog,2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,Drought attribution is established prior art
+S026,WebSearch,hydrological drought separate demand supply contribution attribution method,2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,Attribution methods exist; queue-specific identification remains to verify
+S027,WebSearch,"water scarcity" attribution demand supply drought decomposition,2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,Structural decomposition precedents exist
+S028,WebSearch,"queue length" "identifiability" arrival service rates,2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,Queue identifiability precedents exist
+S029,WebSearch,"drought" "data assimilation" "unmet demand",2026-11-25T12:19:24+05:30,none,none,not reported,0,Search snippets,No full four-part match found
+S030,OpenAlex,title.search:Stochastic modelling and control of rainwater harvesting systems for irrigation during dry spells,2026-11-25T12:19:24+05:30,none,none,1,1,API metadata,Verified Unami et al. DOI 10.1016/j.jclepro.2014.03.100
+S031,OpenAlex,DOI lookup 10.1016/j.jhydrol.2016.06.056,2026-11-25T12:19:24+05:30,none,none,1,1,API metadata,Verified Jones et al. 2016 volume and pages
+S032,OpenAlex,DOI lookup 10.1017/jpr.2019.61,2026-11-25T12:19:24+05:30,none,none,1,1,API metadata,Verified Jones 2019 volume issue and pages
+S033,OpenAlex,DOI lookup 10.11975/j.issn.1002-6819.2016.06.016,2026-11-25T12:19:24+05:30,none,none,404,0,API error,No OpenAlex record; Scopus trace metadata retained

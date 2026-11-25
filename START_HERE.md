@@ -37,8 +37,8 @@ is 2.13 claims but treating the year as one average gives 0.92 — a 2.3×
 understatement. Peak severe-backlog probability is 0.073 versus 0.004. That gap
 is the reason the project exists.
 
-**The tests.** 5 P1 tests, 6 benchmark tests and 7 rate-estimator tests all pass
-(18 in total). Every new feature should get a test.
+**The tests.** 9 P1 tests, 6 benchmark tests and 7 rate-estimator tests all pass
+(22 in total). Every new feature should get a test.
 
 **The literature hunt.** Crossref, OpenAlex, Web of Science and Scopus were all
 searched with the same five strings plus direct tests. Scopus alone contributed
@@ -52,7 +52,9 @@ mature fields — we say so explicitly rather than claiming them.
 CAMELS-India rainfall, temperature and streamflow for gauge 4026 (Kurundwad on
 the Krishna) into daily arrival and service rates, then run the queue. Over
 2001–2020 after one spin-up year: mean E[Q] = 1.43 claims, peak 3.60,
-Pr(Q≥6) mean 0.023 and peak 0.156, unmet demand 199 claim-days. These demonstrate
+Pr(Q≥6) mean 0.023 and peak 0.156, and a legacy U output of 199.0. The R script
+mislabels U as claim-days; because it integrates an abandonment rate, its unit
+is claims. This label is scheduled for correction after Gate B. These outputs demonstrate
 that the data → rates → queue chain works. They are **not findings**, because
 the area, claim volume and cap are assumptions.
 
@@ -129,17 +131,21 @@ Do not use them.
 
 ## 7. What we are doing right now
 
-We are in **Phase A: finish the novelty hunt**. Scopus is finished. The last
-database job is to screen four Web of Science searches whose record cards would
-not render: S4 (6 hits), S5 (66), Extra A (8) and Extra C (13). After that we
-full-text screen the retained prior art and freeze the gap sentence in section 5.
+We are in **Phase B: finish P1**. Phase A is complete: all 142 WoS and 295
+Scopus records were screened, the database citation traces are complete, and
+the gap sentence in section 5 is frozen. The 25 November 2026 supplementary
+search added Acosta et al. (2026) and Zhao et al. (2018) as prior art without
+changing that sentence.
 
-Then **Phase B: finish P1** — tighten the mapping section, add the guardrails
-box, build the figures, check every novelty word, and prepare the WRR package.
+The current P1 work is to finish the conservation and identification framing,
+build reproducible figures, complete the novelty-language pass, and prepare the
+WRR package. The single next action is to finish the P1 indicator-contract and
+status pass, then produce the figure/programme tables.
 
-Then **Phase C: build P3** — fix the μ-error near ρ≈1, finish the Floquet and
-MMPP studies, extend the R pilot to more gauges, bias-correct CMIP6, set up
-held-out validation, and only then write the HESS paper.
+**Phase C: build P3** comes only after Gate B — fix the μ-error near ρ≈1,
+finish the Floquet and MMPP studies, extend the R pilot to more gauges,
+bias-correct CMIP6, set up held-out validation, and only then write the HESS
+paper.
 
 ## 8. How to see it run
 
@@ -148,9 +154,9 @@ environment: the default `python` on this machine has no NumPy, so the three
 test commands fail with `ModuleNotFoundError`.
 
 ```powershell
-& 'C:\Users\deshm\miniconda3\envs\drought\python.exe' paper1/src/test_queue_core.py
-& 'C:\Users\deshm\miniconda3\envs\drought\python.exe' paper3/src/test_nonstationary_bench.py
-& 'C:\Users\deshm\miniconda3\envs\drought\python.exe' paper3/src/test_rate_estimators.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper1/src/test_queue_core.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper3/src/test_nonstationary_bench.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper3/src/test_rate_estimators.py
 
 & 'C:\Program Files\R\R-4.5.1\bin\x64\Rscript.exe' paper3/R/01_build_rates.R
 & 'C:\Program Files\R\R-4.5.1\bin\x64\Rscript.exe' paper3/R/02_run_queue.R

@@ -22,6 +22,7 @@ import numpy as np
 __all__ = [
     "QueueConfig",
     "birth_rates",
+    "service_rates",
     "death_rates",
     "generator",
     "stationary",
@@ -43,32 +44,33 @@ class QueueConfig:
     theta: int = 8       # backlog at which emergency/drought-mode service switches on
     alpha: float = 1.5   # service-rate multiplier above theta
     eta: float = 0.02    # reneging per waiting claim per day (demand abandonment)
-    balk: float = 0.0    # extra fraction of arrivals withheld at full backlog
+    balk: float = 0.0    # reserved; full capacity already blocks every arrival
 
 
 def birth_rates(lam: float, cfg: QueueConfig) -> np.ndarray:
     """Admitted-arrival rate lambda_n for each backlog state n=0..K.
 
-    Arrivals at n=K are blocked (lost demand), scaled by (1 - balk).
+    Every arrival is blocked at n=K. The blocked flux is lambda * Pr(Q=K)
+    and is counted separately from reneging in the demand ledger.
     """
-    n = np.arange(cfg.K + 1)
     rate = np.full(cfg.K + 1, float(lam))
-    rate[cfg.K] = float(lam) * (1.0 - cfg.balk)
-    if cfg.K > 0:
-        rate[cfg.K] = 0.0 if cfg.balk >= 1.0 else rate[cfg.K]
-    # blocked state cannot accept new claims
     rate[cfg.K] = 0.0
     return rate
 
 
-def death_rates(mu: float, cfg: QueueConfig) -> np.ndarray:
-    """Clearing rate mu_n = service + reneging, with drought-mode boost."""
+def service_rates(mu: float, cfg: QueueConfig) -> np.ndarray:
+    """Supply-service flux by backlog state, in claims/day."""
     n = np.arange(cfg.K + 1)
     base = np.minimum(n, cfg.c) * float(mu)
     boost = np.where(n >= cfg.theta, cfg.alpha, 1.0)
-    service = base * boost
-    reneging = n * cfg.eta
-    out = service + reneging
+    out = base * boost
+    out[0] = 0.0
+    return out
+
+
+def death_rates(mu: float, cfg: QueueConfig) -> np.ndarray:
+    """Clearing rate mu_n = service + reneging, with drought-mode boost."""
+    out = service_rates(mu, cfg) + np.arange(cfg.K + 1) * cfg.eta
     out[0] = 0.0
     return out
 
@@ -174,37 +176,68 @@ def des_time_average(states, clocks, horizon: float, burn_in: float = 0.0) -> fl
 
 
 def indicators(times, P, lam_fn, mu_fn, cfg: QueueConfig, q_star: int = 6):
-    """Queue-state drought indicators from a transient solution."""
+    """Queue-state indicators plus an explicit demand-conservation ledger.
+
+    Stocks and fluxes use different units. Backlog Q is in claims; backlog
+    exposure integral(Q dt) is in claim-days; served, blocked and reneged demand
+    are integrals of rates and therefore in claims. The ledger residual checks
+
+        total arrivals = served + abandoned + change in backlog.
+
+    ``E_wait_mean`` is retained as a time-average Little's-law proxy. It is not
+    a transient waiting-time distribution and should not be interpreted as one.
+    """
     n = np.arange(cfg.K + 1)
     E_Q = P @ n
     P_pos = 1.0 - P[:, 0]
     P_crit = P[:, q_star:].sum(axis=1) if 0 < q_star <= cfg.K else np.zeros_like(E_Q)
 
+    lam = np.array([lam_fn(t) for t in times], dtype=float)
     lam_eff = np.array([
-        birth_rates(lam_fn(t), cfg) @ P[i] for i, t in enumerate(times)
+        birth_rates(lam[i], cfg) @ P[i] for i in range(len(times))
     ])
+    service = np.array([
+        service_rates(mu_fn(t), cfg) @ P[i] for i, t in enumerate(times)
+    ])
+    reneging = cfg.eta * E_Q
+    blocked = lam * P[:, cfg.K]
+    abandoned = blocked + reneging
+
+    horizon = float(times[-1] - times[0])
+    total_arrivals = float(np.trapezoid(lam, times))
+    admitted_arrivals = float(np.trapezoid(lam_eff, times))
+    served_demand = float(np.trapezoid(service, times))
+    abandoned_demand = float(np.trapezoid(abandoned, times))
+    blocked_demand = float(np.trapezoid(blocked, times))
+    reneged_demand = float(np.trapezoid(reneging, times))
+    backlog_exposure = float(np.trapezoid(E_Q, times))
+    backlog_change = float(E_Q[-1] - E_Q[0])
+    ledger_residual = total_arrivals - served_demand - abandoned_demand - backlog_change
+
     with np.errstate(divide="ignore", invalid="ignore"):
-        E_W = np.where(lam_eff > 0, E_Q / lam_eff, np.nan)   # Little's law
+        rho = lam / np.array([mu_fn(t) for t in times], dtype=float)
+        delay_proxy = backlog_exposure / admitted_arrivals if admitted_arrivals > 0 else np.nan
 
-    # Abandoned demand = blocked at K + reneging from waiting claims.
-    abandoned = np.array([
-        (lam_fn(t) * (1.0 - cfg.balk) if cfg.K == 0 else 0.0) * P[i, cfg.K]
-        + cfg.eta * (n * P[i]).sum()
-        for i, t in enumerate(times)
-    ])
-    U = float(np.trapezoid(abandoned, times))
-
-    rho = np.array([lam_fn(t) / mu_fn(t) for t in times])
     return {
         "E_Q_peak": float(E_Q.max()),
-        "E_Q_mean": float(np.trapezoid(E_Q, times) / (times[-1] - times[0])),
+        "E_Q_mean": float(backlog_exposure / horizon),
         "P_backlog_peak": float(P_pos.max()),
-        "P_backlog_mean": float(np.trapezoid(P_pos, times) / (times[-1] - times[0])),
+        "P_backlog_mean": float(np.trapezoid(P_pos, times) / horizon),
         "P_crit_peak": float(P_crit.max()),
-        "E_wait_mean": float(np.nanmean(E_W)),
-        "unmet_demand_U": U,
+        "E_wait_mean": float(delay_proxy),
+        "backlog_exposure_claim_days": backlog_exposure,
+        "total_arrivals_claims": total_arrivals,
+        "admitted_arrivals_claims": admitted_arrivals,
+        "served_demand_claims": served_demand,
+        "blocked_demand_claims": blocked_demand,
+        "reneged_demand_claims": reneged_demand,
+        "abandoned_demand_claims": abandoned_demand,
+        "terminal_backlog_change_claims": backlog_change,
+        "ledger_residual_claims": ledger_residual,
+        # Legacy name kept for downstream compatibility; unit is claims.
+        "unmet_demand_U": abandoned_demand,
         "rho_peak": float(rho.max()),
-        "rho_mean": float(np.trapezoid(rho, times) / (times[-1] - times[0])),
+        "rho_mean": float(np.trapezoid(rho, times) / horizon),
     }
 
 
@@ -255,7 +288,7 @@ def run_demos(verbose: bool = True):
     T = 365.0 * 3
     _, P_stat = solve_transient(lambda t: lam_mean, lambda t: mu_mean, cfg, T, 0.25)
     times_ns, P_ns = solve_transient(lam_ns, mu_ns, cfg, T, 0.25)
-    cut = int(0.25 * len(times_ns))     # discard first-year warm-up
+    cut = int(np.searchsorted(times_ns, 365.0))     # discard first-year warm-up
     out["stationary"] = indicators(times_ns[cut:], P_stat[cut:],
                                    lambda t: lam_mean, lambda t: mu_mean, cfg)
     out["nonstationary"] = indicators(times_ns[cut:], P_ns[cut:],

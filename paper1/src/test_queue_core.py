@@ -46,6 +46,52 @@ def test_probabilities_normalised():
     assert np.allclose(P.sum(axis=1), 1.0)
 
 
+def test_blocked_demand_is_counted():
+    cfg = q.QueueConfig(K=2, c=1, theta=99, eta=0.0)
+    times, P = q.solve_transient(
+        lambda t: 5.0, lambda t: 0.1, cfg, T=2.0, dt=0.01,
+        p0=np.array([0.0, 0.0, 1.0]))
+    out = q.indicators(times, P, lambda t: 5.0, lambda t: 0.1, cfg)
+    assert out["blocked_demand_claims"] > 9.0
+    assert out["abandoned_demand_claims"] >= out["blocked_demand_claims"]
+
+
+def test_demand_conservation_ledger_closes():
+    cfg = q.QueueConfig(K=5, c=2, theta=3, alpha=1.3, eta=0.02)
+    lam_fn = lambda t: 0.8 + 0.3 * np.sin(2 * np.pi * t / 30.0)
+    mu_fn = lambda t: 1.0 - 0.2 * np.cos(2 * np.pi * t / 30.0)
+    times, P = q.solve_transient(lam_fn, mu_fn, cfg, T=60.0, dt=0.02)
+    out = q.indicators(times, P, lam_fn, mu_fn, cfg)
+    scale = max(1.0, out["total_arrivals_claims"])
+    assert abs(out["ledger_residual_claims"]) < 1e-4 * scale
+
+
+def test_backlog_exposure_and_abandoned_demand_are_distinct():
+    cfg = q.QueueConfig(K=4, c=1, theta=3, alpha=1.2, eta=0.05)
+    lam_fn = lambda t: 1.2
+    mu_fn = lambda t: 0.4
+    times, P = q.solve_transient(lam_fn, mu_fn, cfg, T=10.0, dt=0.02)
+    out = q.indicators(times, P, lam_fn, mu_fn, cfg)
+    assert out["backlog_exposure_claim_days"] > 0.0
+    assert out["abandoned_demand_claims"] > 0.0
+    assert not np.isclose(out["backlog_exposure_claim_days"],
+                          out["abandoned_demand_claims"])
+
+
+def test_box1_sensitivity_baseline_reproduces_anchor():
+    from box1_sensitivity import SensitivityCase, run_case
+    row = run_case(SensitivityCase(case_id="test", experiment="test"), dt=0.25)
+    assert abs(row["peak_E_Q_ratio"] - 2.3) < 0.05
+    assert abs(row["seasonal_ledger_residual_claims"]) < 1e-4
+    assert row["provenance"] == "synthetic_illustrative_under_stated_assumptions"
+    try:
+        run_case(SensitivityCase(case_id="unsafe", experiment="test"), dt=0.5)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unsafe RK4 step was not rejected")
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for t in tests:

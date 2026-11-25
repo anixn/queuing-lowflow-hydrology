@@ -1,0 +1,16 @@
+record_id,supports_or_contradicts,mechanism_or_method,data_or_validation,limitation,evidence_locator
+R001,CONTRADICTS_BROAD_CONCEPTUAL_NOVELTY,Coupled storage-accessibility-demand-transfer-loss state space; unmet accessible demand; probabilistic risk,Two-node synthetic simulation; real-world validation listed as future work,No queue-state backlog; no learned nonstationary rates; no exact queue benchmarks; preprint not peer reviewed,Full preprint pp. 4-13 and 30; DOI 10.2139/ssrn.6835758
+R002,CONTRADICTS_BROAD_SUPPLY_DEMAND_NOVELTY,Integrated hydrology and management for reservoir reliability under nonstationary supply and demand,CMIP5-based scenario analysis and system simulation,Not a finite-state stochastic deficit queue; no exact queue validation,OSTI abstract https://www.osti.gov/biblio/1489983
+R003,CONTRADICTS_ML_QUEUE_NOVELTY,Survey of queue parameter and state estimation,Multiple queue inference settings,Methods are mature; hydrological contribution must be elsewhere,DOI 10.1007/s11134-021-09688-w
+R004,SUPPORTS_LINEAGE,Explicit queue-storage analogy in hydrology,Theory and storage applications,Stationary framing; no modern drought indicators,DOI 10.1061/JYCEAJ.0000222
+R005,SUPPORTS_LINEAGE,Runoff-runon as single-server waiting time,Steady runoff theory,No temporal deficit backlog,DOI 10.1002/2013WR013596
+R006,SUPPORTS_LINEAGE,Finite-hillslope stochastic runoff-runon extension,Asymptotics and Monte Carlo,Runoff generation not drought backlog,DOI 10.1016/j.jhydrol.2016.06.056
+R007,SUPPORTS_LINEAGE,Runoff on rooted trees mathematical extension,Probability theory,Not drought deficit accounting,DOI 10.1017/jpr.2019.61
+R008,SUPPORTS_LINEAGE,Conjunctive surface-groundwater irrigation allocation queue,Operational optimisation,No drought-state indicators or learned rates,DOI 10.11975/j.issn.1002-6819.2016.06.016
+R009,SUPPORTS_LINEAGE,Canal-management queue decision support,Operational allocation with uncertainty,No drought backlog state,DOI 10.1007/s11269-019-02372-y
+R010,SUPPORTS_LINEAGE,Multi-source well-field reliability queue,System reliability model,Not multi-year drought deficits,DOI 10.3390/app16031608
+R011,SUPPORTS_LINEAGE,Finite-capacity queue with time-dependent arrivals,Analytical queueing,Not hydrological parameterisation,DOI 10.1016/j.spa.2013.02.002
+R012,SUPPORTS_LINEAGE,Waiting times with variable long-range-correlated arrivals,Queueing theory,Not drought validation,DOI 10.1016/j.physa.2023.128513
+R013,SUPPORTS_LINEAGE,Waiting times with cross-correlated arrival rates,Queueing theory,Not drought validation,DOI 10.1016/j.physa.2024.130152
+R015,SUPPORTS_LINEAGE,Queuing allocation to command areas and fields,Irrigation decision support,No drought-state indicators,DOI 10.1061/(ASCE)0733-9437(1997)123:2(106)
+R016,SUPPORTS_LINEAGE,Stochastic rainwater-harvesting control,Small-system irrigation control,Stationarity typical; not drought backlog,DOI 10.1016/j.jclepro.2014.03.100

@@ -1,11 +1,10 @@
 # Scopus / Web of Science search plan — P1 prior-art completion
 
-Prepared 21 November 2026. Web of Science was run on 20–21 November 2026;
-Scopus was run on 21 November 2026 through the institutional IP address (no
-login needed). WoS export files are still needed for the four searches whose
-record cards would not render (see run log). Results are screened directly in
-`literature_audit.md`; only a gap-changing finding triggers an edit to
-`P1_draft_v2.md`.
+Prepared 21 November 2026; status updated 25 November 2026. Web of Science was
+run on 20–21 November 2026 and Scopus on 21 November 2026 through the
+institutional IP address. All WoS result sets were exported and screened, and
+all Scopus records were screened at title level. Only a gap-changing finding
+would reopen the frozen sentence; none was found.
 
 ## 1. Exact strings
 
@@ -70,7 +69,7 @@ result therefore applies to the narrower string.
 | Date | Database | String | Hits | Screened | Retained | Status |
 |---|---|---|---:|---:|---:|---|
 | 20 Nov 2026 | WoS Core Collection | S1 | 25 | 25 | 0 | Done — no relevant prior art |
-| 20 Nov 2026 | WoS Core Collection | S2 | 24 | 24 | 4 | Done — Yang 2019; Palková et al. 2010/2011/2012; Harel & Mouche 2014; Bogachev 2023/2024 for P3 |
+| 20 Nov 2026 | WoS Core Collection | S2 | 24 | 24 | 0 | Done — known prior art: Yang 2019; Palková et al. 2010/2011/2012; Harel & Mouche 2014; Bogachev 2023/2024 for P3 |
 | 21 Nov 2026 | WoS Core Collection | S3 | 0 | — | 0 | Done — complete null |
 | 21 Nov 2026 | WoS Core Collection | S4 | 6 | 6 | 0 | Done 21 Nov 2026 — exported to Excel with abstracts; all telecom/OR, Bogachev 2024 already recorded |
 | 21 Nov 2026 | WoS Core Collection | S5 | 66 | 66 | 0 | Done 21 Nov 2026 — exported to Excel with abstracts (2 pages); WEAP-type deficit modelling, no queueing |
@@ -104,12 +103,10 @@ appeared again, which is a useful cross-database check, but no study combined
 drought-as-queue-backlog with covariate-learned rates and pre-specified
 validation.
 
-The two decisive direct tests are now complete in **both** databases: WoS
-returned 8 (Extra A) and 13 (Extra C) hits but would not render the records;
-Scopus returned 15 and 17 and they were fully screened. The Scopus results
-therefore partly cover the WoS screening gap, but the WoS record-level screen
-remains a separate, still-open task because the two databases do not index
-identical records.
+The two decisive direct tests are complete in **both** databases: WoS returned
+8 (Extra A) and 13 (Extra C) hits and both sets were screened by Excel export;
+Scopus returned 15 and 17 and they were screened at title level. The databases
+do not index identical records, and both screens are complete.
 
 ## 1c. WoS record-level screening summary (21 November 2026)
 

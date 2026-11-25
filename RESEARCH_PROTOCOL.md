@@ -2,8 +2,8 @@
 title: "Research protocol: P01 and P03"
 subtitle: "Queue-based drought science — objectives, gates and analysis plans"
 author: "Ankit Deshmukh"
-date: "21 November 2026"
-version: "1.0"
+date: "25 November 2026"
+version: "1.1"
 ---
 
 # Research protocol: P01 and P03
@@ -17,21 +17,18 @@ human-facing names.
 
 | Canonical name | Old label | Physical folder | Current work product |
 |---|---|---|---|
-| **P01** | Paper 1 / P1 | `paper1/` | `paper1/P1_draft_v2.md` |
-| **P03** | Paper 3 / P3 | `paper3/` | Methods package in `paper3/` |
-| Not used | Paper 02 / P2 | — | No such paper is defined in the repository |
+| **P01** | Paper 1 / P1 | `P01/` | `P01/P01_draft_v2.md` |
+| **P02** | Paper 3 / P3 (renumbered) | `P02/` | Methods package in `P02/` |
 
-The repository defines two papers, P1 and P3, and fixes the order P1 first,
-P3 second (`AGENTS.md:21-28`; `START_HERE.md:21-28`). The physical folders stay
-as `paper1/` and `paper3/` so the tested Python imports and documented run
-commands continue to work (`paper3/src/evaluate_estimators.py:30-35`;
-`START_HERE.md:141-152`). The detailed working note is
-`APPROACH_P01_P03.md`.
+The repository defines two papers, P01 and P02, and fixes the order P01 first,
+P02 second (`AGENTS.md` §1; `START_HERE.md` §2). Shared code lives in `src/shared/`,
+P01 code in `src/P01/`, P02 code in `src/P02/`, and tests in `tests/`. The ordered
+plan is in `docs/novelty/NOVELTY_AND_PLAN_REPORT.md`.
 
 ## 1. Phase position
 
-We are in **Phase A: finish the gap hunt** (`AGENTS.md:174-180`;
-`START_HERE.md:125-130`) — **Phase A closed 21 November 2026**. The record-level
+We are in **Phase B: finish P01** (`AGENTS.md:182-201`;
+`START_HERE.md` §7) — **Phase A closed 21 November 2026**. The record-level
 screens are complete: the four Web of Science sets (S4 6 records, S5 66
 records, Extra A 8 records, Extra C 13 records — 93 in total) were screened
 by export with zero records retained
@@ -69,8 +66,9 @@ P01 is a review/perspective for *Water Resources Research*
 2. Map queue quantities to drought quantities: arrivals to demand, service to
    supply, backlog to unmet demand, capacity to a system limit, and reneging to
    abandoned demand (`paper1/P1_draft_v2.md:103-150`).
-3. Keep two dual representations separate: stored water as the buffer and
-   unmet demand as the backlog (`paper1/P1_draft_v2.md:123-150`).
+3. Keep physical storage and unmet-demand backlog distinct, couple them through
+   the served-water flux and conservation ledger, and test identification
+   (`paper1/P1_draft_v2.md` §2.2 and §5).
 4. Cite the established hydrology, irrigation, groundwater, runoff and
    reliability literature without overstating the gap
    (`paper1/literature_audit.md:122-174`; `paper1/P1_draft_v2.md:152-187`).
@@ -185,9 +183,9 @@ splits (`paper1/queueing_howto.md:157-162`).
 
 ## 6. Shared operating rules
 
-1. Run all 18 tests after every change and before reporting
-   (`AGENTS.md:78-86`). On 21 November 2026 all 18 passed with the existing
-   `drought` environment (`SESSION_LOG.md:8-10`).
+1. Run the full test suite after every change and before reporting
+   (`AGENTS.md` §4). On 25 November 2026 all 22 tests passed with the existing
+   `drought` environment (9 shared/P01, 6 benchmark, 7 estimator).
 2. Keep three-way agreement between exact solution, RK4 and DES
    (`AGENTS.md:87-91`).
 3. Every manuscript number has a named script (`AGENTS.md:92-94`).
@@ -199,34 +197,20 @@ splits (`paper1/queueing_howto.md:157-162`).
 
 ## 7. Exact next action
 
-DONE 21 November 2026 — the 93-record WoS screen is complete and the keep/drop
-table is transferred (`analysis/P01/wos_screening_2026-11-21.md` §5 →
-`paper1/literature_audit.md`); the seed citation trace is complete
-(`analysis/P01/citation_trace_2026-11-21.md`). The gap sentence is frozen and
-dated (`AGENTS.md` §2; `field/README.md` §8). **Gate A passed — Phase B
-(finish P1) is current**: next action is the P1 mapping-section tightening
-and prior-art table update with the two new trace records
-(`APPROACH_P01_P03.md`).
+Gate A passed on 21 November 2026. The WoS/Scopus screens and database citation traces are complete, and the gap sentence is frozen in `AGENTS.md` §2. The 25 November supplementary search and P01 indicator-contract revisions are complete.
+
+**Phase B (finish P01) is current.** Exact next action: build the reproducible P01 figures and prepare the WRR abstract, cover letter and code/data availability statement. The ordered plan is in `docs/novelty/NOVELTY_AND_PLAN_REPORT.md`.
 
 ## 8. Analysis workspace
 
 The working analysis files are organised under `analysis/`:
 
 - `analysis/README.md` — index and status.
-- `analysis/P01/README.md` — P01 file list and decision rule.
-- `analysis/P01/wos_screening_2026-11-21.md` — completed 93-record WoS screen
-  (21 November 2026, zero retained).
-- `analysis/P01/citation_trace_2026-11-21.md` — completed seed forward-citation
-  trace in WoS/Scopus (76 citing records screened).
-- `analysis/P01/exports/` — the five WoS Excel exports behind the screen and
-  four citing-article exports.
-- `analysis/P03/README.md` — P03 outputs to create after Gate B.
-- `field/README.md` — field-level initial state and formulated objectives for
-  P01 and P03.
+- `analysis/P01_literature/` — completed WoS screen, citation trace and raw exports.
+- `analysis/novelty_2026-11-25/` — supplementary novelty investigation and Box 1 sensitivity grid.
+- `analysis/P02_methods/README.md` — P02 outputs to create after Gate B.
 
-The P01 screening sheet records the access blocker honestly; no records are
-invented. It will be filled only from signed-in WoS result pages
-(`analysis/P01/wos_screening_2026-11-21.md:9-16`).
+The P01 literature folder preserves five WoS search exports and two citing-article exports. Two citing-set exports are absent and two citation-count discrepancies remain unreconciled; these limitations are disclosed in the trace note. No records are invented.
 
 ## 9. Reproducibility commands
 
@@ -234,16 +218,10 @@ Use the existing `drought` Conda environment; the default `python` has no NumPy
 (`START_HERE.md:141-148`).
 
 ```powershell
-& 'C:\Users\deshm\miniconda3\envs\drought\python.exe' paper1/src/test_queue_core.py
-& 'C:\Users\deshm\miniconda3\envs\drought\python.exe' paper3/src/test_nonstationary_bench.py
-& 'C:\Users\deshm\miniconda3\envs\drought\python.exe' paper3/src/test_rate_estimators.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper1/src/test_queue_core.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper3/src/test_nonstationary_bench.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper3/src/test_rate_estimators.py
 
 & 'C:\Program Files\R\R-4.5.1\bin\x64\Rscript.exe' paper3/R/01_build_rates.R
 & 'C:\Program Files\R\R-4.5.1\bin\x64\Rscript.exe' paper3/R/02_run_queue.R
-```
-
-Render this protocol to HTML with:
-
-```powershell
-pandoc RESEARCH_PROTOCOL.md -o RESEARCH_PROTOCOL.html --standalone --toc --number-sections --css=protocol.css
 ```

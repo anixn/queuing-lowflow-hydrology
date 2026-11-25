@@ -23,16 +23,21 @@ Queueing theory is the mathematics of exactly that bookkeeping.
 | Arrival process | inflow / recharge $I(t)$ | demand claim $D(t)$ |
 | Service process | withdrawal / release $R(t)$ | supply available to clear backlog $S(t)$ |
 | Buffer occupancy | storage $X(t)$ | backlog $Q(t)$ |
-| Empty buffer | **supply starvation** = drought onset | $Q=0$ = no drought |
-| Full buffer | spill / rejected recharge | $Q=K$ = demand shedding (balking) |
+| Empty buffer | **supply starvation** = drought onset | $Q=0$ = no represented deficit |
+| Full buffer | spill / rejected recharge at physical capacity $K_s$ | $Q=K_q$ = new demand blocked; $K_q$ is backlog tolerance, not storage capacity |
 | Observable proxy | reservoir level, soil moisture, GRACE TWS | crop stress, failed demand, restriction events |
 | Best for | storage validation (Topic 7) | drought indicators (Topics 1, 6) |
 
-These are complementary views of the same water balance, related by a
-reflection/capacity convention: $Q$ is essentially the *shortfall* relative to
-the storage target, while $X$ is the *contents*. Paper 1 should make this
-duality explicit — it is the cleanest way to connect the drought-indicator
-literature (deficits) with the storage/GRACE literature (contents).
+These are complementary views of the same water system, but they are **not
+generally reflections of one another**. Storage $X$ and backlog $Q$ are linked
+by the served-water flux $S$:
+
+$$\dot Q=D-S-A,\qquad D_{\rm total}=S_{\rm served}+A_{\rm abandoned}+[Q(T)-Q(0)].$$
+
+An independent storage observation constrains $Q$ only if demand, releases and
+losses are also observed or modelled. This is an identification problem: a
+backlog trajectory alone need not separate demand pressure from supply
+constraint.
 
 **Historical anchor.** Moran's dam recursion and Lindley's waiting-time
 recursion are the same equation under relabelling:
@@ -67,19 +72,23 @@ water".
 
 ## 3. The model to actually fit
 
-Let $Q(t)\in\{0,1,\dots,K\}$ be the backlog (in volume units, discretised for
-the CTMC). Let $\lambda(t)$ be the admitted-demand arrival rate and $\mu(t)$
-the per-server clearing rate. Define state-dependent rates
+Let $Q(t)\in\{0,1,\dots,K_q\}$ be the backlog in claims, discretised for the
+CTMC. Let $\lambda(t)$ be the demand-arrival rate and $\mu(t)$ the per-source
+clearing rate. Define
 
 $$
-\lambda_n(t)=\lambda(t)\,(1-\text{balk}(n)),\qquad
-\mu_n(t)=\underbrace{\min(n,c)\,\mu(t)\,\big[1+(\alpha-1)\mathbf{1}(n\ge\theta)\big]}_{\text{supply / drought-mode service}}+\underbrace{n\,\eta}_{\text{reneging}},
+\lambda_n(t)=\begin{cases}\lambda(t),&n<K_q,\\0,&n=K_q,\end{cases}
+\qquad
+S_n(t)=\min(n,c)\,\mu(t)\,[1+(\alpha-1)\mathbf 1(n\ge\theta)],
+\qquad
+\mu_n(t)=S_n(t)+n\eta.
 $$
 
-with $K$ = maximum trackable backlog, $c$ = parallel supply sources, $\theta$ =
-backlog at which emergency service turns on, $\alpha$ = service multiplier,
-$\eta$ = abandonment rate per waiting claim. At $n=K$ arrivals are blocked:
-blocked and reneged claims are *abandoned demand*, not served demand.
+Here $K_q$ is backlog tolerance, $c$ is the number of genuinely separate supply
+sources, $\theta$ is the emergency-service threshold, $\alpha$ is the service
+multiplier and $\eta$ is the abandonment rate per waiting claim. At $n=K_q$ all
+arrivals are blocked. Blocked and reneged claims are *abandoned demand*, not
+served demand.
 
 Forward equation (row form): $\dot{\mathbf p}(t)=\mathbf p(t)\,A(t)$, where
 $A(t)$ is the birth–death generator with births $\lambda_n(t)$ and deaths
@@ -88,12 +97,16 @@ $\mu_n(t)$.
 **Critical bookkeeping rule.** In a conventional queue a reneging customer
 leaves the system and is no longer anyone's problem. In drought science that
 customer is a *failed irrigation, a shut-off user, a lost crop* — an impact.
-Therefore report two separate loss totals:
+Report four separate quantities:
 
-* served demand $\int\sum_n \mu_n^{\text{service}}p_n(t)\,dt$
-* abandoned/unmet demand $U=\int\big[\lambda(t)\,\text{balk}(K)p_K(t)+\eta\sum_n n\,p_n(t)\big]dt$
+* backlog stock $Q(t)$ [claims];
+* backlog exposure $B=\int\mathbb E[Q(t)]dt$ [claim-days];
+* served demand $S_{\rm served}=\int\sum_n S_n(t)p_n(t)dt$ [claims];
+* abandoned demand $A_{\rm abandoned}=\int[\lambda(t)p_{K_q}(t)+\eta\sum_n n p_n(t)]dt$ [claims].
 
-Collapsing these into one number is the fastest way to produce a physically
+Then check the ledger
+$D_{\rm total}=S_{\rm served}+A_{\rm abandoned}+[Q(T)-Q(0)]$. Collapsing these
+quantities into one number is the fastest way to produce a physically
 nonsensical drought indicator.
 
 ## 4. What queueing gives you that an index does not
@@ -105,17 +118,18 @@ $\Pr(Q>q)=\rho^{q+1}$, $\mathbb E[W]=1/(\mu-\lambda)$ (Little's law). These are
 
 | Quantity | Definition | Drought meaning |
 |---|---|---|
-| $\rho(t)=\lambda(t)/\mu(t)$ | traffic intensity | proximity to chronic congestion; **warning signal** |
+| $\rho_{\rm nom}(t)=\lambda(t)/(c\mu(t))$ | nominal offered load | proximity to congestion; not exact utilisation when service is state-dependent |
 | $\Pr(Q>0)$ | busy probability | drought occurrence probability |
-| $\mathbb E[Q]$ | mean backlog | deficit severity |
-| $\mathbb E[W]=\mathbb E[Q]/\lambda_{\text{eff}}$ | mean wait | delay to demand satisfaction |
-| $T_{q\to0}$ | first-passage time to empty | **recovery time** |
+| $Q(t)$ / $\mathbb E[Q]$ | backlog stock [claims] | current deficit severity |
+| $B=\int\mathbb E[Q]dt$ | backlog exposure [claim-days] | duration-weighted deficit severity |
+| $\mathbb E[W]=1/(\mu-\lambda)$ | stationary M/M/1 mean wait [days] | reference delay; transient waiting-time distribution not yet implemented |
+| $T_{q\to0}$ | first-passage time to empty [days] | **recovery time**; current implementation is stationary-only |
 | $\Pr(Q\ge q^\*)$ | critical exceedance | failure risk against a tolerance threshold |
-| $U$ | cumulative abandoned demand | agricultural/ecological impact proxy |
+| $A_{\rm abandoned}$ | cumulative blocked + reneged demand [claims] | agricultural/ecological impact proxy |
 
-Important caveat: $\rho(t)$ is a *local* diagnostic. When rates vary in time,
-backlog depends on the **history** $\int(\lambda-\mu)\,dt$, so the same
-$\rho$ can imply different $Q$ on the rising and falling limbs of a cycle
+Important caveat: nominal load is a *local* diagnostic. When rates vary in
+time, backlog depends on the **history** $\int(\lambda-\mu)\,dt$, so the same
+nominal load can imply different $Q$ on the rising and falling limbs of a cycle
 (hysteresis). Never use stationary formulae to interpret a transient state.
 
 ## 5. Non-stationary solution and verification strategy
@@ -171,51 +185,64 @@ found, move to a Markov-modulated Poisson or phase-type arrival process.
 
 1. No assumption of Poisson arrivals, exponential service or stationarity
    without a test and a reported result.
-2. Account for temporal dependence and spatial autocorrelation in estimation
+2. Label $K_q$, $\theta$, $\alpha$, $\eta$, claim volume and server structure as
+   assumptions until measured or identified.
+3. Keep backlog stock, backlog exposure and abandoned demand separate; test the
+   conservation ledger.
+4. Account for temporal dependence and spatial autocorrelation in estimation
    and validation.
-3. Compare against SPI/SPEI/SSI, low-flow duration statistics and the DIE event
-   catalogue using **pre-specified** metrics (AUC, Brier, lead time, CRPS).
-4. Demonstrate incremental information with ablation; a correlation with an
+5. Compare against SPI/SPEI/SSI, low-flow duration statistics and the DIE event
+   catalogue using **pre-specified** metrics (Brier, lead time, CRPS, MAE).
+6. Demonstrate incremental information with ablation; a correlation with an
    existing index is not evidence of superiority.
-5. Quantify uncertainty in $\lambda(t)$, $\mu(t)$ and every derived indicator.
-6. Keep physical-process queues (Topics 1, 6, 7) separate from operational
-   allocation queues (deferred Topics 3, 4).
-7. Cite the prior art — Langbein (1958), Harel & Mouche (2013), Lefebvre (2019),
-   Unami et al. (2015) — and state the gap relative to it, never in ignorance
-   of it.
+7. Quantify uncertainty in rates, structural parameters and derived indicators;
+   exact solver agreement is not empirical validation.
+8. Keep physical-process queues separate from operational allocation queues,
+   never publish raw CMIP6 output, and report null or non-identifiable results.
 
 ## 8. Box 1 — synthetic demonstration already computed (from `queue_core.py`)
 
-Config: $K=20$, $c=2$, $\theta=8$, $\alpha=1.5$, $\eta=0.02$ d$^{-1}$.
+Config: $K_q=20$, $c=2$, $\theta=8$, $\alpha=1.5$, $\eta=0.02$ d$^{-1}$.
+**Illustrative, under the stated assumptions.**
 
-* Solver check: exact $\mathbb E[Q]=0.91607$; RK4 $=0.91607$; DES time-average
-  $=0.91295$ (0.34% error); L1(RK4, exact) $=0.00000$.
-* Stationary ($\lambda=0.8$, $\mu=1.0$, $\rho=0.8$): peak $\mathbb E[Q]=0.916$,
-  $\Pr(Q\ge6)_{\max}=0.0043$, unmet $U=15.05$.
+* Solver check: exact $\mathbb E[Q]=0.91607$ claims; RK4 $=0.91607$ claims;
+  DES time-average $=0.91295$ claims (0.34% error); L1(RK4, exact) $<10^{-5}$.
+* Stationary ($\lambda=0.8$, $\mu=1.0$ claims/day): peak $\mathbb E[Q]=0.916$
+  claims, $\Pr(Q\ge6)_{\max}=0.0043$, backlog exposure $=668.73$ claim-days,
+  abandoned demand $=13.37$ claims.
 * Non-stationary with the **same time-mean** rates
   ($\lambda=0.8+0.35\sin(2\pi t/365)$, $\mu=1.0-0.28\sin(2\pi(t-75)/365)$):
-  peak $\mathbb E[Q]=2.13$ (2.3×), $\Pr(Q\ge6)_{\max}=0.073$ (17×),
-  $U=16.79$ (+11.6%), peak $\rho=1.39$.
+  peak $\mathbb E[Q]=2.130$ claims (2.3×), $\Pr(Q\ge6)_{\max}=0.0733$ (17×),
+  backlog exposure $=795.01$ claim-days, abandoned demand $=15.90$ claims
+  (+18.9%), peak $\lambda/\mu=1.39$. Evaluation is two years after a one-year
+  spin-up; $q^*=6$ is illustrative.
+* Demand-ledger residual for the non-stationary run: $2.2\times10^{-7}$ claims.
 * Mean recovery time from backlog 6 to empty (stationary case): 5.41 days.
-* Critical-transition ramp $\lambda:0.70\to1.15$: $\mathbb E[Q]$ rises to 1.56
-  and $U$ to 24.78 as the system crosses $\rho=1$.
+* Ramp $\lambda:0.70\to1.15$: peak $\mathbb E[Q]=1.56$ claims, mean
+  $\mathbb E[Q]=1.13$ claims, abandoned demand $=24.78$ claims. With $c=2$,
+  crossing $\lambda/\mu=1$ is not a universal critical threshold.
 
 **Interpretation for the paper:** averaging a time-varying climate signal can
 understate peak congestion by more than a factor of two and critical-risk
-probability by more than an order of magnitude. That is the mechanistic reason
-non-stationary queueing matters for drought under climate change. It is a
-synthetic proof of concept, not evidence about real basins.
+probability by more than an order of magnitude in this controlled example.
+The documented 44-case grid in `src/box1_sensitivity.py` preserves the direction
+of the effect in every case: peak-backlog ratios range from 1.20 to 5.33 and
+critical-probability ratios from 2.06 to 92.9, with medians 2.32 and 16.78. The
+largest absolute ledger residual is $1.7\times10^{-6}$ claims. This is a
+mechanistic reason to test non-stationary queueing for drought, not evidence
+about real basins; conclusions outside the declared grid remain untested.
 
 ## 9. Open decisions before writing continues
 
 * **Resolved:** P1 is the review/perspective paper; P3 follows (user decision,
-  20 Nov 2026).
-* **Partly resolved:** a Crossref/OpenAlex audit found the prior art and
-  narrowed the novelty claim (see `literature_audit.md`). Scopus/WoS,
-  forward-citation tracing and full-text screening are still required.
-* Decide the unit of the claim (one claim/event per day vs per irrigation
-  event); it affects every rate interpretation.
-* Confirm which CMIP6 models, SSPs and IMD products are already accessible locally.
-* Revise the roadmap's own screening claims: candidate 2 (runoff queueing) has
-  prior art (Harel & Mouche 2013), and groundwater queueing has a 2026 well-field
-  reliability precedent. Re-entry conditions should reflect this.
+  20 Nov 2026). Phase A is complete and Phase B is current.
+* **Resolved:** Crossref/OpenAlex, WoS, Scopus and database citation tracing are
+  complete; the 25 Nov supplementary search did not change the frozen sentence.
+* **Provisional:** one claim = $10^7$ m³ = 20 mm over 50,000 ha. Replace it with
+  canal/crop records or run a sensitivity envelope before physical interpretation.
+* Confirm which CMIP6 models, SSPs and IMD products are accessible locally; raw
+  CMIP6 output remains unusable until bias correction.
+* Broad coupled drought state-space modelling is prior art (Acosta et al. 2026),
+  as are non-stationary supply–demand resilience models (Zhao et al. 2018). The
+  proposed contribution must stay with queue dynamics, identification, exact
+  validation and pre-specified drought tests.

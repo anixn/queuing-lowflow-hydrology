@@ -1,4 +1,4 @@
-# Literature audit for Paper 1 — 20–21 November 2026
+# Literature audit for Paper 1 — 20–25 November 2026
 
 ## Protocol
 
@@ -11,11 +11,13 @@ Verification was therefore done through two bibliographic APIs:
 
 Searches were run on 20–21 November 2026. Web of Science Core Collection was
 searched on 20–21 November 2026 and Scopus on 21 November 2026 (institutional
-IP, no login; see below). This is a **scoping audit**, not a systematic review:
-forward-citation tracing was done through OpenAlex rather than the database
-"Cited by" tools, and there has been no full-text screening of all hits. Four
-WoS record-level screens are also still open. Those steps are required before
-submission.
+IP, no login; see below). This is a **scoping audit**, not a systematic review.
+WoS records were screened from exported titles, abstracts and keywords;
+Scopus records were screened at title level. Database citation tracing was
+completed inside WoS/Scopus where the seeds are indexed, with OpenAlex retained
+for unindexed seeds. Zero gap-changing records were retained. A supplementary
+targeted search on 25 November 2026 is recorded below and did not change the
+frozen sentence.
 
 ## Queries run (compact)
 
@@ -46,13 +48,13 @@ should be used without `TS=` in this interface.
 | # | Query as run (Topic field) | Hits | Titles/abstracts screened | Retained for full text |
 |---|---|---:|---:|---:|
 | S1 | `((queue* OR "queuing theory" OR "queueing theory" OR "mass service") AND (drought OR "low flow" OR "water storage" OR "unmet demand" OR "water deficit"))` | 25 | 25 | 0 |
-| S2 | `(("queuing theory" OR "queueing theory" OR "mass service") AND (hydrolog* OR "water resource*" OR river* OR reservoir* OR irrigation OR groundwater))` | 24 | 24 | 4 |
+| S2 | `(("queuing theory" OR "queueing theory" OR "mass service") AND (hydrolog* OR "water resource*" OR river* OR reservoir* OR irrigation OR groundwater))` | 24 | 24 | 0 |
 | S3 | `(drought AND ("recovery time" OR "first passage" OR "busy period") AND (queue* OR congestion OR backlog))` | 0 | — | 0 |
-| S4 | `(("non-stationary" OR nonstationary OR "time-varying") AND queue* AND (hydrolog* OR drought OR water OR irrigation))` | 6 | hit count only — renderer stalled | pending |
-| S5 | `(("unmet demand" OR "deficit accumulation" OR "demand backlog") AND (drought OR irrigation OR "water supply"))` | 66 | hit count only — renderer stalled | pending |
-| Extra A | `(drought AND (queue* OR queu*))` | 8 | hit count only — renderer stalled | pending — **highest priority** |
+| S4 | `(("non-stationary" OR nonstationary OR "time-varying") AND queue* AND (hydrolog* OR drought OR water OR irrigation))` | 6 | 6 | 0 |
+| S5 | `(("unmet demand" OR "deficit accumulation" OR "demand backlog") AND (drought OR irrigation OR "water supply"))` | 66 | 66 | 0 |
+| Extra A | `(drought AND (queue* OR queu*))` | 8 | 8 | 0 |
 | Extra B | `(drought AND ("first passage" OR "busy period") AND (reservoir* OR storage OR deficit))` | 0 | — | 0 |
-| Extra C | `(("water deficit" OR "unmet demand") AND (queue* OR queu*))` | 13 | hit count only — renderer stalled | pending — **highest priority** |
+| Extra C | `(("water deficit" OR "unmet demand") AND (queue* OR queu*))` | 13 | 13 | 0 |
 
 **Record-level screening limitation (21 November 2026) — RESOLVED 21
 November 2026.** For S4, S5 and Extra A/C the WoS results page initially
@@ -115,10 +117,10 @@ Harel & Mouche, and Prajamwong et al. 1997). That is a useful cross-database
 check, but no study combined drought-as-queue-backlog with covariate-learned
 rates and pre-specified validation.
 
-The two decisive direct tests (Extra A and Extra C) are now fully screened in
-Scopus at 15 and 17 records. This partly offsets the WoS renderer failure,
-though the WoS record-level screen remains open because the two databases do
-not index identical sets.
+The two decisive direct tests (Extra A and Extra C) are fully screened in
+Scopus at 15 and 17 records. The corresponding WoS sets were also screened by
+export on 21 November 2026; the two databases do not index identical sets, and
+both screens are complete.
 
 ## Verified prior art that changes the framing
 
@@ -143,6 +145,56 @@ not index identical sets.
 | **Jones, Owen D.; Lane, Patrick N. J.; Sheridan, Garry J. (2016)**, "The stochastic runoff-runon process: Extending its analysis to a finite hillslope", *Journal of Hydrology*, DOI 10.1016/j.jhydrol.2016.06.056 | WoS Times-Cited trace of Harel & Mouche 2013, 21 Nov 2026 (3 citing records screened, `../analysis/P01/citation_trace_2026-11-21.md`) | Extends the Harel–Mouche queue-based stochastic runoff-runon theory to finite hillslopes (asymptotics + Monte Carlo) | **New (found by citation tracing, not keyword search).** The runoff-runon queue lineage is still active mathematically (see also Jones 2019, *J. Applied Probability* 56(4):1065–1085, "Runoff on rooted trees"). Still runoff generation, not drought deficit accounting. |
 
 Full bibliographic detail for all resolved records is in `P1_draft_v2.md` References.
+
+## Supplementary targeted novelty search — 25 November 2026
+
+This search tests the proposed stronger framing around conservation,
+identifiability, coupled storage–backlog states and recovery. It is
+exploratory and does not reopen or reword the frozen 21 November sentence.
+Exact logs and candidate assessments are in
+`../analysis/P02_novelty_2026-11-25/`.
+
+| Source | Exact query / filter | Hits | Decision |
+|---|---|---:|---|
+| OpenAlex | `title_and_abstract.search:drought queueing` | 40 | No full four-part match; mostly false positives |
+| OpenAlex | `title_and_abstract.search:drought backlog` | 25 | No full four-part match |
+| OpenAlex | `title_and_abstract.search:drought "unmet demand"` | 25 | Supply–demand and deficit studies; no queue-state validation |
+| OpenAlex | `title_and_abstract.search:drought "first passage"` | 13 | Reservoir/storage first-passage precedents; no learned deficit-queue recovery diagnostic |
+| OpenAlex | `title_and_abstract.search:reservoir demand deficit queue` | 0 | No direct record |
+| OpenAlex | `title_and_abstract.search:drought storage demand state space` | 42 | **Retained Acosta et al. (2026)** as closest conceptual prior art |
+| OpenAlex | `title_and_abstract.search:coupled storage demand drought` | 179 | **Retained Zhao et al. (2018)** as closest non-stationary supply–demand prior art |
+| OpenAlex | `title_and_abstract.search:drought "water debt"` | 6 | No stochastic backlog record |
+| OpenAlex | `title_and_abstract.search:drought "recovery time" queue` | 0 | No direct record |
+| Crossref | Seven bibliographic queries mirroring the above | API returned HTTP 429 | No records exported; limitation recorded |
+
+Two records were inspected beyond title/abstract metadata:
+
+1. **Acosta, G. A. J. G., Colili, J. V. C., Abalus Jr., R. O., & Malolos, J. V.
+   (2026). "Toward a Dynamical Network Theory of Drought: Functional Water
+   Accessibility in Coupled Human–Water Systems." SSRN preprint,
+   DOI 10.2139/ssrn.6835758.** Full 36-page preprint inspected. It proposes a
+   coupled state-space framework with storage, accessibility, demand, transfer
+   and loss, defines drought intensity as unmet accessible demand, formulates
+   probabilistic risk and a recovery timescale, and calls real-world validation
+   and observational assimilation future work. It contains no queue-state
+   backlog model, learned non-stationary arrival/service rates, exact queue
+   benchmarks or empirical validation. **Decision: retain as conceptual prior
+   art; not gap-changing.**
+2. **Zhao, G., Gao, H., Kao, S.-C., Voisin, N., & Naz, B. S. (2018). "A modeling
+   framework for evaluating the drought resilience of a surface water supply
+   system under non-stationarity." *Journal of Hydrology*, 563, 22–32,
+   DOI 10.1016/j.jhydrol.2018.05.037.** Abstract and accepted-manuscript metadata
+   inspected. It integrates hydrological processes and water management to
+   evaluate reservoir storage and supply reliability under changing supply and
+   demand. It is not a finite-state stochastic deficit queue and does not
+   provide exact queue validation. **Decision: retain as supply–demand prior
+   art; not gap-changing.**
+
+The frozen sentence is unchanged. The main consequence is narrower wording:
+coupled state-space drought modelling and non-stationary supply–demand
+modelling are established; the proposed contribution must remain the
+queue-specific backlog dynamics, identification, exact validation and
+pre-specified drought tests.
 
 ## WoS record-level screen — 21 November 2026
 
@@ -203,7 +255,11 @@ export files and the screening basis are in
   queueing-based conjunctive irrigation allocation, and Jones, Lane &
   Sheridan (2016) extending the queue-based runoff-runon theory to finite
   hillslopes (with the 2019 *J. Applied Probability* descendant).
-- **No citing record anywhere combines drought-as-queue-backlog with
+- **Preservation limitation:** two citing-set exports are absent from the
+  current workspace, and the Harel–Mouche 2013/2014 panel-versus-list count
+  differences (6 vs 5; 11 vs 10) are unreconciled. The screened lists are
+  preserved in the trace note; the missing records were not inspected.
+- **No inspected citing record combines drought-as-queue-backlog with
   queue-state indicators, covariate-learned rates and exact validation.** The
   frozen gap sentence is unchanged.
 
@@ -255,9 +311,11 @@ analysis and must **not** be cited as queueing prior art.
 | "Queueing view of water systems exists only in isolated niches" | Partly true — real but thin niche, now enumerated | Cite it; call it thin, not absent |
 | "Service-congestion view of low-flow hydrology: none found" | Still plausible — no drought/low-flow queue-state indicator located | Word as "we found no..." with scope stated |
 | Candidate 2 (runoff generation queues) | Rejected as novel — Harel & Mouche 2013 | Reframe as spatial non-stationarity extension |
-| Topic 1 irrigation queues | Weakened further — Palková & Hennyeyová 2012; Palková et al. 2010/2011/2012; Yang et al. 2019 | Gap = unmet-demand indicators + non-stationarity + learned rates |
+| Topic 1 irrigation queues | Weakened further — Palková & Hennyeyová 2012; Palková et al. 2010/2011/2012; Yang et al. 2016, 2019 | Gap = unmet-demand indicators + non-stationarity + learned rates |
 | Topic 7 groundwater queues | Rejected as novel — Batabyal 1996; Al-Sifao et al. 2026 | Gap = multi-year deficit backlog + GRACE validation |
-| ML-parameterised non-stationary queue for drought | No hits in Crossref/OpenAlex, WoS S1–S5/Extra A/C (142 records) or Scopus S1–S5/Extra A/C (295 records): 437 records screened in total; plausible gap | Keep as headline, with scope caveat |
+| Broad coupled drought state-space framework | Already established conceptually — Acosta et al. 2026 preprint | Do not claim the broad framework; distinguish queue dynamics, identification and exact validation |
+| Non-stationary supply–demand resilience modelling | Already established — Zhao et al. 2018 | Cite as closest system-modelling precedent |
+| ML-parameterised non-stationary queue for drought | No hits in Crossref/OpenAlex, WoS S1–S5/Extra A/B/C (142 records) or Scopus S1–S5/Extra A/C (295 records): 437 records screened in total; plausible gap | Keep as headline, with scope caveat |
 
 ## Still required before submission
 
@@ -269,8 +327,12 @@ analysis and must **not** be cited as queueing prior art.
    2026** — all seeds traced or confirmed unindexed; two new prior-art
    records found, neither gap-changing
    (`../analysis/P01/citation_trace_2026-11-21.md`).
-3. Full-text screen of the retained prior-art set (not every hit).
-4. Targeted search for "recovery time", "first passage" and "busy period" in
-   hydrological drought (S3 returned zero in both WoS and Scopus).
-5. Decision on claim-volume convention (one claim/event per day vs per
-   irrigation event) — affects every rate interpretation.
+3. Known prior-art records have been checked individually; the gap-changing
+   retained set is empty. Full-text screening of every hit was never claimed.
+4. Supplementary targeted searches for recovery, first passage, state-space and
+   identifiability were run on 25 November 2026; see
+   `../analysis/P02_novelty_2026-11-25/`. Repeat them immediately before
+   submission because the field is moving.
+5. The claim-volume convention is locked provisionally and must be replaced by
+   canal/crop records or covered by a documented sensitivity envelope before
+   physical interpretation.

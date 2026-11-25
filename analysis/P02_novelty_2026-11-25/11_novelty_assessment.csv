@@ -1,0 +1,10 @@
+candidate_id,candidate,scientific_originality_1_5,gap_evidence_1_5,scientific_significance_1_5,methodological_advancement_1_5,knowledge_contribution_1_5,feasibility_1_5,reproducibility_1_5,weighted_score_0_100,evidence_confidence,status,decision_note
+C1,Conservation-ledger deficit queue,3,4,4,4,4,5,5,80,MODERATE,RETAIN_AS_FOUNDATION,Implemented in shared Python core with new tests; not standalone broad novelty
+C2,Identifiability-first joint storage-backlog inference,4,4,5,5,5,3,4,87,MODERATE,PROMISING_UNVERIFIED,Recommended headline direction; empirical observations and targeted prior-art search still needed
+C3,Time-varying recovery distributions,3,4,4,4,4,5,5,80,MODERATE,STRONG_CANDIDATE,First feasible P3 extension after Gate B
+C4,Zero-flow-aware intermittent service,3,4,4,4,4,3,4,74,LOW,INVESTIGATE_AFTER_DATA_SEMANTICS,Blocked until zero-flow meaning is resolved
+C5,Dependence-aware uncertainty propagation,3,4,4,4,4,4,4,76,MODERATE,RETAIN_AS_REQUIRED_VALIDATION,Standard methods but necessary for credible intervals
+C6,Pre-specified incremental and decision-value tests,2,5,5,4,4,4,5,80,MODERATE,RETAIN_AS_REQUIRED_VALIDATION,Essential credibility gate; not a novelty claim by itself
+C7,Risk-sensitive rate estimation,3,4,4,4,4,4,4,76,LOW,PROMISING_UNVERIFIED,Secondary direction; requires held-out event tests
+C8,Source-resolved networked drought queues,4,3,4,4,4,2,3,71,LOW,INSUFFICIENT_EVIDENCE,Operational source records missing and prior art is strong
+C9,Broad coupled drought state-space theory,2,2,4,3,3,3,3,56,MODERATE,ALREADY_ESTABLISHED,Acosta et al. 2026 preprint already proposes the broad framework

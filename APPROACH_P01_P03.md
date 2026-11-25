@@ -1,12 +1,20 @@
 # Approach preparation for Paper 01 and Paper 03
 
-Prepared 21 November 2026. This is a working note, not a manuscript edit. It does
-not change the frozen gap sentence in `AGENTS.md` §2.
+Prepared 21 November 2026; status note updated 25 November 2026. This is a
+working note, not a manuscript edit. It does not change the frozen gap sentence
+in `AGENTS.md` §2.
+
+> **25 November status:** Gate A is passed and Phase B is current. The P1
+> indicator contract, blocked-demand accounting, conservation ledger and
+> supplementary prior-art search have been updated. Current candidate rankings
+> and the next P1/P3 sequence are in
+> `analysis/P02_novelty_2026-11-25/README.md`; older numbers below are retained
+> for provenance.
 
 ## 1. Where the project stands
 
-We are in **Phase A: finish the gap hunt** — record-level screens are now
-complete (21 November 2026). The last database job, the record-level screen of
+We are in **Phase B: finish P1** — Phase A record-level screens were completed
+on 21 November 2026. The last database job, the record-level screen of
 four Web of Science sets (S4: 6 records, S5: 66, Extra A: 8, Extra C: 13 — 93
 in total), was done on 21 November 2026 by export; zero records retained
 (`analysis/P01/wos_screening_2026-11-21.md`; `paper1/literature_audit.md`).
@@ -30,7 +38,7 @@ numerical claim to have a reproducible script (`AGENTS.md:184-190`;
 
 All values below are synthetic or pipeline-check outputs unless marked otherwise.
 They were regenerated on 21 November 2026 using
-`C:\Users\deshm\miniconda3\envs\drought\python.exe`. Units and provenance are
+`C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe`. Units and provenance are
 part of the number.
 
 | Quantity | Value | Unit | Status and source |
