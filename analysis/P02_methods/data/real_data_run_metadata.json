@@ -96,9 +96,12 @@
     "D:\\Datasets\\Drought_Intelligence_Explorer_v2\\source\\anixn-drought-intelligence-explorer-d0b1573\\data\\drought\\soil_moisture.csv": "a9fa550e53fcd39101302c5368f61635096dc78f3064c6662d10fc6634949f37",
     "D:\\Datasets\\Drought_Intelligence_Explorer_v2\\source\\anixn-drought-intelligence-explorer-d0b1573\\data\\drought\\spi_03.csv": "f7b49cd1ae569d82a20d286d846ffe932198e9ed183ce0675f6a710c86f98a9f",
     "D:\\Datasets\\Drought_Intelligence_Explorer_v2\\source\\anixn-drought-intelligence-explorer-d0b1573\\data\\drought\\spei_03.csv": "3b13e66779030790fc8d9e7613b5e1b4384124a1611ece2321096f41f2e59c39",
-    "D:\\Research\\queuing-lowflow-hydrology\\analysis\\P02_methods\\REAL_DATA_COMPARISON_PROTOCOL.md": "e09bc03d9af415177d78e6496f5beb5a9c942959cb9bce156af8f4a19726e675"
+    "D:\\Research\\queuing-lowflow-hydrology\\analysis\\P02_methods\\REAL_DATA_COMPARISON_PROTOCOL.md": "c9ade316bdd9f52e30f62e4bb99cfb2a2df63c296ac0de1c305de8f627b4f7f0"
   },
   "numpy_version": "2.5.4",
   "pandas_version": "3.1.0",
-  "analysis_interpretation": "retrospective diagnosis; not ahead-of-event forecasting"
+  "scipy_version": "1.18.1",
+  "python_version": "3.12.16",
+  "code_sha256": "77e6d4261475ffac9b6e5fea4d777acecfe2e7ccd8cecc21c9bd0e681ced9bce",
+  "analysis_interpretation": "retrospective diagnosis; not ahead-of-event forecasting; SMA target uses external 1981-2020 climatology and is not strictly held-out"
 }

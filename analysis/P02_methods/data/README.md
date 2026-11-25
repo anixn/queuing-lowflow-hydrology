@@ -24,4 +24,4 @@ Regenerate from the repository root:
 python src/P02/make_comparison_figure.py
 ```
 
-The confirmatory result is null. Queue outputs are **illustrative, under the stated assumptions**; the comparison is retrospective and makes no forecast claim.
+The confirmatory result is null. Queue outputs are **illustrative, under the stated assumptions**; the comparison is retrospective and makes no forecast claim. Supplied SMA and published SPI/SPEI use an external 1981–2020 reference period, so target construction and those benchmarks are not strictly held-out.

@@ -2,7 +2,7 @@
 
 Units are mm/day for rainfall and PET, m3/s for discharge, claims/day for queue
 rates, claims for backlog, and monthly probabilities for the comparison target.
-The primary target is district 3-month soil-moisture anomaly <= -15 percent.
+The primary target is district Soil Moisture Anomaly (SMA) as supplied <= -15 percent.
 Training years are 1981-2010 and held-out years are 2011-2020.
 
 This is retrospective diagnosis. Same-month observed streamflow is allowed;
@@ -28,6 +28,7 @@ from typing import Iterable
 
 import numpy as np
 import pandas as pd
+import scipy
 from scipy.stats import rankdata
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -438,7 +439,7 @@ def aggregate_monthly(daily: pd.DataFrame) -> pd.DataFrame:
 
 def load_district_targets(spec: GaugeSpec,
                           cfg: ComparisonConfig) -> pd.DataFrame:
-    """Load district SPI-3, SPEI-3 and 3-month soil-moisture anomaly."""
+    """Load district SPI-3, SPEI-3 and SMA exactly as supplied by the product."""
     frames: list[pd.DataFrame] = []
     for filename, name in (
         ("spi_03.csv", "spi3"),
@@ -964,11 +965,12 @@ def reliability_table(predictions: pd.DataFrame,
 
 def _event_runs(frame: pd.DataFrame) -> list[dict[str, object]]:
     """Extract consecutive target-positive runs from a sorted monthly frame."""
-    y = frame["y"].astype(int).to_numpy()
+    y = frame["y"].to_numpy()
     rows: list[dict[str, object]] = []
     start: int | None = None
     for position in range(len(frame) + 1):
-        positive = position < len(frame) and y[position] == 1
+        positive = (position < len(frame) and pd.notna(y[position])
+                    and int(y[position]) == 1)
         if positive and start is None:
             start = position
         if not positive and start is not None:
@@ -977,7 +979,9 @@ def _event_runs(frame: pd.DataFrame) -> list[dict[str, object]]:
                 "start": frame.iloc[start]["date"],
                 "end": frame.iloc[end]["date"],
                 "duration_months": int(end - start + 1),
-                "left_censored": bool(start > 0 and y[start - 1] == 1),
+                "left_censored": bool(
+                    start == 0 or (pd.notna(y[start - 1]) and y[start - 1] == 1)
+                ),
                 "right_censored": bool(
                     (end < len(frame) - 1 and y[end + 1] == 1)
                     or end == len(frame) - 1
@@ -1118,6 +1122,8 @@ def _target_audit(features: pd.DataFrame, spec: GaugeSpec) -> list[dict[str, obj
         group = features.loc[features["split"].eq(split)]
         y = group["y_sma"].dropna().astype(int)
         expected_months = 12 * len(TRAIN_YEARS if split == "train" else TEST_YEARS)
+        complete_mask = group[["y_sma", "spi3", "spei3"]].notna().all(axis=1)
+        complete_months = int(complete_mask.sum())
         rows.append({
             "gauge_id": spec.gauge_id,
             "district_id": spec.district_id,
@@ -1126,6 +1132,8 @@ def _target_audit(features: pd.DataFrame, spec: GaugeSpec) -> list[dict[str, obj
             "expected_months": expected_months,
             "months": int(len(group)),
             "excluded_flow_or_incomplete_months": expected_months - int(len(group)),
+            "common_complete_case_months": complete_months,
+            "common_case_excluded_months": int(len(group) - complete_months),
             "missing_target_months": int(group["y_sma"].isna().sum()),
             "event_months": int(y.sum()),
             "event_fraction": float(y.mean()) if len(y) else float("nan"),
@@ -1171,7 +1179,13 @@ def _metadata(config: ComparisonConfig, mode: str,
         "source_sha256": {str(path): _sha256(path) for path in source_paths},
         "numpy_version": np.__version__,
         "pandas_version": pd.__version__,
-        "analysis_interpretation": "retrospective diagnosis; not ahead-of-event forecasting",
+        "scipy_version": scipy.__version__,
+        "python_version": sys.version.split()[0],
+        "code_sha256": _sha256(Path(__file__)),
+        "analysis_interpretation": (
+            "retrospective diagnosis; not ahead-of-event forecasting; "
+            "SMA target uses external 1981-2020 climatology and is not strictly held-out"
+        ),
     }
 
 
@@ -1210,7 +1224,7 @@ def _decision_text(primary: pd.DataFrame) -> str:
     if len(decisions) == 2 and decisions.all():
         return (
             "Both gauges meet the predeclared rule: adding queue probability to "
-            "SSI lowers held-out Brier score for SMA drought at q*=6. This "
+            "SSI lowers nominally held-out Brier score for SMA drought at q*=6. This "
             "supports a pilot association, not forecasting or broad superiority."
         )
     if decisions.any():
@@ -1221,7 +1235,7 @@ def _decision_text(primary: pd.DataFrame) -> str:
         )
     return (
         "Neither gauge meets the predeclared rule: adding queue probability to "
-        "SSI does not lower held-out Brier score for SMA drought at q*=6. The "
+        "SSI does not lower nominally held-out Brier score for SMA drought at q*=6. The "
         "null/negative result is retained; no superiority claim may be made."
     )
 
@@ -1238,14 +1252,17 @@ def write_results_report(metrics: pd.DataFrame, events: pd.DataFrame,
         "# Real-data queue-indicator comparison — results",
         "",
         "Date: 25 November 2026. Generated by `src/P02/real_data_comparison.py` "
-        "from the locked protocol; no test-year tuning was performed.",
+        "from the locked protocol; no test-year tuning was performed. The SMA "
+        "target uses the product's external 1981-2020 climatology, so the "
+        "comparison is retrospectively held-out in model fitting but not "
+        "strictly leakage-free in target construction.",
         "",
         "## Decision",
         "",
         _decision_text(primary),
         "",
         "The confirmatory rule is narrow: at q*=6, SSI+queue must have lower "
-        "held-out Brier score than SSI alone. The two gauges are co-primary and "
+        "nominally held-out Brier score than SSI alone. The two gauges are co-primary and "
         "overall support requires improvement in both. AUC, calibration, q*=4/8 "
         "and published SPI/SPEI comparisons are secondary or exploratory.",
         "",
@@ -1267,7 +1284,7 @@ def write_results_report(metrics: pd.DataFrame, events: pd.DataFrame,
         )
     lines.extend([
         "",
-        "The analysis stops at each gauge's last complete observed month; "
+        "The analysis stops at each gauge's last usable complete month; "
         "trailing incomplete months are excluded rather than extrapolated. "
         "Only interior gaps of at most seven days were linearly interpolated "
         "and flagged day by day; a longer gap ends the usable record. Zero "
@@ -1278,14 +1295,15 @@ def write_results_report(metrics: pd.DataFrame, events: pd.DataFrame,
         "",
         "## Target availability",
         "",
-        "| Gauge | Target | Split | Expected months | Available months | Excluded flow/incomplete | Missing target | Event months | Event fraction | Events |",
-        "|---:|---|---|---:|---:|---:|---:|---:|---:|---:|",
+        "| Gauge | Target | Split | Expected months | Available months | Excluded flow/incomplete | Common complete-case months | Missing target | Event months | Event fraction | Events |",
+        "|---:|---|---|---:|---:|---:|---:|---:|---:|---:|---:|",
     ])
     for _, row in target_audit.iterrows():
         lines.append(
             f"| {int(row['gauge_id'])} | {row['target']} | {row['split']} | "
             f"{int(row['expected_months'])} | {int(row['months'])} | "
             f"{int(row['excluded_flow_or_incomplete_months'])} | "
+            f"{int(row['common_complete_case_months'])} | "
             f"{int(row['missing_target_months'])} | "
             f"{int(row['event_months'])} | {row['event_fraction']:.3f} | "
             f"{int(row['n_events'])} |"
@@ -1293,7 +1311,7 @@ def write_results_report(metrics: pd.DataFrame, events: pd.DataFrame,
 
     lines.extend([
         "",
-        "## Primary held-out results: SMA drought, q*=6",
+        "## Primary nominally held-out results: SMA drought, q*=6",
         "",
         "| Gauge | Model | Brier | Brier skill | AUC | Log loss | Cal. intercept | Cal. slope | Event-month mean p |",
         "|---:|---|---:|---:|---:|---:|---:|---:|---:|",
@@ -1313,12 +1331,13 @@ def write_results_report(metrics: pd.DataFrame, events: pd.DataFrame,
         "Calibration intercept/slope are descriptive held-out diagnostics; ideal "
         "values are 0 and 1. Predictions were not recalibrated.",
         "",
-        "![Figure 1. Held-out Brier skill and reliability for the primary comparison.](figures/real_data_comparison.png)",
+        "![Figure 1. Observed SMA, model-predicted probabilities, Brier skill and reliability.](figures/real_data_comparison.png)",
         "",
-        "*Figure 1. Queue alone has small Brier skill over climatology, while "
-        "adding queue to SSI does not improve the primary metric. SPI/SPEI are "
-        "external, non-strict benchmarks. The comparison is retrospective, not "
-        "a forecast.*",
+        "*Figure 1. Observed SMA, uncalibrated model-predicted probabilities, "
+        "Brier skill and reliability. Queue alone has small Brier skill over "
+        "climatology, while adding queue to SSI does not improve the primary "
+        "metric. Product SMA/SPI/SPEI use an external 1981-2020 reference; the "
+        "comparison is retrospective and not strictly leakage-free.*",
         "",
         "## Incremental decision",
         "",
@@ -1376,8 +1395,8 @@ def write_results_report(metrics: pd.DataFrame, events: pd.DataFrame,
         "",
         "## Missing-flow sensitivity: SSI+queue, q*=6",
         "",
-        "| Gauge | Sensitivity | Fill | Test n | Brier | ΔBrier vs SSI | Lower Brier than SSI |",
-        "|---:|---|---|---:|---:|---:|---|",
+        "| Gauge | Sensitivity | Fill | Test n | Event months | Prevalence | Brier | ΔBrier vs SSI | Lower Brier than SSI |",
+        "|---:|---|---|---:|---:|---:|---:|---:|---|",
     ])
     sensitivity_combined = sensitivity.loc[
         sensitivity["model"].eq("ssi3_plus_queue")
@@ -1386,6 +1405,7 @@ def write_results_report(metrics: pd.DataFrame, events: pd.DataFrame,
         lines.append(
             f"| {int(row['gauge_id'])} | {row['sensitivity']} | "
             f"{row['flow_imputation_method']} | {int(row['n'])} | "
+            f"{int(row['event_months'])} | {_format_metric(row['prevalence'])} | "
             f"{_format_metric(row['brier'])} | "
             f"{_format_metric(row['delta_brier_vs_ssi3'])} | "
             f"{'yes' if bool(row['queue_adds_information']) else 'no'} |"
@@ -1393,17 +1413,25 @@ def write_results_report(metrics: pd.DataFrame, events: pd.DataFrame,
 
     lines.extend([
         "",
-        "## External SPI/SPEI benchmark status",
+        "Absolute Brier scores in the imputation-exclusion rows are not directly "
+        "comparable with the full sample because gauge 4064 loses one drought "
+        "month; the paired SSI+queue versus SSI difference remains the relevant "
+        "sensitivity check.",
         "",
-        "The published district SPI-3 and SPEI-3 use a 1981-2020 reference "
-        "period that overlaps the held-out years. Raw CHIRPS/ERA5 inputs are not "
-        "available locally, so these models are external, non-strict benchmarks. "
-        "They do not determine the confirmatory decision.",
+        "## External product reference periods",
+        "",
+        "The supplied SMA target and published district SPI-3/SPEI-3 use the "
+        "product's 1981-2020 reference period, which overlaps the nominal test "
+        "years. No test labels enter model fitting, but the target transformation "
+        "itself is not strictly held-out. Raw soil-moisture/CHIRPS/ERA5 inputs "
+        "needed to rebuild 1981-2010 climatologies are not available locally. "
+        "SMA is therefore an external, non-strict target and SPI/SPEI are "
+        "external, non-strict benchmarks; none determines the confirmatory rule.",
         "",
         "## Event timing",
         "",
-        "The retrospective onset offset is the first calibrated queue probability "
-        ">0.5 within six months before/on observed SMA onset, using held-out "
+        "The retrospective onset offset is the first uncalibrated SSI+queue "
+        "predicted probability >0.5 within six months before/on observed SMA onset, using held-out "
         "predictions only. Zero means concurrent threshold exceedance. This is "
         "**not forecast lead time**.",
         "",
@@ -1434,7 +1462,8 @@ def write_results_report(metrics: pd.DataFrame, events: pd.DataFrame,
         "- Same-month observed flow makes this retrospective diagnosis only.",
         "- SSI and queue share observed flow; any gain may reflect richer flow "
         "information rather than queue-state information specifically.",
-        "- Published SPI/SPEI have a non-strict 1981-2020 reference period.",
+        "- Supplied SMA and published SPI/SPEI use a non-strict external "
+        "1981-2020 reference period; target construction is not strictly held-out.",
         "- Two gauges are a pilot. No population-general significance is claimed.",
         "- Soil moisture is a land-state target, not a direct crop-loss measure.",
         "- Zero-flow semantics and station regulation remain unresolved.",
@@ -1492,6 +1521,13 @@ def run_pipeline(config: ComparisonConfig = ComparisonConfig()) -> dict[str, obj
             parameter_parts.append(parameters)
     predictions = pd.concat(prediction_parts, ignore_index=True)
     parameters = pd.concat(parameter_parts, ignore_index=True)
+    convergence = parameters.loc[
+        parameters["parameter_type"].eq("fit_diagnostic")
+        & parameters["term"].eq("converged"),
+        "value",
+    ]
+    if convergence.empty or not np.allclose(convergence.to_numpy(dtype=float), 1.0):
+        raise FloatingPointError("one or more logistic fits did not converge")
     metrics = compute_metrics(predictions)
     reliability = reliability_table(predictions, config)
     events = event_table(predictions, feature_frame, config)

@@ -41,14 +41,14 @@ The default source paths are recorded in `ComparisonConfig`. Use `--camels-root`
 
 ## Locked comparison design
 
-- Target: district 3-month soil-moisture anomaly ≤ −15%.
-- Training: 1981–2010.
+- Target: district SMA as supplied ≤ −15%; the product's external 1981–2020 climatology overlaps the test years, so target construction is not strictly held-out.
+- Training: 1981–2010; 358 common complete cases because January–February 1981 lack SPI/SPEI.
 - Nominal test: 2011–2020; actual usable test is 98 complete months per gauge (2011–2018 plus January–February 2019).
 - Gauge 4026 has a 611-day interior discharge gap; gaps longer than seven days are not interpolated.
 - Confirmatory comparison: SSI+queue versus SSI alone at q*=6, using Brier score.
 - Both gauges are co-primary; overall support requires improvement in both.
 - q*=4/8, AUC, calibration, event timing and missing-flow checks are secondary/exploratory.
-- Published SPI/SPEI use a 1981–2020 reference period and are external, non-strict benchmarks.
+- Supplied SMA and published SPI/SPEI use a 1981–2020 reference period and are external, non-strict; model probabilities are uncalibrated outputs.
 - Same-month observed flow makes this retrospective diagnosis, not forecasting.
 
 ## Primary observed result

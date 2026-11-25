@@ -1,6 +1,6 @@
 # P02 methods analysis
 
-**Current status:** the first predeclared two-gauge retrospective comparison is complete. The confirmatory result is null: adding queue probability to SSI did not improve held-out Brier score in either gauge. Broader methods work awaits author sign-off.
+**Current status:** the first predeclared two-gauge retrospective comparison is complete. The confirmatory result is null: adding queue probability to SSI did not improve nominally held-out Brier score in either gauge. The supplied SMA target uses an external 1981–2020 climatology, so target construction is not strictly leakage-free. Broader methods work awaits author sign-off.
 
 ## Completed first-cycle artifacts
 

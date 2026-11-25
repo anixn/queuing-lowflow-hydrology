@@ -1,23 +1,25 @@
 # Queueing–Drought Junction
 
-Two active papers read drought and low-flow behaviour as a queueing process:
+The recommended product is **one merged HESS-style methods and negative-result paper**. It asks whether a finite-capacity unmet-demand queue adds drought information beyond climatology, SPI, SPEI and SSI, using exact verification and an actual-data comparison.
 
-- **P01 — perspective paper** for *Water Resources Research*: why the queue view belongs in drought science, what the prior art is, and which tests would make the programme credible.
-- **P02 — methods paper** for *Hydrology and Earth System Sciences*: estimate non-stationary demand/service rates, validate the queue against exact references, and test incremental drought information on held-out data.
+- `P01/` retains the perspective, literature audit and frozen novelty evidence.
+- `P02/` retains the methods, real-data pipeline and generated results.
 
-P01 comes first. P02 starts only after Gate B.
+The first actual-data test returned a null; the paper must not claim queue-indicator superiority.
 
 ## Start here
 
-1. `START_HERE.md` — plain-language orientation and current phase.
-2. `AGENTS.md` — operating rules, frozen novelty sentence and verification protocol.
-3. `docs/project/RESEARCH_PROTOCOL.md` — gates, objectives and analysis plan.
-4. `P01/README.md` and `P02/README.md` — paper-package contents and run commands.
+1. `PLAN_SUMMARY.md` — root-level plain-language plan, actual result and next actions.
+2. `START_HERE.md` — plain-language orientation and current phase.
+3. `AGENTS.md` — operating rules, frozen novelty sentence and verification protocol.
+4. `docs/project/RESEARCH_PROTOCOL.md` — gates, objectives and analysis plan.
+5. `P01/README.md` and `P02/README.md` — paper-package contents and run commands.
 
 ## Repository map
 
 | Path | Purpose |
 |---|---|
+| `PLAN_SUMMARY.md` | Root-level plain-language plan, actual result, limitations and next actions |
 | `P01/` | Current P01 manuscript, literature audit, search protocol and technical notes |
 | `P02/` | P02 methods package, R pipeline and generated data |
 | `src/shared/` | Queueing engine shared by both papers |

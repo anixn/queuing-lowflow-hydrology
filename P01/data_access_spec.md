@@ -71,6 +71,10 @@ changing one line in `P02/R/01_build_rates.R`.
   the usable record; both gauges therefore end on 28 February 2019.
 - The nominal 2011–2020 test window yields 98 complete months per gauge
   (2011–2018 plus January–February 2019). No trailing flow is extrapolated.
+- Drought Intelligence Explorer supplies SMA, SPI and SPEI standardized with an
+  external 1981–2020 reference period. That period overlaps the nominal test
+  years, so the SMA target and SPI/SPEI benchmarks are not strictly held-out.
+  Raw inputs needed to rebuild a 1981–2010 target climatology are not local.
 - No crop-area or canal-command records were found. Crop water requirement in
   the R script therefore uses a **district-level proxy** of 45,000 ha and a generic Kc curve;
   it is a pipeline demonstration, not a calibrated irrigation demand.

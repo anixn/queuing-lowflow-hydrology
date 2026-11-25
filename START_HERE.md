@@ -1,7 +1,7 @@
 # START HERE — what I did, what we are doing, and which file to open
 
 Prepared 21 November 2026. Plain language; no statistics training needed.
-Read this file first, then follow the reading order in section 6.
+Read `PLAN_SUMMARY.md` first for the root-level plan, then follow the reading order in section 6.
 
 ---
 
@@ -121,14 +121,15 @@ frozen dated copy lives in `AGENTS.md` §2.
 
 | Order | File | What it gives you |
 |---|---|---|
-| 1 | **`START_HERE.md`** (this file) | The whole situation in plain language |
-| 2 | `docs/novelty/NOVELTY_AND_PLAN_REPORT.md` | The full idea, the novelty verdict and every planned step, in order. Sections 3–6 are the literature hunt; section 4 is the work plan |
-| 3 | `P01/P01_draft_v2.md` | The actual P01 manuscript — sections 2, 5, 6 and 7 matter most |
-| 4 | `P01/literature_audit.md` | The evidence trail: which queries were run, which papers were found, which claims were rejected |
-| 5 | `P01/search_protocol.md` | The exact search strings and the run log with dates and hit counts |
-| 6 | `P01/data_access_spec.md` | What data is actually on disk, and the revisable convention in §1 |
-| 7 | `P01/README.md`, `P02/README.md` | File lists, run commands and the verified numbers for each package |
-| 8 | `P01/queueing_howto.md` | The technical mapping and the guardrails, if you want the equations |
+| 1 | **`PLAN_SUMMARY.md`** | One-page plan, actual result, limitations and next actions |
+| 2 | **`START_HERE.md`** (this file) | The whole situation in plain language |
+| 3 | `docs/novelty/NOVELTY_AND_PLAN_REPORT.md` | The full idea, the novelty verdict and every planned step, in order. Sections 3–6 are the literature hunt; section 4 is the work plan |
+| 4 | `P01/P01_draft_v2.md` | The actual P01 manuscript — sections 2, 5, 6 and 7 matter most |
+| 5 | `P01/literature_audit.md` | The evidence trail: which queries were run, which papers were found, which claims were rejected |
+| 6 | `P01/search_protocol.md` | The exact search strings and the run log with dates and hit counts |
+| 7 | `P01/data_access_spec.md` | What data is actually on disk, and the revisable convention in §1 |
+| 8 | `P01/README.md`, `P02/README.md` | File lists, run commands and the verified numbers for each package |
+| 9 | `P01/queueing_howto.md` | The technical mapping and the guardrails, if you want the equations |
 
 ## 7. What we are doing right now
 
@@ -141,8 +142,10 @@ changing that sentence.
 The reproducible P01 figures and WRR package drafts are complete. The technical
 Gate B checklist passes (`P01/GATE_B_CHECKLIST.md`). On the author's instruction,
 the first real-data comparison is also complete: adding queue probability to SSI
-did not improve held-out Brier score in either gauge
-(`analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`). The merged paper must
+did not improve nominally held-out Brier score in either gauge
+(`analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`). The supplied SMA target
+uses an external 1981–2020 climatology, so target construction is not strictly
+leakage-free. The merged paper must
 therefore be a methods and negative-result evaluation, not a superiority claim.
 The single next action is author review of that result and the reframed
 single-paper strategy in `docs/project/MERGED_PAPER_PLAN.md`.

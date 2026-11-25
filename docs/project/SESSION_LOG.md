@@ -1,5 +1,21 @@
 # Session log
 
+## 25 November 2026 — actual-data figure, root plan summary and audit disclosures
+
+I replaced the comparison figure with a six-panel observed-data view: SMA target,
+uncalibrated model-predicted probabilities with drought months shaded, Brier
+skill and reliability for both gauges. I added `PLAN_SUMMARY.md` at the repository
+root with the objective, exact frozen gap, data, method, null result, one-paper
+plan, limitations and next actions.
+
+An independent audit found no solver or metric error. I closed its disclosure
+issues: the supplied SMA target uses an external 1981-2020 climatology and is not
+strictly held-out; probabilities are labelled uncalibrated; training accounting
+now distinguishes 360 available from 358 common complete months; bootstrap seeds
+are documented; imputation sensitivity reports event prevalence; event edge
+cases are tested; and run metadata records Python/SciPy versions and a code hash.
+The primary null is unchanged. The full suite passes 42/42.
+
 ## 25 November 2026 — real-data comparison and merged-paper reframing
 
 I implemented the predeclared two-gauge retrospective comparison in

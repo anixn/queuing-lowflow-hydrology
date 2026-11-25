@@ -307,6 +307,17 @@ def test_event_runs_and_censoring():
     assert np.isclose(events[0]["severity"], 30.0)
     assert events[1]["right_censored"]
 
+    boundary = pd.DataFrame({
+        "date": pd.date_range("2011-01-01", periods=4, freq="MS"),
+        "y": [1.0, 1.0, np.nan, 1.0],
+        "target_value": [-20.0, -10.0, np.nan, -16.0],
+    })
+    boundary_events = _event_runs(boundary)
+    assert len(boundary_events) == 2
+    assert boundary_events[0]["left_censored"]
+    assert boundary_events[0]["duration_months"] == 2
+    assert not boundary_events[1]["left_censored"]
+
 
 def test_reliability_bins_are_fixed():
     predictions = pd.DataFrame({

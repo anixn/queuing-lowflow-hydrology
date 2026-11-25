@@ -202,8 +202,9 @@ The technical Gate B checklist passes (`P01/GATE_B_CHECKLIST.md`): mapping,
 prior art, script-backed numbers, reproducible figures and WRR package drafts
 are complete. On the author's instruction, the predeclared real-data comparison
 is also complete (`analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`).
-It found no held-out Brier improvement from adding queue probability to SSI in
-either gauge. The merged paper must therefore be framed as a methods and
+It found no nominally held-out Brier improvement from adding queue probability
+to SSI in either gauge. The supplied SMA target uses an external 1981-2020
+climatology, so target construction is not strictly leakage-free. The merged paper must therefore be framed as a methods and
 negative-result evaluation, not a superiority claim. Author sign-off remains on
 submission metadata, archive links, recovery/μ definitions, disclosed
 literature limitations and this merged-paper reframing.
