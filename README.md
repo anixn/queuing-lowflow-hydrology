@@ -40,17 +40,18 @@ Use the existing `drought` Conda environment:
 python tests/test_queue_core.py
 python tests/test_nonstationary_bench.py
 python tests/test_rate_estimators.py
+python tests/test_real_data_comparison.py
 ```
 
-All **25 tests** should pass. The exact interpreter path is recorded in `START_HERE.md` §8.
+All **42 tests** should pass. The exact interpreter path is recorded in `START_HERE.md` §8.
 
 ## Current status
 
 - **Phase A complete:** 142 WoS and 295 Scopus records screened; citation traces complete; the 21 November 2026 gap sentence is frozen.
-- **Phase B current:** finish P01 figures, language pass and WRR package.
+- **Phase B current:** P01 technical Gate B passes; author sign-off is pending.
 - **Claim convention revised:** 45,000 ha district canal-irrigated proxy; 9×10⁶ m³ per 20 mm claim; 30-case scale envelope checked.
-- **P02 design protocol ready:** model stack, data requirements and CAMELS-IND-Proj future route documented in `analysis/P02_methods/`.
-- **P01 Gate B technical pass:** figures, WRR drafts, provenance and count validator complete; author sign-off pending in `P01/GATE_B_CHECKLIST.md`.
-- **Phase C not started:** P02 implementation begins only after Gate B sign-off.
+- **First real-data comparison complete:** queue+SSI did not improve held-out Brier score in either pilot gauge; the null is retained in `analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`.
+- **Merged-paper strategy updated:** one HESS-style methods/negative-result paper, with a results-backed title and abstract in `docs/project/MERGED_PAPER_PLAN.md`.
+- **Broader Phase C not started:** more gauges/events, measured demand, strict SPI/SPEI and future μ remain gated on author sign-off.
 
 See `docs/project/SESSION_LOG.md` for the session-by-session record.

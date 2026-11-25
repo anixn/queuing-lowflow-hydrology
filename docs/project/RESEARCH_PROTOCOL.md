@@ -48,8 +48,9 @@ The order of gates is fixed:
 3. **Gate C:** P02 ready — estimator beats climatology on held-out data, or an
    honest null result is written (`AGENTS.md` §8).
 
-P02 analysis is prepared here but is not started before Gate B
-(`AGENTS.md` §§1, 8).
+P01's technical Gate B passes. On the author's instruction, the first P02
+real-data pilot is complete and its null result is written; broader P02 work
+still awaits author sign-off (`AGENTS.md` §§1, 8).
 
 ## 2. P01 — key objective
 
@@ -184,8 +185,8 @@ splits (`P01/queueing_howto.md` §6).
 ## 6. Shared operating rules
 
 1. Run the full test suite after every change and before reporting
-   (`AGENTS.md` §4). On 25 November 2026 all 25 tests passed with the existing
-   `drought` environment (12 shared/P01, 6 benchmark, 7 estimator).
+   (`AGENTS.md` §4). On 25 November 2026 all 42 tests passed with the existing
+   `drought` environment (12 shared/P01, 6 benchmark, 7 estimator, 17 real-data comparison).
 2. Keep three-way agreement between exact solution, RK4 and DES
    (`AGENTS.md:87-91`).
 3. Every manuscript number has a named script (`AGENTS.md:92-94`).
@@ -199,7 +200,7 @@ splits (`P01/queueing_howto.md` §6).
 
 Gate A passed on 21 November 2026. The WoS/Scopus screens and database citation traces are complete, and the gap sentence is frozen in `AGENTS.md` §2. The 25 November supplementary search and P01 indicator-contract revisions are complete.
 
-**Phase B (finish P01) is current.** The reproducible figures and WRR package drafts are complete, and `P01/GATE_B_CHECKLIST.md` records a technical Gate B pass. Exact next action: author sign-off on submission metadata, archive links, recovery/μ definitions and disclosed literature limitations. The ordered plan is in `docs/novelty/NOVELTY_AND_PLAN_REPORT.md`.
+**Phase B (finish P01 and test the merged-paper claim) is current.** The reproducible figures and WRR package drafts are complete, and `P01/GATE_B_CHECKLIST.md` records a technical Gate B pass. The first predeclared real-data comparison is also complete and found no held-out Brier improvement from adding queue probability to SSI in either gauge (`analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`). Exact next action: author sign-off on submission metadata, archive links, recovery/μ definitions, disclosed literature limitations and the negative-result merged-paper strategy in `docs/project/MERGED_PAPER_PLAN.md`.
 
 ## 8. Analysis workspace
 

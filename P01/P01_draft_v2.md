@@ -8,6 +8,11 @@
 > assumptions** (`src/shared/queue_core.py`), not observational findings.
 > The technical Gate B checklist passes (`GATE_B_CHECKLIST.md`); author
 > sign-off on submission metadata and definitions remains pending.
+> The first real-data comparison later found no incremental held-out Brier
+> improvement from queue+SSI (`../analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`).
+> This perspective is therefore source material for the merged methods and
+> negative-result paper in `../docs/project/MERGED_PAPER_PLAN.md`, not standalone
+> empirical support for queue-indicator superiority.
 
 ---
 

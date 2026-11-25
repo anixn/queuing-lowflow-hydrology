@@ -1,0 +1,5 @@
+gauge_id,district_id,target,split,expected_months,months,excluded_flow_or_incomplete_months,missing_target_months,event_months,event_fraction,n_events,provenance
+4026,maharashtra-sangli,sma,train,360,360,0,0,29,0.08055555556,22,src/P02/real_data_comparison.py; analysis/P02_methods/REAL_DATA_COMPARISON_PROTOCOL.md; 2026-11-25
+4026,maharashtra-sangli,sma,test,120,98,22,0,4,0.04081632653,3,src/P02/real_data_comparison.py; analysis/P02_methods/REAL_DATA_COMPARISON_PROTOCOL.md; 2026-11-25
+4064,karnataka-yadgir,sma,train,360,360,0,0,20,0.05555555556,15,src/P02/real_data_comparison.py; analysis/P02_methods/REAL_DATA_COMPARISON_PROTOCOL.md; 2026-11-25
+4064,karnataka-yadgir,sma,test,120,98,22,0,4,0.04081632653,3,src/P02/real_data_comparison.py; analysis/P02_methods/REAL_DATA_COMPARISON_PROTOCOL.md; 2026-11-25

@@ -1,5 +1,31 @@
 # Session log
 
+## 25 November 2026 — real-data comparison and merged-paper reframing
+
+I implemented the predeclared two-gauge retrospective comparison in
+`src/P02/real_data_comparison.py`, with 17 new tests, training-only SSI/logistic
+fitting, calendar-month effects, a seven-day streamflow-gap cap, year-block
+bootstrap, q*=4/6/8 and missing-flow sensitivities. The source audit found a
+611-day interior gap at gauge 4026 and a 661-day trailing gap at 4064, so both
+usable records end on 28 February 2019. Each gauge contributes 360 training
+months and 98 held-out months, with four held-out SMA-drought months.
+
+The confirmatory result is null: SSI+queue Brier is 0.041279 versus 0.041008 for
+SSI at 4026, and 0.044836 versus 0.044246 at 4064. Adding queue therefore worsens
+Brier by 0.000271 and 0.000590, respectively; AUC also declines. Queue alone has
+small Brier skill over climatology (0.0347 and 0.0320), while external SPEI-3 is
+better (0.029799 and 0.033204). Every q* and missing-flow sensitivity preserves
+the no-improvement result. Sources: `analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`
+and `analysis/P02_methods/data/real_data_comparison_metrics.csv`.
+
+I retained the negative result, generated the comparison figure, and reframed
+the single paper as a methods/negative-result evaluation with a results-backed
+title and abstract in `docs/project/MERGED_PAPER_PLAN.md`. I also documented the
+CAMELS zero/regulation unknowns and the actual data coverage in
+`P01/data_access_spec.md`. The full suite passes 42/42. The next action is author
+review of the null result and merged-paper strategy; broader multi-gauge and
+measured-demand work remains blocked on that sign-off.
+
 ## 25 November 2026 — P01 Gate B technical pass
 
 I ran the P01 Gate B audit and closed the agent-fixable items. Three reproducible

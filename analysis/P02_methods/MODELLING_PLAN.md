@@ -1,12 +1,12 @@
 # P02 modelling plan — design protocol, not final analysis
 
-Date: 25 November 2026. Status: **design/preparation only**. P02 implementation starts after P01 reaches Gate B.
+Date: 25 November 2026. Status: **broader design plan; first retrospective pilot complete**. The locked comparison and null result are in `REAL_DATA_COMPARISON_PROTOCOL.md` and `REAL_DATA_COMPARISON_RESULTS.md`. Broader P02 implementation awaits author sign-off.
 
 ## 1. Scientific target
 
 Estimate a non-stationary finite-capacity drought queue from hydroclimatic data, test whether its states and parameters are identifiable, and evaluate whether queue indicators add information beyond climatology, SPI/SPEI/SSI and storage-based baselines on held-out years, basins and drought events.
 
-The primary prediction product is an event-level probability:
+The eventual forecasting product is an event-level probability. The completed first pilot is narrower: same-month retrospective diagnosis, not an ahead-of-event forecast.
 
 \[
 \Pr(Q(t)\ge q^* \mid \text{information available at forecast issue time}).

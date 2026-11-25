@@ -56,6 +56,6 @@ The queue–storage lineage begins with Langbein (1958). Hydrological queueing a
 
 The technical Gate B checklist passes: `GATE_B_CHECKLIST.md`. Figures, the 219-word abstract, cover letter, code/data statement, numerical provenance and literature-count validator are complete.
 
-Author sign-off is still required for the final title/abstract/keywords, corresponding-author details and declarations, public repository/archive/licence, the backlog-clearance recovery definition, the aggregate μ convention and acceptance of the disclosed literature limitations.
+Author sign-off is still required for the final title/abstract/keywords, corresponding-author details and declarations, public repository/archive/licence, the backlog-clearance recovery definition, the aggregate μ convention, acceptance of the disclosed literature limitations and the merged-paper negative-result reframing in `../docs/project/MERGED_PAPER_PLAN.md`.
 
-P02 implementation remains gated by that author sign-off; see `../P02/README.md`.
+The first real-data P02 pilot is complete and found no incremental Brier improvement from queue+SSI. Broader P02 implementation remains gated by author sign-off; see `../P02/README.md` and `../analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`.

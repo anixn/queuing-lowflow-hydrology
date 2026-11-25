@@ -90,8 +90,9 @@ An agent must never:
    python tests/test_queue_core.py          # 12 tests
    python tests/test_nonstationary_bench.py # 6 tests
    python tests/test_rate_estimators.py     # 7 tests
+   python tests/test_real_data_comparison.py # 17 tests
    ```
-   All 25 must pass. Any new feature ships with a new test.
+   All 42 must pass. Any new feature ships with a new test.
 2. **Keep the three-way agreement.** Any change to the solver must preserve
    agreement between (a) the exact product-form stationary solution,
    (b) the RK4 numerical solution, and (c) the Gillespie/thinning discrete-event
@@ -196,22 +197,27 @@ is empty by definition.
 keep/drop reason — **both met; Gate A passed. Phase B (finish P01) is the
 current phase.**
 
-**Phase B — finish P01.**
+**Phase B — finish P01 and test the merged-paper claim.**
 The technical Gate B checklist passes (`P01/GATE_B_CHECKLIST.md`): mapping,
 prior art, script-backed numbers, reproducible figures and WRR package drafts
-are complete. Author sign-off remains on submission metadata, archive links,
-recovery/μ definitions and disclosed literature limitations.
-*Done when:* gap sentence frozen, all prior art cited, every number
-regenerable, and the author signs the Gate B checklist.
+are complete. On the author's instruction, the predeclared real-data comparison
+is also complete (`analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`).
+It found no held-out Brier improvement from adding queue probability to SSI in
+either gauge. The merged paper must therefore be framed as a methods and
+negative-result evaluation, not a superiority claim. Author sign-off remains on
+submission metadata, archive links, recovery/μ definitions, disclosed
+literature limitations and this merged-paper reframing.
+*Done when:* the author signs the Gate B checklist and accepts the
+results-backed merged-paper strategy in `docs/project/MERGED_PAPER_PLAN.md`.
 
-**Phase C — build P02 (starts only after Gate B sign-off).**
-Ordered: fix mu-error near rho~1; Floquet convergence study; MMPP sweep;
-multi-gauge R pipeline (add 4064 Yadgir); resolve zero-flow semantics;
-replace-or-envelope the claim convention; CAMELS-IND-Proj provenance/historical
-validation and conditional future mu(t); pre-registered held-out validation; uncertainty propagation;
-ablation vs SPI/SSI; then write.
-*Done when:* estimator beats climatology on held-out data, or an honest
-null is written.
+**Phase C — broader P02 methods programme (starts only after sign-off).**
+The first real-data pilot is complete. Remaining ordered work: fix mu-error near
+rho~1; Floquet convergence study; MMPP sweep; multi-gauge expansion; resolve
+zero-flow semantics; replace-or-envelope the claim convention; CAMELS-IND-Proj
+provenance/historical validation and conditional future mu(t); uncertainty
+propagation; strict training-only SPI/SPEI; then write.
+*Done when:* a stronger multi-gauge test beats climatology on held-out data,
+or an honest null is written.
 
 **Phase D — hygiene, continuous:** tests green; repository structure and naming
 kept consistent; reproducibility page per paper.
@@ -222,12 +228,12 @@ Start of session:
 
 1. Read `START_HERE.md` §7 and this file's §8; state the current phase and
    the single next action.
-2. Run the full 25-test suite; report pass/fail.
+2. Run the full 42-test suite; report pass/fail.
 3. State which numbers you will trust today and where they live.
 
 End of session:
 
-4. Re-run the full 25-test suite; list any new test added.
+4. Re-run the full 42-test suite; list any new test added.
 5. Update the audit/spec/README files that changed; one paragraph of
    plain-language "what changed and why" in the session log.
 6. Report: what moved (numbers with units + sources), what is blocked, the

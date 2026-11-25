@@ -9,7 +9,7 @@ The queueing engine, reproducible demonstrations, sensitivity analyses and accep
 - `src/P01/claim_scale_envelope.py` — 30-case claim-scale and physical-invariance checks.
 - `src/P01/figure_data.py` and `src/P01/make_figures.py` — script-backed manuscript figures.
 - `src/P01/validate_literature_counts.py` — read-only validator for the quoted WoS/Scopus and citation-trace totals.
-- `tests/` — 25 acceptance tests covering solver agreement, blocked demand, conservation, claim-scale invariance, figure-data anchors, literature counts, benchmarks and estimators.
+- `tests/` — 42 acceptance tests covering solver agreement, blocked demand, conservation, claim-scale invariance, figure-data anchors, literature counts, benchmarks, estimators and the real-data comparison pipeline.
 
 From the repository root:
 
@@ -17,13 +17,14 @@ From the repository root:
 python tests/test_queue_core.py
 python tests/test_nonstationary_bench.py
 python tests/test_rate_estimators.py
+python tests/test_real_data_comparison.py
 python src/P01/box1_sensitivity.py
 python src/P01/claim_scale_envelope.py
 python src/P01/make_figures.py
 python src/P01/validate_literature_counts.py
 ```
 
-**Action required before submission:** replace this statement with the final public repository URL, archived release/DOI and software licence.
+**Action required before submission:** replace this statement with the final public repository URL, archived release/DOI and software licence. If the merged methods paper proceeds, replace this P01-only statement with one that also cites CAMELS-IND, Drought Intelligence Explorer and the generated real-data comparison outputs.
 
 ## Data availability
 

@@ -1,5 +1,7 @@
 # Cover letter — draft for author review
 
+> **Merged-paper note (25 November 2026):** the first real-data comparison returned a null/negative result. This WRR perspective draft is retained as source material; the recommended submission is the single HESS-style methods/negative-result paper in `../../docs/project/MERGED_PAPER_PLAN.md`.
+
 Dear Editor-in-Chief,
 
 We submit our perspective, “Dams, queues and droughts: reclaiming storage theory for deficit-accumulation drought science,” for consideration by *Water Resources Research*.

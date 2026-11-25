@@ -280,37 +280,39 @@ Everything below is in the order I intend to do it. Each phase ends with a decis
 7. **Claim-volume convention — REVISED 25 November 2026.** One claim = 9×10⁶ m³ = 20 mm over a 45,000 ha Sangli canal-irrigated proxy; K = 20 claims = 400 mm; service cap 3 claims/day = 60 mm/day. The area is documented district evidence, not a gauge-specific measurement. Source and envelope: `analysis/claim_convention_2026-11-25/`.
 8. **Tighten the mapping section — DONE 25 November 2026.** P01 §2 now separates physical storage capacity from backlog tolerance and couples storage/backlog through the served-water flux and conservation ledger.
 9. **Expand prior art — DONE 25 November 2026.** P01 now includes Yang et al. (2016), Jones et al. (2016), Jones (2019), Acosta et al. (2026) and Zhao et al. (2018), and states that variable/correlated queueing and ML-for-queues are mature.
-10. **Strengthen non-stationarity — DONE 25 November 2026.** Box 1 now has corrected units, one-year spin-up, Floquet verification, conservation residual and a 44-case sensitivity grid. The direction of the averaging effect persists across the declared grid; real-basin evidence remains outstanding.
+10. **Strengthen non-stationarity — DONE 25 November 2026.** Box 1 now has corrected units, one-year spin-up, Floquet verification, conservation residual and a 44-case sensitivity grid. The direction of the averaging effect persists across the declared grid. The first real-basin comparison is also complete and found no incremental held-out Brier improvement from queue+SSI.
 11. **Write a falsifiable programme — DONE 25 November 2026.** P01 §5 now begins with an identification gate and a table of metrics, baselines, held-out units and null clauses.
 12. **Add guardrails — DONE 25 November 2026.** P01 §6 now includes assumptions, conservation, dependence, uncertainty, raw-CMIP6 and null/non-identifiability rules.
 13. **Build the figures/tables — DONE 25 November 2026.** Three reproducible PNG/SVG figures and five numbered tables are embedded in P01; generation scripts and captions are in `P01/figures/`.
 14. **Internal read-through for novelty language — DONE 25 November 2026.** The draft uses the exact frozen sentence and avoids prohibited priority language.
 15. **Prepare the WRR submission package — DONE AS DRAFT 25 November 2026.** The 219-word abstract, cover letter and code/data statement are in `P01/submission/`.
 
-**Gate B:** the technical checklist passes (`P01/GATE_B_CHECKLIST.md`). Author sign-off remains on submission metadata, archive links, recovery/μ definitions and disclosed literature limitations. Then P02 starts.
+**Gate B:** the technical checklist passes (`P01/GATE_B_CHECKLIST.md`). Author sign-off remains on submission metadata, archive links, recovery/μ definitions, disclosed literature limitations and the negative-result merged-paper strategy in `docs/project/MERGED_PAPER_PLAN.md`.
 
-### Phase C — Build and test P02
+### Phase C — Broader P02 methods programme
+
+The first two-gauge retrospective pilot is complete. Its confirmatory result is null and must not be rewritten as a superiority finding.
 
 16. **Fix the μ-estimation weakness near ρ ≈ 1.** This is the known dominant error in the current estimator. Try monotone constraints, better features, and calibration; report what works.
 16a. **Correct the P02 indicator contract and evaluation plumbing.** Fix R/Python unit labels, blocked-demand parity, server accounting, spin-up, mass-calibration leakage and adaptive stability; add golden tests.
 16b. **Implement time-varying recovery distributions and identification experiments.** Validate recovery probabilities against exact/DES references, then test parameter separation with independent storage or impact observations. Report robust indicators if full identification fails.
 17. **Do the formal Floquet convergence study** — how fine the time discretisation must be for the periodic reference solution to be trusted.
 18. **Do the MMPP parameter sweep** — the current 1.16× burstiness amplification is a single parameter setting and must be tested across regimes before any general statement.
-19. **Convert the R pilots into a multi-gauge pipeline.** Keep the linear style the user prefers: BLOCK 1 settings at the top, then blocks run top to bottom, no hidden functions, no package dependencies beyond base R. Add gauge 4064 Yadgir as the second gauge.
+19. **Expand the multi-gauge pipeline.** The first Python pilot covers gauges 4026 and 4064 and is complete. A broader R/streamlined multi-gauge workflow remains future work; keep BLOCK 1 settings at the top and blocks linear.
 20. **Resolve the zero-flow question** for gauge 4026: are the 9,710 zero-flow days real zeros or a fill value? Check CAMELS-India documentation before interpreting ρ.
 21. **Test the revisable command-area proxy and claim volume.** Search for gauge-specific canal/crop records; if found, replace the 45,000 ha / 9×10⁶ m³ proxy and re-run. If not, run the documented 45,000 / 174,000 / 190,000 ha envelope and keep every output labelled illustrative.
 22. **Implement CMIP6 bias correction** against IMD/CAMELS before using any future rate. The current Hargreaves ET0 output is uncorrected and must not be published.
 23. **Build future service rates μ(t).** Validate CAMELS-IND-Proj historical streamflow and LSTM provenance, then use its 13-model/four-SSP ensemble as the primary conditional projection. Raw CMIP6 remains pipeline-check-only; any bias-corrected delta-change comparison is secondary.
-24. **Set up held-out validation:** held-out years, held-out basins, and named drought events. Write the metrics and the baseline comparisons **before** looking at results (pre-registration in the project notes).
+24. **Expand held-out validation.** The first predeclistered held-out-year comparison is complete (`analysis/P02_methods/REAL_DATA_COMPARISON_PROTOCOL.md`); add more gauges, events and eventually held-out basins without changing the locked primary rule after seeing results.
 25. **Propagate uncertainty** from rate estimates into backlog indicators using the bootstrap intervals already built into the estimator code.
-26. **Run the ablation that matters:** does the queue state add drought information beyond SPI/SPEI/SSI and a climatological queue? If not, record the null result.
+26. **Ablation result — FIRST PILOT COMPLETE.** Adding queue probability to SSI did not improve held-out Brier score in either gauge at q*=6; q*=4/8 and missing-flow sensitivities agree. Record the null and test stronger demand/data identification before any broader claim.
 27. **Write P02** with the structure already in `P02/README.md`, and prepare the HESS submission.
 
 **Gate C:** P02 is ready only when the estimator beats the climatological baseline on held-out data, or when a solid null result is written up honestly.
 
 ### Phase D — Cross-cutting hygiene
 
-28. **Keep the test suites green** — 12 P01 tests, 6 benchmark tests, 7 estimator tests (25 total) — and add a test for every new feature.
+28. **Keep the test suites green** — 12 P01 tests, 6 benchmark tests, 7 estimator tests and 17 real-data-comparison tests (42 total) — and add a test for every new feature.
 29. **Version control — resolved.** The workspace is a Git repository; continue committing coherent paper/analysis changes.
 30. **Write one reproducibility page per paper** with exact run commands (including the Rscript path), file names, and the order to run them. The P02 investigation report is complete; paper-specific pages remain a Gate-B/C task.
 
@@ -338,6 +340,6 @@ Everything below is in the order I intend to do it. Each phase ends with a decis
 - Confirm recovery means backlog clearance including reneging, or request a service-only redefinition.
 - Confirm aggregate μ uses c=1 unless separate supply sources are documented.
 - Accept the disclosed literature limitations or authorize retrieval of missing restricted records.
-- Confirm that WRR (P01) then HESS (P02) remains the order of work.
+- Approve one merged HESS-style methods/negative-result paper using the results-backed strategy in `docs/project/MERGED_PAPER_PLAN.md`, rather than separate WRR and HESS papers.
 
-Everything else — searches, screening, code, drafts, tests and figures — is complete for the technical Gate B pass.
+Everything else — searches, screening, code, drafts, tests, figures and the first real-data comparison — is complete for the technical Gate B pass.

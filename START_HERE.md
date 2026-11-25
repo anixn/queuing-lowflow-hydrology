@@ -37,8 +37,8 @@ is 2.13 claims but treating the year as one average gives 0.92 — a 2.3×
 understatement. Peak severe-backlog probability is 0.073 versus 0.004. That gap
 is the reason the project exists.
 
-**The tests.** 12 P01 tests, 6 benchmark tests and 7 rate-estimator tests all pass
-(25 in total). Every new feature should get a test.
+**The tests.** 12 P01 tests, 6 benchmark tests, 7 rate-estimator tests and 17
+real-data-comparison tests all pass (42 in total). Every new feature should get a test.
 
 **The literature hunt.** Crossref, OpenAlex, Web of Science and Scopus were all
 searched with the same five strings plus direct tests. Scopus alone contributed
@@ -74,9 +74,9 @@ a real irrigation application depth and needs no canal records we do not have.
 | Item | Selected value | What it means in plain language |
 |---|---|---|
 | Command area | **45,000 ha** | District canal-irrigated area in Sangli, used as a proxy; not a gauge-specific measurement |
-| One claim | **9×10⁶ m³** | 20 mm over 45,000 ha — a modelling delivery unit, not a measured canal release |
-| Capacity K | **20 claims** | 1.8×10⁸ m³, i.e. 400 mm over the proxy command — about one season's cumulative supply |
-| Service cap | **3 claims/day** | 60 mm/day, i.e. 2.7×10⁷ m³/day — the intake ceiling |
+| One claim | **20 mm depth** | 9×10⁶ m³ over 45,000 ha; 1.44504×10⁷ m³ over the Yadgir proxy — a modelling unit, not a measured release |
+| Capacity K | **20 claims** | 400 mm over either proxy — about one season's cumulative supply |
+| Service cap | **3 claims/day** | 60 mm/day — the intake ceiling; volume differs with proxy area |
 | Firm share | **0.5** | Half of river flow is treated as dependable dry-season supply |
 
 Why this scale: 45,000 ha is the canal-irrigated area reported for Sangli in
@@ -84,6 +84,11 @@ the official agriculture contingency plan, so it is a documented district-level
 proxy rather than a round guess. It is still not the command area of gauge 4026.
 Keeping a 20 mm delivery unit makes one claim readable and preserves the 400 mm
 backlog tolerance and 60 mm/day service cap when the proxy area changes.
+
+For gauge 4064, the comparison uses a separate **72,252 ha Yadgir proxy**
+(`[assumption]`): 14% of the district's 516,088 ha net sown area, rounded to the
+nearest hectare. The source is the Yadgir district profile in
+`analysis/claim_convention_2026-11-25/`; it is not a gauge command-area measurement.
 
 **Important honesty note:** this is a *provisional assumption*, not a
 measurement, and it is unlocked as of 25 November 2026. It is written in one
@@ -134,15 +139,18 @@ search added Acosta et al. (2026) and Zhao et al. (2018) as prior art without
 changing that sentence.
 
 The reproducible P01 figures and WRR package drafts are complete. The technical
-Gate B checklist passes (`P01/GATE_B_CHECKLIST.md`); author sign-off is pending
-on submission metadata, archive links, the recovery definition, the μ convention
-and the disclosed literature limitations. The single next action is author
-review of that checklist.
+Gate B checklist passes (`P01/GATE_B_CHECKLIST.md`). On the author's instruction,
+the first real-data comparison is also complete: adding queue probability to SSI
+did not improve held-out Brier score in either gauge
+(`analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`). The merged paper must
+therefore be a methods and negative-result evaluation, not a superiority claim.
+The single next action is author review of that result and the reframed
+single-paper strategy in `docs/project/MERGED_PAPER_PLAN.md`.
 
-**Phase C: build P02** comes only after Gate B sign-off — fix the μ-error near ρ≈1,
-finish the Floquet and MMPP studies, extend the R pilot to more gauges,
-bias-correct CMIP6, set up held-out validation, and only then write the HESS
-paper.
+**Phase C: broader P02 methods programme** comes only after sign-off. The first
+pilot is complete; remaining work includes more gauges/events, measured demand,
+zero-flow/regulation semantics, strict training-only SPI/SPEI, estimator work and
+conditional future μ. No raw CMIP6 number may be published.
 
 ## 8. How to see it run
 
@@ -154,6 +162,7 @@ test commands fail with `ModuleNotFoundError`.
 & 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' tests/test_queue_core.py
 & 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' tests/test_nonstationary_bench.py
 & 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' tests/test_rate_estimators.py
+& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' tests/test_real_data_comparison.py
 
 & 'C:\Program Files\R\R-4.5.1\bin\x64\Rscript.exe' P02/R/01_build_rates.R
 & 'C:\Program Files\R\R-4.5.1\bin\x64\Rscript.exe' P02/R/02_run_queue.R
