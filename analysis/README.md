@@ -1,13 +1,10 @@
 # Analysis workspace
 
-Created 21 November 2026. This folder holds the working analysis files for the
-two active papers.
-
-| Paper | Folder | Status |
+| Folder | Contents | Status |
 |---|---|---|
-| P01 | `P01/` | Active. Phase A closed 21 Nov 2026: 93-record WoS screen + full citation trace; gap sentence frozen. |
-| P03 | `P03/` | Prepared only. Analysis starts after Gate B. |
+| `P01_literature/` | Completed WoS record screen, citation trace and raw exports | Complete; Phase A closed 21 Nov 2026 |
+| `novelty_2026-11-25/` | Supplementary novelty search, evidence matrix, candidate audit, proposals and Box 1 sensitivity grid | Complete as an exploratory Phase-B investigation |
+| `claim_convention_2026-11-25/` | Official irrigation-area evidence, WoS refresh, revised proxy convention and scale envelope | Complete as a documented proxy; gauge-specific replacement still open |
+| `P02_methods/` | Planned P02 analysis outputs | Not started; begins after Gate B |
 
-The organising protocol is `../RESEARCH_PROTOCOL.md`. The rendered HTML is
-`../RESEARCH_PROTOCOL.html`. Do not hand-edit generated CSV files under
-`../paper3/data/`.
+The organising protocol is `../docs/project/RESEARCH_PROTOCOL.md`. Generated CSV files under `../P02/data/generated/` and `novelty_2026-11-25/data/` must never be hand-edited.

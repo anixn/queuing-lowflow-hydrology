@@ -22,10 +22,10 @@ Two papers come out of this:
 
 | Paper | Job | Target |
 |---|---|---|
-| **P1** (`paper1/`) | Why-and-what review/perspective | Water Resources Research |
-| **P3** (`paper3/`) | Methods: estimate changing rates from data, prove them against exact maths | Hydrology and Earth System Sciences |
+| **P01** (`P01/`) | Why-and-what review/perspective | Water Resources Research |
+| **P02** (`P02/`) | Methods: estimate changing rates from data, prove them against exact maths | Hydrology and Earth System Sciences |
 
-P1 first, P3 second. That order is fixed.
+P01 first, P02 second. That order is fixed.
 
 ## 2. The frozen novelty sentence (frozen 21 November 2026)
 
@@ -40,8 +40,8 @@ P1 first, P3 second. That order is fixed.
 >
 > — Frozen 21 November 2026, after the WoS record-level screen of S4/S5/Extra
 > A/C completed both databases (437 records in total, zero gap-changing
-> findings; `analysis/P01/wos_screening_2026-11-21.md`,
-> `paper1/literature_audit.md`).
+> findings; `analysis/P01_literature/wos_screening_2026-11-21.md`,
+> `P01/literature_audit.md`).
 
 An agent must never:
 
@@ -53,8 +53,9 @@ An agent must never:
 ## 3. The never-list (hard prohibitions)
 
 1. **Never present pilot numbers as findings.** Every number produced under
-   the locked provisional convention (50,000 ha command; 1 claim = 10^7 m^3
-   = 20 mm; K = 20; cap 3 claims/day; firm share 0.5) is *illustrative*.
+   the working proxy convention (45,000 ha district canal-irrigated area;
+   1 claim = 9×10^6 m^3 = 20 mm; K = 20; cap 3 claims/day = 60 mm/day;
+   firm share 0.5) is *illustrative*.
    Say or write "illustrative, under the stated assumptions" every time.
 2. **Never use raw CMIP6 output in any published number.** Bias correction
    against IMD/CAMELS-IND is not implemented yet. Raw extractions
@@ -76,20 +77,21 @@ An agent must never:
 7. **Never invent a reference, a number, or a dataset field.** If a value is
    unknown (e.g., whether gauge 4026 flows are regulated), write "unknown,
    action: check X" instead of guessing.
-8. **Never change the claim convention in more than one place.** It lives in
-   `paper3/R/01_build_rates.R` BLOCK 1 and `paper1/src/data_pipeline.py`
-   (and is documented in `START_HERE.md` §4 and `paper1/data_access_spec.md`
-   §1). Any change updates all of them together in one commit/step.
+8. **The claim convention is revisable, not locked.** It currently lives in
+   `P02/R/01_build_rates.R` BLOCK 1 and `src/P01/data_pipeline.py` (and is
+   documented in `START_HERE.md` §4 and `P01/data_access_spec.md` §1). Replace
+   it only with documented canal/crop evidence or a declared sensitivity
+   envelope, and update all four locations together in one commit/step.
 
 ## 4. The always-list (verification protocol)
 
 1. **Run the full test suite after every change** and before reporting:
    ```powershell
-   python paper1/src/test_queue_core.py          # 5 tests
-   python paper3/src/test_nonstationary_bench.py # 6 tests
-   python paper3/src/test_rate_estimators.py     # 7 tests
+   python tests/test_queue_core.py          # 10 tests
+   python tests/test_nonstationary_bench.py # 6 tests
+   python tests/test_rate_estimators.py     # 7 tests
    ```
-   All 18 must pass. Any new feature ships with a new test.
+   All 23 must pass. Any new feature ships with a new test.
 2. **Keep the three-way agreement.** Any change to the solver must preserve
    agreement between (a) the exact product-form stationary solution,
    (b) the RK4 numerical solution, and (c) the Gillespie/thinning discrete-event
@@ -100,7 +102,7 @@ An agent must never:
 4. **Report with sources.** Every claim in a session summary carries
    file + line (or table cell) where it came from.
 5. **Update the paper trail.** New findings update `literature_audit.md`,
-   `scopus_wos_search_plan.md`, or `data_access_spec.md` in the same session
+   `search_protocol.md`, or `data_access_spec.md` in the same session
    — the audit trail is part of the deliverable, not an afterthought.
 
 ## 5. Repository map (what lives where, and its trust level)
@@ -108,26 +110,28 @@ An agent must never:
 | Path | Role | Status |
 |---|---|---|
 | `START_HERE.md` | Plain-language orientation; reading order | Current |
-| `NOVELTY_AND_PLAN_REPORT.md` | Novelty verdict + full ordered plan (Phases A–D) | Current; §5 owns next steps |
-| `citations.txt` | Exported reference list | Reference only |
-| `roadmap_extracted.txt` | Text extracted from the 2027–2029 roadmap PDF | Background |
-| `paper1/P1_draft_v2.md` | **Current P1 manuscript** | Active (v0/v1 provenance only) |
-| `paper1/literature_audit.md` | Evidence trail for every prior-art claim | Active |
-| `paper1/scopus_wos_search_plan.md` | Exact search strings + run log | Active |
-| `paper1/data_access_spec.md` | Verified data inventory + locked convention | Current (Rev 2) |
-| `paper1/queueing_howto.md` | Technical mapping, equations, guardrails | Reference |
-| `paper1/src/queue_core.py` | **The shared engine.** Finite-capacity CTMC, RK4, exact solution, DES | Stable, tested |
-| `paper1/src/data_pipeline.py` | Python loader skeleton + synthetic Punjab demo | Loaders unimplemented (no NetCDF reader in Python here) |
-| `paper3/src/nonstationary_bench.py` | Floquet + MMPP exact benchmarks | Stable, tested |
-| `paper3/src/rate_estimators.py` | GBDT + isotonic mu, log-link, calibration, bootstrap | Known weakness near rho~1 |
-| `paper3/src/evaluate_estimators.py` | Held-out-year evaluation vs baselines | Working |
-| `paper3/R/01_build_rates.R` | Real data: CAMELS-IND -> daily lambda, mu | Runs on gauge 4026 |
-| `paper3/R/02_run_queue.R` | Real data: RK4 solve + indicators | Runs; dt capped |
-| `paper3/R/03_extract_cmip6.R` | Future data: one model/SSP at the gauge | Runs; output UNCORRECTED |
-| `paper3/data/*.csv` | Generated outputs | Regenerable; never hand-edit |
+| `docs/novelty/NOVELTY_AND_PLAN_REPORT.md` | Novelty verdict + full ordered plan (Phases A–D) | Current; §5 owns next steps |
+| `P01/P01_draft_v2.md` | **Current P01 manuscript** | Active; superseded drafts deleted |
+| `P01/literature_audit.md` | Evidence trail for every prior-art claim | Active |
+| `P01/search_protocol.md` | Exact search strings + run log | Active |
+| `P01/data_access_spec.md` | Verified data inventory + revisable convention | Current (Rev 2) |
+| `P01/queueing_howto.md` | Technical mapping, equations, guardrails | Reference |
+| `src/shared/queue_core.py` | **The shared engine.** Finite-capacity CTMC, RK4, exact solution, DES | Stable, tested |
+| `src/P01/data_pipeline.py` | Python loader skeleton + synthetic Punjab demo | Loaders unimplemented (no NetCDF reader in Python here) |
+| `src/P02/nonstationary_bench.py` | Floquet + MMPP exact benchmarks | Stable, tested |
+| `src/P02/rate_estimators.py` | GBDT + isotonic mu, log-link, calibration, bootstrap | Known weakness near rho~1 |
+| `src/P02/evaluate_estimators.py` | Held-out-year evaluation vs baselines | Working |
+| `P02/R/01_build_rates.R` | Real data: CAMELS-IND -> daily lambda, mu | Runs on gauge 4026 |
+| `P02/R/02_run_queue.R` | Real data: RK4 solve + indicators | Runs; dt capped |
+| `P02/R/03_extract_cmip6.R` | Future data: one model/SSP at the gauge | Runs; output UNCORRECTED |
+| `P02/data/generated/*.csv` | Generated outputs | Regenerable; never hand-edit |
+| `analysis/P01_literature/` | Completed WoS/Scopus audit, citation trace and raw exports | Evidence record |
+| `analysis/novelty_2026-11-25/` | Supplementary novelty investigation and Box 1 sensitivity grid | Exploratory Phase-B record |
+| `analysis/claim_convention_2026-11-25/` | Official area evidence, WoS refresh and claim-scale envelope | Current proxy decision record |
+| `analysis/P02_methods/` | Planned P02 analysis outputs | Starts after Gate B |
 
-Treat everything under `src/` and `R/` as the only writable code; generated
-`data/*.csv` must always be reproducible by the scripts that wrote them.
+Treat everything under `src/` and `P02/R/` as the only writable code; generated
+`P02/data/generated/*.csv` must always be reproducible by the scripts that wrote them.
 
 ## 6. Coding standards (match what is already here)
 
@@ -151,7 +155,7 @@ Treat everything under `src/` and `R/` as the only writable code; generated
 ## 7. Data rules (the contracts)
 
 Input locations are on the local machine (`D:\Datasets\...`) — see
-`paper1/data_access_spec.md` §0 for the verified table. The extract
+`P01/data_access_spec.md` §0 for the verified table. The extract
 contracts are fixed:
 
 ```text
@@ -181,18 +185,18 @@ Rules:
 
 **Phase A — the novelty hunt is complete (21 November 2026).**
 Done: record-level screen of WoS S4 (6), S5 (66), Extra A (8), Extra C (13)
-— 93/93 screened, zero retained (`analysis/P01/wos_screening_2026-11-21.md`);
+— 93/93 screened, zero retained (`analysis/P01_literature/wos_screening_2026-11-21.md`);
 forward-citation tracing of all seeds inside WoS "Times Cited" and Scopus
 "Cited by" — 76 citing records screened, two new non-gap-changing prior-art
-records found (`analysis/P01/citation_trace_2026-11-21.md`); gap sentence
+records found (`analysis/P01_literature/citation_trace_2026-11-21.md`); gap sentence
 frozen with date and scope (§2 above); every retained record has a keep/drop
 reason (the retained set is empty). The full-text screen of the retained set
 is empty by definition.
 *Done when:* one dated sentence exists and every retained record has a
-keep/drop reason — **both met; Gate A passed. Phase B (finish P1) is the
+keep/drop reason — **both met; Gate A passed. Phase B (finish P01) is the
 current phase.**
 
-**Phase B — finish P1.**
+**Phase B — finish P01.**
 Remaining: mapping section tightening (§2), prior-art expansion,
 non-stationarity section with the 2.3x anchor, falsifiable programme
 section, guardrails box, reproducible figures, novelty-language pass,
@@ -200,7 +204,7 @@ WRR package (abstract, cover letter, code/data statement).
 *Done when:* gap sentence frozen, all prior art cited, every number
 regenerable.
 
-**Phase C — build P3 (starts only after Gate B).**
+**Phase C — build P02 (starts only after Gate B).**
 Ordered: fix mu-error near rho~1; Floquet convergence study; MMPP sweep;
 multi-gauge R pipeline (add 4064 Yadgir); resolve zero-flow semantics;
 replace-or-envelope the claim convention; CMIP6 bias correction; delta-change
@@ -209,9 +213,8 @@ ablation vs SPI/SSI; then write.
 *Done when:* estimator beats climatology on held-out data, or an honest
 null is written.
 
-**Phase D — hygiene, continuous:** tests green; initialise git (repo has
-none today — do this before any further major edit); reproducibility page
-per paper.
+**Phase D — hygiene, continuous:** tests green; repository structure and naming
+kept consistent; reproducibility page per paper.
 
 ## 9. Session ritual (for agents, and for me)
 
@@ -219,12 +222,12 @@ Start of session:
 
 1. Read `START_HERE.md` §7 and this file's §8; state the current phase and
    the single next action.
-2. Run the 18 tests; report pass/fail.
+2. Run the full 23-test suite; report pass/fail.
 3. State which numbers you will trust today and where they live.
 
 End of session:
 
-4. Re-run the 18 tests; list any new test added.
+4. Re-run the full 23-test suite; list any new test added.
 5. Update the audit/spec/README files that changed; one paragraph of
    plain-language "what changed and why" in the session log.
 6. Report: what moved (numbers with units + sources), what is blocked, the

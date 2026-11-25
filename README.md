@@ -1,66 +1,54 @@
 # Queueing–Drought Junction
 
-This repository contains the working files for two papers that read drought
-and low-flow behaviour as a queueing problem:
+Two active papers read drought and low-flow behaviour as a queueing process:
 
-- **P01** — review/perspective paper for *Water Resources Research*.
-- **P03** — methods paper for *Hydrology and Earth System Sciences*.
+- **P01 — perspective paper** for *Water Resources Research*: why the queue view belongs in drought science, what the prior art is, and which tests would make the programme credible.
+- **P02 — methods paper** for *Hydrology and Earth System Sciences*: estimate non-stationary demand/service rates, validate the queue against exact references, and test incremental drought information on held-out data.
 
-There is no P02/Paper 02 in this project. `analysis/P02_novelty_2026-11-25/`
-is an investigation label, not a paper. The physical paper folders remain
-`paper1/` and `paper3/` because the code and tests depend on those paths.
+P01 comes first. P02 starts only after Gate B.
 
 ## Start here
 
-1. Read `START_HERE.md` for the plain-language project overview.
-2. Read `RESEARCH_PROTOCOL.md` for the current phase, gates and analysis plan.
-3. Read `field/README.md` for the field-level objectives of P01 and P03.
-4. Read `analysis/P01/wos_screening_2026-11-21.md` for the completed Web of Science
-   record-level screening sheet.
-5. Read `analysis/P02_novelty_2026-11-25/README.md` for the 25 November
-   novelty-strengthening investigation.
+1. `START_HERE.md` — plain-language orientation and current phase.
+2. `AGENTS.md` — operating rules, frozen novelty sentence and verification protocol.
+3. `docs/project/RESEARCH_PROTOCOL.md` — gates, objectives and analysis plan.
+4. `P01/README.md` and `P02/README.md` — paper-package contents and run commands.
 
-## Folder map
+## Repository map
 
-| Folder | Purpose |
+| Path | Purpose |
 |---|---|
-| `paper1/` | P01 manuscript, literature audit, data spec, Python core engine. |
-| `paper3/` | P03 methods code, R real-data pipeline, generated pilot outputs. |
-| `analysis/` | Completed Phase-A screens and the dated P02 novelty-strengthening investigation. |
-| `field/` | Field-level objectives and initial state. |
-| `RESEARCH_PROTOCOL.md` | Current protocol, phase and gates. |
-| `APPROACH_P01_P03.md` | Ordered work plan for P01 and P03. |
+| `P01/` | Current P01 manuscript, literature audit, search protocol and technical notes |
+| `P02/` | P02 methods package, R pipeline and generated data |
+| `src/shared/` | Queueing engine shared by both papers |
+| `src/P01/` | P01 demonstrations and data-to-rates skeleton |
+| `src/P02/` | Exact benchmarks, rate estimators and evaluation code |
+| `tests/` | Full Python acceptance suite |
+| `analysis/P01_literature/` | Completed WoS screen, citation trace and raw exports |
+| `analysis/novelty_2026-11-25/` | Dated novelty-strengthening investigation and sensitivity outputs |
+| `analysis/claim_convention_2026-11-25/` | Official area evidence, WoS refresh and revisable claim convention |
+| `analysis/P02_methods/` | Planned P02 analysis outputs |
+| `docs/` | Project protocol, session log, novelty plan and data specifications |
+| `references/` | Original roadmap source retained for historical provenance |
+| `P02/data/generated/` | Reproducible R outputs; never hand-edit |
 
 ## Run the tests
 
 Use the existing `drought` Conda environment:
 
 ```powershell
-& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper1/src/test_queue_core.py
-& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper3/src/test_nonstationary_bench.py
-& 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' paper3/src/test_rate_estimators.py
+python tests/test_queue_core.py
+python tests/test_nonstationary_bench.py
+python tests/test_rate_estimators.py
 ```
 
-All 22 tests should pass. See `RESEARCH_PROTOCOL.md` §9 for the exact command
-block and the R real-data pipeline commands.
+All **23 tests** should pass. The exact interpreter path is recorded in `START_HERE.md` §8.
 
-## Notes for working from another computer
+## Current status
 
-If you clone this repository on another machine:
+- **Phase A complete:** 142 WoS and 295 Scopus records screened; citation traces complete; the 21 November 2026 gap sentence is frozen.
+- **Phase B current:** finish P01 figures, language pass and WRR package.
+- **Claim convention revised:** 45,000 ha district canal-irrigated proxy; 9×10⁶ m³ per 20 mm claim; 30-case scale envelope checked.
+- **Phase C not started:** P02 implementation begins only after Gate B.
 
-1. Read `START_HERE.md` before changing any file.
-2. Run the three Python test commands above before touching code.
-3. If using R, run `paper3/R/01_build_rates.R` and `paper3/R/02_run_queue.R`
-   in that order.
-4. Do not edit files under `paper3/data/` by hand. They are generated outputs.
-5. Keep the P01/P03 naming and the physical folder paths unchanged.
-
-## Current work status
-
-- Phase A is closed (21 November 2026): the record-level screens (Scopus 295
-  + WoS 93 records; zero retained) and the forward-citation trace (76 citing
-  records; two new prior-art records) are complete, and the gap sentence is
-  frozen (`AGENTS.md` §2). Gate A is passed; Phase B (finish P1) is current.
-- P03 analysis is prepared only and starts after P01 reaches Gate B.
-
-See `SESSION_LOG.md` for the session-by-session changes.
+See `docs/project/SESSION_LOG.md` for the session-by-session record.

@@ -1,0 +1,9 @@
+# Binary evidence and source artifacts
+*.pdf binary
+*.xls binary
+
+# Consistent text handling on Windows
+*.md text eol=crlf
+*.csv text eol=crlf
+*.py text eol=crlf
+*.R text eol=crlf
