@@ -184,8 +184,8 @@ splits (`P01/queueing_howto.md` §6).
 ## 6. Shared operating rules
 
 1. Run the full test suite after every change and before reporting
-   (`AGENTS.md` §4). On 25 November 2026 all 23 tests passed with the existing
-   `drought` environment (10 shared/P01, 6 benchmark, 7 estimator).
+   (`AGENTS.md` §4). On 25 November 2026 all 25 tests passed with the existing
+   `drought` environment (12 shared/P01, 6 benchmark, 7 estimator).
 2. Keep three-way agreement between exact solution, RK4 and DES
    (`AGENTS.md:87-91`).
 3. Every manuscript number has a named script (`AGENTS.md:92-94`).
@@ -199,7 +199,7 @@ splits (`P01/queueing_howto.md` §6).
 
 Gate A passed on 21 November 2026. The WoS/Scopus screens and database citation traces are complete, and the gap sentence is frozen in `AGENTS.md` §2. The 25 November supplementary search and P01 indicator-contract revisions are complete.
 
-**Phase B (finish P01) is current.** The gauge-4026 rate file has been regenerated with the revised 45,000 ha proxy and the 30-case claim-scale envelope is complete. Exact next action: build the reproducible P01 figures and prepare the WRR package. The ordered plan is in `docs/novelty/NOVELTY_AND_PLAN_REPORT.md`.
+**Phase B (finish P01) is current.** The reproducible figures and WRR package drafts are complete, and `P01/GATE_B_CHECKLIST.md` records a technical Gate B pass. Exact next action: author sign-off on submission metadata, archive links, recovery/μ definitions and disclosed literature limitations. The ordered plan is in `docs/novelty/NOVELTY_AND_PLAN_REPORT.md`.
 
 ## 8. Analysis workspace
 

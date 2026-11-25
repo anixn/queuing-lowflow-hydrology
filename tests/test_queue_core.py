@@ -100,7 +100,9 @@ def test_box1_sensitivity_baseline_reproduces_anchor():
 
 
 def test_claim_scale_envelope_is_physically_invariant():
-    from P01.claim_scale_envelope import ClaimConvention, physical_forcing, fluid_ledger
+    from P01.claim_scale_envelope import (
+        ClaimConvention, physical_forcing, fluid_ledger, fluid_ledger_scaled,
+    )
     working = ClaimConvention(45_000, 20)
     assert working.claim_volume_m3 == 9_000_000
     assert working.K == 20
@@ -113,7 +115,25 @@ def test_claim_scale_envelope_is_physically_invariant():
         assert conv.K * conv.depth_mm == 400.0
         assert conv.q_star * conv.depth_mm == 120.0
         assert abs(conv.service_cap_claims_day * conv.depth_mm - 60.0) < 1e-12
-        assert fluid_ledger(demand, supply) == reference
+        scaled = fluid_ledger_scaled(conv, demand, supply)
+        for key, value in reference.items():
+            assert abs(scaled[key] - value) < 1e-9
+
+
+def test_figure_data_matches_box1_anchors():
+    from P01.figure_data import box1_series
+    d = box1_series(dt=0.25)
+    assert abs(float(d["E_Q_s"].max()) - 0.91607) < 1e-4
+    assert abs(float(d["E_Q_n"].max()) - 2.12950) < 1e-4
+    assert abs(float(d["P_crit_n"].max()) - 0.07331) < 1e-5
+
+
+def test_literature_counts_validate():
+    from P01.validate_literature_counts import validate
+    counts = validate()
+    assert counts["total_original"] == 437
+    assert counts["wos_record_level"] == 93
+    assert counts["citation_trace"] == 76
 
 
 if __name__ == "__main__":

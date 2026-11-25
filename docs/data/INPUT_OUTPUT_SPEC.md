@@ -113,4 +113,4 @@ Rscript P02/R/01_build_rates.R
 Rscript P02/R/02_run_queue.R
 ```
 
-Current Python baseline: **23 tests** (10 shared/P01, 6 benchmark, 7 estimator).
+Current Python baseline: **25 tests** (12 shared/P01, 6 benchmark, 7 estimator).

@@ -24,7 +24,8 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from shared.queue_core import QueueConfig, indicators, solve_transient  # noqa: E402
 
-__all__ = ["ClaimConvention", "physical_forcing", "fluid_ledger", "ctmc_case", "run_envelope"]
+__all__ = ["ClaimConvention", "physical_forcing", "fluid_ledger",
+           "fluid_ledger_scaled", "ctmc_case", "run_envelope"]
 
 
 @dataclass(frozen=True)
@@ -92,6 +93,35 @@ def fluid_ledger(demand: np.ndarray, supply: np.ndarray,
         "blocked_demand_mm": blocked,
         "served_demand_mm": served,
         "abandoned_demand_mm": blocked,
+    }
+
+
+def fluid_ledger_scaled(conv: ClaimConvention, demand: np.ndarray,
+                        supply: np.ndarray) -> dict[str, float]:
+    """Run the ledger in claim units after rescaling all physical quantities."""
+    lam = np.asarray(demand, dtype=float) / conv.depth_mm
+    mu = np.minimum(np.asarray(supply, dtype=float),
+                    conv.service_cap_depth_mm_day) / conv.depth_mm
+    q = 0.0
+    exposure = blocked = served = peak = severe_days = 0.0
+    for l, m in zip(lam, mu, strict=True):
+        incoming = q + float(l)
+        blocked += max(0.0, incoming - conv.K)
+        q = min(incoming, float(conv.K))
+        delivered = min(q, float(m))
+        served += delivered
+        q -= delivered
+        peak = max(peak, q)
+        exposure += q
+        severe_days += float(q >= conv.q_star)
+    return {
+        "peak_backlog_mm": peak * conv.depth_mm,
+        "mean_backlog_mm": exposure * conv.depth_mm / len(demand),
+        "backlog_exposure_mm_days": exposure * conv.depth_mm,
+        "severe_days": severe_days,
+        "blocked_demand_mm": blocked * conv.depth_mm,
+        "served_demand_mm": served * conv.depth_mm,
+        "abandoned_demand_mm": blocked * conv.depth_mm,
     }
 
 

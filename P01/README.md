@@ -17,6 +17,10 @@ Read `../START_HERE.md` first. The ordered plan is in `../docs/novelty/NOVELTY_A
 | `../src/P01/box1_sensitivity.py` | Reproducible 44-case Box 1 sensitivity grid |
 | `../src/P01/claim_scale_envelope.py` | Exact fluid and finite-claim checks for the revisable convention |
 | `../src/P01/data_pipeline.py` | Data-to-rates skeleton and synthetic demonstration |
+| `../src/P01/figure_data.py`, `../src/P01/make_figures.py` | NumPy-only figure data and reproducible PNG/SVG rendering |
+| `../src/P01/validate_literature_counts.py` | Read-only validator for WoS/Scopus/citation-trace totals |
+| `figures/` | Three manuscript figures with captions and regeneration instructions |
+| `submission/` | Draft abstract, cover letter and code/data availability statement |
 | `../tests/test_queue_core.py` | Shared-engine and P01 acceptance tests |
 
 ## Run
@@ -25,10 +29,13 @@ Read `../START_HERE.md` first. The ordered plan is in `../docs/novelty/NOVELTY_A
 python src/shared/queue_core.py
 python src/P01/box1_sensitivity.py
 python src/P01/claim_scale_envelope.py
+python src/P01/make_figures.py
+python src/P01/validate_literature_counts.py
 python tests/test_queue_core.py
 ```
 
 The sensitivity script writes `analysis/novelty_2026-11-25/data/box1_sensitivity.csv`.
+Figure rendering uses matplotlib in the base Python environment; the figure-data module and tests remain NumPy-only.
 
 ## Verified synthetic results
 
@@ -45,10 +52,10 @@ Illustrative, under the stated assumptions:
 
 The queue–storage lineage begins with Langbein (1958). Hydrological queueing also includes soil water, groundwater, runoff, irrigation and water-supply reliability. Acosta et al. (2026) and Zhao et al. (2018) are cited as coupled state-space and non-stationary supply–demand prior art. The 25 November WoS refresh left S1, Extra A and S5 unchanged and added one irrelevant wireless-QoS record to S4. Scopus's current UI did not return targeted results, so no new Scopus screen is claimed. The frozen four-part gap sentence in `../AGENTS.md` §2 is unchanged.
 
-## Remaining P01 work
+## Gate B status
 
-1. Build reproducible manuscript figures.
-2. Complete the novelty-language and internal-consistency pass.
-3. Prepare the WRR abstract, cover letter and code/data availability statement.
+The technical Gate B checklist passes: `GATE_B_CHECKLIST.md`. Figures, the 219-word abstract, cover letter, code/data statement, numerical provenance and literature-count validator are complete.
 
-P02 code is not part of Gate B; see `../P02/README.md`.
+Author sign-off is still required for the final title/abstract/keywords, corresponding-author details and declarations, public repository/archive/licence, the backlog-clearance recovery definition, the aggregate μ convention and acceptance of the disclosed literature limitations.
+
+P02 implementation remains gated by that author sign-off; see `../P02/README.md`.

@@ -87,11 +87,11 @@ An agent must never:
 
 1. **Run the full test suite after every change** and before reporting:
    ```powershell
-   python tests/test_queue_core.py          # 10 tests
+   python tests/test_queue_core.py          # 12 tests
    python tests/test_nonstationary_bench.py # 6 tests
    python tests/test_rate_estimators.py     # 7 tests
    ```
-   All 23 must pass. Any new feature ships with a new test.
+   All 25 must pass. Any new feature ships with a new test.
 2. **Keep the three-way agreement.** Any change to the solver must preserve
    agreement between (a) the exact product-form stationary solution,
    (b) the RK4 numerical solution, and (c) the Gillespie/thinning discrete-event
@@ -197,14 +197,14 @@ keep/drop reason — **both met; Gate A passed. Phase B (finish P01) is the
 current phase.**
 
 **Phase B — finish P01.**
-Remaining: mapping section tightening (§2), prior-art expansion,
-non-stationarity section with the 2.3x anchor, falsifiable programme
-section, guardrails box, reproducible figures, novelty-language pass,
-WRR package (abstract, cover letter, code/data statement).
+The technical Gate B checklist passes (`P01/GATE_B_CHECKLIST.md`): mapping,
+prior art, script-backed numbers, reproducible figures and WRR package drafts
+are complete. Author sign-off remains on submission metadata, archive links,
+recovery/μ definitions and disclosed literature limitations.
 *Done when:* gap sentence frozen, all prior art cited, every number
-regenerable.
+regenerable, and the author signs the Gate B checklist.
 
-**Phase C — build P02 (starts only after Gate B).**
+**Phase C — build P02 (starts only after Gate B sign-off).**
 Ordered: fix mu-error near rho~1; Floquet convergence study; MMPP sweep;
 multi-gauge R pipeline (add 4064 Yadgir); resolve zero-flow semantics;
 replace-or-envelope the claim convention; CAMELS-IND-Proj provenance/historical
@@ -222,12 +222,12 @@ Start of session:
 
 1. Read `START_HERE.md` §7 and this file's §8; state the current phase and
    the single next action.
-2. Run the full 23-test suite; report pass/fail.
+2. Run the full 25-test suite; report pass/fail.
 3. State which numbers you will trust today and where they live.
 
 End of session:
 
-4. Re-run the full 23-test suite; list any new test added.
+4. Re-run the full 25-test suite; list any new test added.
 5. Update the audit/spec/README files that changed; one paragraph of
    plain-language "what changed and why" in the session log.
 6. Report: what moved (numbers with units + sources), what is blocked, the

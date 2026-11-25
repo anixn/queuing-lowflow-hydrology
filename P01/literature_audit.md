@@ -257,7 +257,7 @@ accumulated unmet-demand backlog with a finite-capacity state; (2) queue-state
 indicators reported as drought quantities; (3) non-stationary rates estimated
 from hydroclimatic covariates; (4) validation against exact reference
 solutions and pre-specified drought tests." Canonical copies: `../AGENTS.md`
-§2, `../START_HERE.md` §5, `../docs/project/RESEARCH_PROTOCOL.md` §8.
+§2, `../START_HERE.md` §5, `P01_draft_v2.md` §6.
 
 ## WoS/Scopus forward-citation trace — 21 November 2026
 

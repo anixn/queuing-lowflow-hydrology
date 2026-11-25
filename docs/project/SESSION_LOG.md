@@ -1,5 +1,23 @@
 # Session log
 
+## 25 November 2026 — P01 Gate B technical pass
+
+I ran the P01 Gate B audit and closed the agent-fixable items. Three reproducible
+PNG/SVG figures are embedded in the manuscript; the WRR abstract is 219 words;
+the cover letter quotes the frozen sentence exactly; and the code/data statement,
+number-provenance map and Gate B checklist are in `P01/`. I added missing prior
+art (Jones 2016/2019, Palková & Rodný 2011, Klemeš 1987, first-passage,
+attribution and ML/identification references), corrected μ units and fluid
+drift, defined current recovery as backlog clearance including reneging, and
+disclosed the ramp ledger residual.
+
+I strengthened the claim-scale test so it actually rescales rates, capacity,
+threshold and cap, and added `src/P01/validate_literature_counts.py` plus a test
+for the 142/295/437/93/76 bibliometric totals. The full suite passes 25/25.
+`P01/GATE_B_CHECKLIST.md` records a technical pass; author sign-off remains on
+submission metadata, archive links, recovery/μ definitions and the disclosed
+literature limitations.
+
 ## 25 November 2026 — P02 model and data protocol
 
 I verified the local data holdings rather than starting a final indicator
@@ -28,7 +46,7 @@ paths and documentation were updated together. Shared code lives in
 documents in `docs/`, source references in `references/`, and generated R data in
 `P02/data/generated/`. Superseded drafts, stale HTML, outdated planning notes,
 Python caches, the buggy one-off table builder and stale generated outputs were
-deleted. The full Python suite passes 23/23 and all three R scripts parse.
+deleted. The full Python suite passes 25/25 and all three R scripts parse.
 
 The claim convention was unlocked and revised using official Sangli evidence:
 45,000 ha is the district canal-irrigated proxy, one claim is 9×10⁶ m³ = 20 mm,

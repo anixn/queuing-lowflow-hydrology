@@ -37,8 +37,8 @@ is 2.13 claims but treating the year as one average gives 0.92 — a 2.3×
 understatement. Peak severe-backlog probability is 0.073 versus 0.004. That gap
 is the reason the project exists.
 
-**The tests.** 10 P01 tests, 6 benchmark tests and 7 rate-estimator tests all pass
-(23 in total). Every new feature should get a test.
+**The tests.** 12 P01 tests, 6 benchmark tests and 7 rate-estimator tests all pass
+(25 in total). Every new feature should get a test.
 
 **The literature hunt.** Crossref, OpenAlex, Web of Science and Scopus were all
 searched with the same five strings plus direct tests. Scopus alone contributed
@@ -133,13 +133,13 @@ the gap sentence in section 5 is frozen. The 25 November 2026 supplementary
 search added Acosta et al. (2026) and Zhao et al. (2018) as prior art without
 changing that sentence.
 
-The current P01 work is to build reproducible figures, complete the
-novelty-language pass, and prepare the WRR package. The gauge-4026 rate file has
-been regenerated with the revised 45,000 ha proxy and the 30-case claim-scale
-envelope is complete. The single next action is to build the P01 figures and
-WRR package.
+The reproducible P01 figures and WRR package drafts are complete. The technical
+Gate B checklist passes (`P01/GATE_B_CHECKLIST.md`); author sign-off is pending
+on submission metadata, archive links, the recovery definition, the μ convention
+and the disclosed literature limitations. The single next action is author
+review of that checklist.
 
-**Phase C: build P02** comes only after Gate B — fix the μ-error near ρ≈1,
+**Phase C: build P02** comes only after Gate B sign-off — fix the μ-error near ρ≈1,
 finish the Floquet and MMPP studies, extend the R pilot to more gauges,
 bias-correct CMIP6, set up held-out validation, and only then write the HESS
 paper.

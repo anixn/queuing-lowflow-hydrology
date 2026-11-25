@@ -6,6 +6,8 @@
 > found in the 21 November citation trace and the 25 November supplementary
 > search. Box 1 numbers are synthetic and **illustrative, under the stated
 > assumptions** (`src/shared/queue_core.py`), not observational findings.
+> The technical Gate B checklist passes (`GATE_B_CHECKLIST.md`); author
+> sign-off on submission metadata and definitions remains pending.
 
 ---
 
@@ -14,38 +16,13 @@
 **Ankit Deshmukh**
 Department of Civil Engineering, Pandit Deendayal Energy University, Gandhinagar, India
 
-### Abstract (draft, 271 words)
+### Abstract (draft)
 
-Hydrological drought is conventionally diagnosed with standardized indices that
-locate an anomaly relative to climatology. They describe *when* water is scarce
-but not *how* unmet demand accumulates, how long a system takes to clear a
-deficit, or which part of a shortage arose from arrival pressure rather than
-constrained supply. These are mechanism-level questions, and queueing theory is
-the mathematics built to answer them. The connection is older than the modern
-index literature: Langbein's "Queuing Theory and Water Storage" appeared in the
-*Journal of the Hydraulics Division* in 1958, Moran and Gani developed the
-parallel theory of dams and storage, and Prabhu unified queues, insurance risk
-and dams as stochastic storage processes. Hydrology nevertheless moved toward
-conceptual rainfall–runoff models and standardized indices, leaving the
-stochastic machinery to operations research and to a thin applied niche —
-soil-water residence time, runoff production, rainwater harvesting, high-flow
-forecasting, irrigation capacity and water-supply reliability. This perspective
-synthesises that lineage and asks what it would take to bring it back for
-drought. We set out two coupled representations — stored water as the buffer
-and unmet demand as the backlog — joined by the served-water flux and an
-explicit conservation ledger. They imply distinct quantities: backlog stock,
-backlog exposure, utilisation, waiting time, first-passage recovery time and
-abandoned demand. We distinguish stationary textbook limits from the
-non-stationary formulation that a changing climate requires, and show with a
-controlled synthetic experiment that a time-varying queue with the same mean
-arrival and service rates as a stationary one can produce a 2.3-fold larger
-peak backlog and a 17-fold larger probability of critical backlog: averaging
-the climate signal hides risk. The contribution is deliberately narrow — not
-stochastic storage theory, not queueing in hydrology, and not time-varying
-queueing in general, but a drought-specific, conservation-constrained
-parameterisation of a non-stationary deficit queue, with an explicit test of
-whether demand and supply are identifiable and whether its indicators add
-information under pre-specified validation.
+Hydrological drought is conventionally diagnosed with standardized indices that locate anomalies relative to climatology. They describe when water is scarce but not how unmet demand accumulates, how long a deficit takes to clear, or whether shortage reflects demand pressure or constrained supply. Queueing theory addresses these mechanism-level questions and has a long hydrological lineage: Langbein's “Queuing Theory and Water Storage” appeared in 1958, Moran and Gani developed dam-storage theory, and Prabhu unified queues, insurance risk and dams. Hydrological applications include soil-water residence time, runoff, rainwater harvesting, irrigation and supply reliability.
+
+This perspective reconnects that lineage to drought through two coupled representations: stored water as a buffer and unmet demand as a backlog, joined by the served-water flux and an explicit conservation ledger. The resulting quantities include backlog stock, backlog exposure, utilisation, waiting time, first-passage recovery and abandoned demand.
+
+A controlled synthetic experiment shows that a time-varying queue with the same mean arrival and service rates as a stationary one can produce a 2.3-fold larger peak backlog and a 17-fold larger critical-state probability. These values are synthetic and **illustrative, under the stated assumptions**. The contribution is deliberately narrow: not stochastic storage theory, queueing in hydrology or time-varying queueing, but a drought-specific, conservation-constrained parameterisation of a non-stationary deficit queue, with explicit tests of demand–supply identifiability and incremental information under pre-specified validation.
 
 ---
 
@@ -77,8 +54,7 @@ time, utilisation, loss probability — are the objects a drought manager is
 implicitly asking for when they ask how severe a shortage is, when it will end,
 and who will be cut off. The connection is not a metaphor imposed from outside,
 and it has a long hydrological lineage. Langbein (1958) set out "Queuing Theory
-and Water Storage" in this journal's predecessor, the *Journal of the Hydraulics Division*, with a
-discussion and closure following in 1959. In probability theory Moran (1954) and
+and Water Storage" in this journal's predecessor, the *Journal of the Hydraulics Division*. In probability theory Moran (1954) and
 Gani (1957, 1969) built the theory of dams as random storage systems; Prabhu
 (1998) unified queues, insurance risk and dams as stochastic storage processes.
 Hydrology also developed conceptual rainfall–runoff models, standardized
@@ -113,6 +89,8 @@ Demand arrives through time; supply is limited by flow, infrastructure and
 operating rules; unmet demand persists as a backlog; and service can change
 when a threshold is crossed. Each queueing mechanism therefore has a specific
 hydrological meaning and a specific caveat:
+
+**Table 1. Mechanism-level correspondence between queueing and drought systems.**
 
 | Queueing mechanism | Drought-system interpretation |
 |---|---|
@@ -166,6 +144,10 @@ modelled. This is an **identification problem**, not a change of notation: if
 different demand and supply paths produce the same observed backlog, a
 backlog forecast alone cannot attribute the shortage to either cause.
 
+![Figure 1. Drought–queue mapping and conservation ledger.](figures/figure1_mapping.png)
+
+*Figure 1. Demand and supply generate λ(t) and μ(t), which drive a finite-capacity backlog Q(t). Storage X(t) is a distinct state coupled through the served-water flux. Indicators feed exact verification and held-out validation. Synthetic schematic; illustrative, under the stated assumptions.*
+
 ### 2.3 Prior art: the queueing niche in hydrology is thin, not empty
 
 A scoping search of Crossref and OpenAlex (20–21 November 2026), the complete
@@ -175,9 +157,12 @@ work. A supplementary targeted search on 25 November 2026 added coupled
 state-space and non-stationary supply–demand frameworks. These records must be
 cited, both for accuracy and because they make the contribution sharper.
 
+**Table 2. Closest prior art and the distinction from the proposed programme.**
+
 | Work | Representation | What it leaves open |
 |---|---|---|
 | Langbein (1958), "Queuing Theory and Water Storage", *J. Hydr. Div.* 84(5) | Explicit queue–storage analogy in a hydraulics journal | Stationary framing; no drought indicators; no modern data |
+| Klemeš (1987), *Water Resources Management* 1(3) | Historical synthesis of applied storage-reservoir theory | Storage reliability and first passage, not learned drought backlog rates |
 | Gamble et al. (1990a, 1990b), *J. Hydrol.* 113 | Queueing disciplines for soil-water residence time | Residence-time focus; no deficit or risk indicators |
 | Buchberger & Schade (1997), ASCE conference proceedings | Poisson pulse arrivals for residential water demand | Urban demand; no supply constraint or drought state |
 | Batabyal (1996), *Ecological Modelling* 85 | Queueing approach to groundwater management | Management framing, not drought deficit accumulation |
@@ -188,6 +173,7 @@ cited, both for accuracy and because they make the contribution sharper.
 | Yang, Li & Huo (2019), *Water Resources Management* 33(12) | Queueing-based irrigation water allocation with groundwater uncertainty; canal-management decision support | Operational allocation, not drought state or learned time-varying rates |
 | Harel & Mouche (2014), *Earth Surf. Process. Landforms* 39(11) | Queueing-based runoff–runon connectivity on 2-D slopes | Steady state, no temporal non-stationarity or deficit accounting |
 | Mouche & Harel (2016), *Performance Evaluation* | Overland flow as a B/D/1 queue with arbitrary service time | Queueing of flow, not accumulation of unmet demand |
+| Jones, Lane & Sheridan (2016); Jones (2019) | Mathematical extensions of queue-based runoff–runon to finite hillslopes and rooted trees | Runoff generation, not drought backlog or learned rates |
 | Prajamwong, Merkley & Allen (1997), *J. Irrig. Drain. Eng.* 123(2) | Queuing system allocates water to command areas and fields; root-zone deficit in yield response | Operational allocation and crop response, not drought state or learned rates |
 | Lefebvre (2019), *Atti Accad. Pelorit. Pericolanti* 97(S2) | M/M/1/c CTMC for **high** river flows, Delaware River | High flow rather than low flow; stationary rates; no unmet-demand accounting |
 | Unami et al. (2015), *J. Cleaner Production* 88 | Stochastic control of rainwater harvesting for irrigation | Small-system, stationarity typical |
@@ -204,8 +190,8 @@ state-space and non-stationary supply–demand models also exist. The narrower
 question is therefore not whether anyone has modelled unmet demand, but whether
 the four elements stated in Section 6 have been combined and validated.
 Third, queue first-passage and busy-period quantities have a long history in
-storage and queueing theory; their use as a *data-driven drought recovery*
-diagnostic remains to be demonstrated. Fourth, the review's job is synthesis
+storage and queueing theory (Moran, 1954; Prabhu, 1998); their use as a
+*data-driven drought recovery* diagnostic remains to be demonstrated. Fourth, the review's job is synthesis
 plus a precise, falsifiable programme, not a claim to have invented the
 junction.
 
@@ -216,12 +202,13 @@ the GI/G/1 queue and Moran's dam recursion are, up to notation and reflection,
 the same equation:
 
 $$W_{n+1}=\max(0,\;W_n+B_n-A_n),\qquad
-X_{n+1}=\min\!\big(K,\;\max(0,\;X_n+I_n-R_n)\big).$$
+X_{n+1}=\min\!\big(K_s,\;\max(0,\;X_n+I_n-R_n)\big).$$
 
 Here $B_n$ is the work brought by the $n$th claim, $A_n$ the service opportunity
 before the next claim, $I_n$ inflow and $R_n$ release. In continuous time the
-corresponding fluid limit is $\dot Q=[\lambda(t)-\mu(t)]$ reflected at zero and,
-with finite backlog tolerance, at $K_q$. Everything that makes drought hard — episodic
+backlog drift is $\dot Q=\lambda(t)-S(Q,t)-\eta Q$, reflected at zero and, with
+finite backlog tolerance, at $K_q$. The simpler expression
+$\dot Q=\lambda-\mu$ applies only to a single server with no reneging. Everything that makes drought hard — episodic
 supply, seasonal demand, finite storage, abandonment — is a term queueing theory
 has already learned to put inside this recursion.
 
@@ -247,19 +234,22 @@ S_n(t)=\min(n,c)\,\mu(t)\,[1+(\alpha-1)\mathbf 1(n\ge\theta)],$$
 $$\mu_n(t)=S_n(t)+n\eta.$$
 
 Here $S_n$ is the served-water flux and $\mu_n$ is the total downward jump
-rate; $c$ is the number of genuinely separate supply sources, $\theta$ and
-$\alpha$ parameterise drought-mode service, and $\eta$ is abandonment per
-waiting claim. The forward equation $\dot{\mathbf p}=\mathbf p A(t)$ yields
+rate; $\mu(t)$ is a per-source clearing rate in claims/server/day, $c$ is the
+number of genuinely separate supply sources (use $c=1$ for aggregate supply),
+$\theta$ and $\alpha$ parameterise drought-mode service, and $\eta$ is
+abandonment per waiting claim. The forward equation $\dot{\mathbf p}=\mathbf p A(t)$ yields
 the full distribution, from which the indicators in Table 3 follow.
+
+**Table 3. Queue-state drought indicators, units and management questions.**
 
 | Indicator | Definition and unit | Management question |
 |---|---|---|
-| Nominal load | $\rho_{\rm nom}(t)=\lambda(t)/(c\mu(t))$, dimensionless; not exact utilisation when $\alpha>1$ or $\eta>0$ | How close is the system to chronic congestion? |
+| Nominal load | $\rho_{\rm nom}(t)=\lambda(t)/(c\mu(t))$, dimensionless; only an upper-capacity reference when $n<c$, and not exact utilisation when $\alpha>1$ or $\eta>0$ | How close is the system to chronic congestion? |
 | Backlog stock | $Q(t)$ or $\mathbb E[Q(t)]$, claims | How much demand is outstanding now? |
 | Backlog exposure | $B=\int_0^T\mathbb E[Q(t)]\,dt$, claim-days | How large and long-lasting was the deficit? |
 | Occurrence and severity | $\Pr(Q>0)$ and $\Pr(Q\ge q^*)$, probabilities | How likely is a shortage or tolerance exceedance? |
-| Delay | Stationary $\mathbb E[W]=1/(\mu-\lambda)$ for M/M/1; otherwise a labelled time-average Little's-law proxy, days | How long before demands are served? A transient waiting-time distribution is not yet implemented |
-| Recovery | $\mathbb E[T_{q\to0}]$ for constant rates, days; target extension is $\Pr(T_{q\to0}\le H\mid q,\{\lambda(t),\mu(t)\})$ | How likely is recovery before a management deadline? |
+| Delay | Stationary service-only $\mathbb E[W]=1/(\mu-\lambda)$ for M/M/1 without reneging; the current time-average proxy measures backlog clearance and can include reneging, days | How long before demands are served or abandoned? A transient service-only waiting-time distribution is not yet implemented |
+| Recovery | Current $\mathbb E[T_{q\to0}]$ is backlog-clearance time under constant rates, including reneging, days; target extension is $\Pr(T_{q\to0}\le H\mid q,\{\lambda(t),\mu(t)\})$, with service-only recovery reported separately | How likely is backlog clearance before a management deadline? |
 | Served demand | $S_{\rm served}=\int\sum_n S_n(t)p_n(t)\,dt$, claims | How much demand was actually met? |
 | Abandoned demand | $A_{\rm abandoned}=\int[\lambda(t)p_{K_q}(t)+\eta\sum_n n p_n(t)]\,dt$, claims | How much demand was blocked or reneged? |
 | Ledger residual | $D_{\rm total}-S_{\rm served}-A_{\rm abandoned}-[Q(T)-Q(0)]$, claims | Does the demand accounting close within numerical and measurement uncertainty? |
@@ -282,8 +272,13 @@ varying arrival rates (Massey & Whitt, 1997), finite-capacity queues with
 time-dependent arrivals (Tan et al., 2013), waiting times under variable,
 long-range-correlated arrival rates (Bogachev et al., 2023, 2024), and the modern
 synthesis of time-varying queues (Whitt, 2018). We import that machinery; we do
-not claim to invent it. The hydrological contribution is to estimate the time-varying rates
-from physical covariates and to interpret the resulting state as drought risk.
+not claim to invent it. Queue parameter and state estimation, deep generative
+models and learning-based queue control are also mature fields (Asanjarani et
+al., 2021; Ojeda et al., 2021; Dai & Gluzman, 2022; Sherzer et al., 2024; Chen et
+al., 2026; Garyfallos, 2026; Bae & Lee, 2026). The
+hydrological contribution is therefore not machine learning for queues, but the
+estimation of time-varying rates from physical covariates and the interpretation
+of the resulting state as drought risk.
 
 When $\lambda$ and $\mu$ vary, the stationary formulae no longer apply. For
 piecewise-constant rates the solution can be assembled phase by phase; for
@@ -291,7 +286,7 @@ general time-varying rates we solve $\dot{\mathbf p}=\mathbf p A(t)$ numerically
 and verify against an independent discrete-event simulation. The instantaneous
 nominal load $\rho_{\rm nom}(t)$ is a useful local warning signal, but it is not
 a complete description: backlog depends on the integrated history
-$\int(\lambda-\mu)\,dt$, so the same nominal load can correspond to different
+$\int(\lambda-S)\,dt$, so the same nominal load can correspond to different
 backlogs on the rising and falling limbs of a seasonal cycle. Non-stationary
 queues have hysteresis.
 
@@ -306,13 +301,15 @@ claims (0.34% error; L1 distance between RK4 and exact distribution
 $<10^{-5}$). An independent Floquet calculation reproduces the periodic peak
 $\mathbb E[Q]=2.1295$ claims.
 
-Two runs shared the same time-mean rates, $\bar\lambda=0.8$ and $\bar\mu=1.0$
-claims/day. The stationary run held those rates constant. The non-stationary
+Two runs shared the same time-mean rates, $\bar\lambda=0.8$ claims/day and
+$\bar\mu=1.0$ claims/server/day. The stationary run held those rates constant. The non-stationary
 run imposed a seasonal demand peak and a lagging dry-season service dip,
 $\lambda(t)=0.8+0.35\sin(2\pi t/365)$ and
 $\mu(t)=1.0-0.28\sin(2\pi(t-75)/365)$. Each three-year run used a one-year
 spin-up, leaving two evaluation years. The threshold $q^*=6$ claims is an
 illustrative tolerance, not a measured impact threshold.
+
+**Table 4. Box 1 comparison at identical mean arrival and service rates.**
 
 | Quantity | Stationary | Non-stationary | Ratio |
 |---|---:|---:|---:|
@@ -325,8 +322,10 @@ illustrative tolerance, not a measured impact threshold.
 The demand ledger closes to $2.2\times10^{-7}$ claims in the non-stationary
 run. A further ramp with $\lambda$ rising from 0.70 to 1.15 claims/day raised
 peak $\mathbb E[Q]$ to 1.56 claims, mean $\mathbb E[Q]$ to 1.13 claims and
-abandoned demand to 24.78 claims. With $c=2$, the crossing of $\lambda/\mu=1$
-is not a universal critical threshold. Averaging a time-varying climate signal
+abandoned demand to 24.78 claims. The ramp ledger residual is
+$3.7\times10^{-3}$ claims, below the declared absolute quadrature tolerance of
+$5\times10^{-3}$ claims. With $c=2$, the crossing of $\lambda/\mu=1$ is not a
+universal critical threshold. Averaging a time-varying climate signal
 therefore understates peak congestion and critical-risk probability in this
 controlled example. A documented 44-case sensitivity grid
 (`src/P01/box1_sensitivity.py`; one-at-a-time variations plus a combined
@@ -336,6 +335,14 @@ of the averaging effect. The median ratios are 2.32 and 16.78, respectively,
 and the largest absolute demand-ledger residual is $1.7\times10^{-6}$ claims.
 These are **illustrative, under the stated assumptions** and cover only the
 declared grid; establishing the effect in real basins remains an empirical task.
+
+![Figure 2. Stationary and seasonal queues with identical mean rates.](figures/figure2_box1.png)
+
+*Figure 2. After a one-year spin-up, the seasonal queue reaches peak E[Q] = 2.130 claims and peak Pr(Q ≥ 6) = 0.0733, compared with 0.916 claims and 0.0043 for the stationary-at-mean queue. Synthetic; illustrative, under the stated assumptions.*
+
+![Figure 3. Sensitivity of the averaging effect across 44 synthetic cases.](figures/figure3_sensitivity.png)
+
+*Figure 3. Seasonal/stationary ratios for peak backlog and critical-state probability across the declared one-at-a-time and combined sensitivity grids. Every case preserves the direction of the averaging effect. Synthetic; illustrative, under the stated assumptions.*
 
 ## 5. An identifiability-first research programme
 
@@ -359,8 +366,11 @@ $K_q,\eta,\theta,\alpha,\lambda$ and $\mu$ produce indistinguishable
 observations, and which indicators remain robust across those equivalent
 parameter sets. Independent storage, delivery, restriction or impact
 observations should be used where they exist. Demand-versus-supply attribution
-requires exogenous variation — a documented release, diversion, pumping
-restriction or demand shock — rather than correlated-feature importance alone.
+has prior art in drought attribution and structural decomposition (Sun et al.,
+2019); the queue-specific question is whether backlog dynamics and their
+identification add information beyond those approaches. Attribution requires
+exogenous variation — a documented release, diversion, pumping restriction or
+demand shock — rather than correlated-feature importance alone.
 
 The estimation strategy is deliberately not "predict the index". Constrained
 models estimate the *parameters of an interpretable stochastic process*,
@@ -368,8 +378,10 @@ $\lambda(t)=f_\theta(\mathbf x_t)$ and $\mu(t)=g_\phi(\mathbf z_t)$, subject to
 positive rates, monotone dependence of $\mu$ on upstream flow where justified,
 and calibration of $\lambda$ against demand totals available at forecast
 issuance. Quantile or conformal variants can provide prediction intervals.
-Table 4 pre-specifies the tests; the primary endpoint is event-level Brier
+Table 5 pre-specifies the tests; the primary endpoint is event-level Brier
 score for $\Pr(Q\ge q^*)$ by a declared deadline.
+
+**Table 5. Pre-specified verification, identification and validation tests.**
 
 | Test | Metric | Baseline | Held-out unit | Null or failure clause |
 |---|---|---|---|---|
@@ -479,6 +491,13 @@ Application of queuing theory in the reliability and risk assessment of the
 water supply system: Case study of the Jabal Hasouna well-field. *Applied
 Sciences*, 16(3), 1608. https://doi.org/10.3390/app16031608
 
+Asanjarani, A., Nazarathy, Y., & Taylor, P. (2021). A survey of parameter and
+state estimation in queues. *Queueing Systems*, 97(1–2), 39–80.
+https://doi.org/10.1007/s11134-021-09688-w
+
+Bae, S., & Lee, D. (2026). Algorithm for contextual queueing bandits with
+rate-optimal queue length regret. *arXiv*. https://doi.org/10.48550/arxiv.2606.09668
+
 Batabyal, A. A. (1996). The queuing theoretic approach to groundwater management.
 *Ecological Modelling*, 85, 219–224. https://doi.org/10.1016/0304-3800(94)00178-2
 
@@ -495,10 +514,14 @@ residential water demands. In *Managing Water: Coping with Scarcity and
 Abundance* (pp. 488–493). American Society of Civil Engineers. [OpenAlex
 W2464114327; no DOI located]
 
-Deshmukh, A. (2026). Drought Intelligence Explorer: a 45-year district-level
-dataset of ten drought indicators for India and an open analytical platform.
-*EarthArXiv*. https://doi.org/10.31223/x5f52x [software:
-https://doi.org/10.5281/zenodo.24113363]
+Chen, X., Hong, G., & Liu, Y. (2026). Online learning and optimization for
+queues with unknown arrival rate and service distribution. *Operations
+Research*, 74(4), 2053–2074. https://doi.org/10.1287/opre.2023.0304
+
+Deshmukh, A. (2026). Drought Intelligence Explorer: a multi-era district
+drought record and analytics platform for India. *Zenodo*.
+https://doi.org/10.5281/zenodo.24444860 [preprint:
+https://doi.org/10.31223/x5f52x]
 
 Deshmukh, A., & Singh, R. (2016). Physio-climatic controls on vulnerability of
 watersheds to climate and land use change across the United States. *Water
@@ -507,6 +530,10 @@ Resources Research*, 52(11), 8775–8793. https://doi.org/10.1002/2016WR019189
 Deshmukh, A., & Singh, R. (2019). A Whittaker biome-based framework to account
 for the impact of climate change on catchment behavior. *Water Resources
 Research*, 55(12), 11208–11224. https://doi.org/10.1029/2018WR023113
+
+Dai, J. G., & Gluzman, M. O. (2022). Queueing network controls via deep
+reinforcement learning. *Stochastic Systems*, 12(1), 30–67.
+https://doi.org/10.1287/stsy.2021.0081
 
 Galliher, H. P., & Wheeler, R. C. (1958). Nonstationary queuing probabilities for
 landing congestion of aircraft. *Operations Research*, 6(2), 264–277.
@@ -528,6 +555,11 @@ of the Royal Statistical Society: Series B*, 19.
 Gani, J. (1969). Recent advances in storage and flooding theory. *Advances in
 Applied Probability*, 1.
 
+Garyfallos, S. (2026). *Deep learning methods for transient performance analysis
+and optimization of non-Markovian nonstationary queueing systems*
+[Doctoral dissertation, Universitat Politècnica de Catalunya].
+https://doi.org/10.5821/dissertation-2117-457092
+
 Gordienko, E. I., & Ruiz de Chávez, J. (2012). Quantitative estimates of stability
 in controlled GI/D/1/∞ queueing systems and in control of water release in a
 simple dam model. In *Proceedings of the 9th International Conference on
@@ -548,6 +580,10 @@ Jones, O. D. (2019). Runoff on rooted trees. *Journal of Applied Probability*,
 Jones, O. D., Lane, P. N. J., & Sheridan, G. J. (2016). The stochastic
 runoff-runon process: Extending its analysis to a finite hillslope. *Journal of
 Hydrology*, 541, 677–688. https://doi.org/10.1016/j.jhydrol.2016.06.056
+
+Klemeš, V. (1987). One hundred years of applied storage reservoir theory.
+*Water Resources Management*, 1(3), 159–175.
+https://doi.org/10.1007/BF00429941
 
 Langbein, W. B. (1958). Queuing theory and water storage. *Journal of the
 Hydraulics Division*, 84(5), 1–24. https://doi.org/10.1061/JYCEAJ.0000222
@@ -571,6 +607,11 @@ Mouche, E., & Harel, M.-A. (2016). Overland flow as a queueing process: The B/D/
 queue with an arbitrary service time. *Performance Evaluation*.
 https://doi.org/10.1016/j.peva.2016.10.001
 
+Ojeda, C., Cvejoski, K., Georgiev, B., Bauckhage, C., Schuecker, J., & Sánchez,
+R. J. (2021). Learning deep generative models for queuing systems.
+*Proceedings of the AAAI Conference on Artificial Intelligence*, 35(10),
+9214–9222. https://doi.org/10.1609/aaai.v35i10.17112
+
 Palková, Z., & Hennyeyová, K. (2012). Determination of optimal capacity of
 irrigation system using queuing theory. *Acta Universitatis Bohemiae
 Meridionalis*, 11, 67–72. https://doi.org/10.32725/acta.2008.011
@@ -578,6 +619,10 @@ Meridionalis*, 11, 67–72. https://doi.org/10.32725/acta.2008.011
 Palková, Z., & Rodný, T. (2010). Analytical model of the optimal capacity of an
 irrigation system. *Scientific Papers—Series Management, Economic Engineering
 in Agriculture and Rural Development*, 10(1), 155–158. [No DOI located]
+
+Palková, Z., & Rodný, T. (2011). Analytical model of the optimal capacity of an
+irrigation system. *Scientific Papers—Series Management, Economic Engineering
+in Agriculture and Rural Development*, 14(1). [No DOI located]
 
 Palková, Z., Rodný, T., & Kiedrowicz, M. (2012). Principles of process
 controlling of irrigation systems using queuing theory. *Rocznik Ochrona
@@ -593,6 +638,15 @@ irrigation water management. *Journal of Irrigation and Drainage Engineering*,
 Rothkopf, M. H., & Oren, S. S. (1979). A closure approximation for the
 nonstationary M/M/s queue. *Management Science*, 25(6), 522–534.
 https://doi.org/10.1287/mnsc.25.6.522
+
+Sherzer, E., Baron, O., Krass, D., & Resheff, Y. S. (2024). Approximating
+G(t)/GI/1 queues with deep learning. *European Journal of Operational
+Research*, 322(3), 889–907. https://doi.org/10.1016/j.ejor.2024.12.030
+
+Sun, S., Fu, G., Bao, C., & Fang, C. (2019). Identifying hydro-climatic and
+socioeconomic forces of water scarcity through structural decomposition
+analysis: A case study of Beijing city. *Science of the Total Environment*,
+687, 590–600. https://doi.org/10.1016/j.scitotenv.2019.06.143
 
 Tan, X., Knessl, C., & Yang, Y. P. (2013). On finite capacity queues with time
 dependent arrival rates. *Stochastic Processes and their Applications*.

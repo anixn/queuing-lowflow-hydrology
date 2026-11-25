@@ -19,7 +19,7 @@ After adding blocked-demand, conservation-ledger and stock/flux tests:
 & 'C:\Users\ankit.deshmukh\AppData\Local\miniconda3\envs\drought\python.exe' tests/test_rate_estimators.py
 ```
 
-Result after the claim-scale test: **23/23 passed** (10 P01, 6 benchmark, 7 estimator).
+Result after the literature-count validator: **25/25 passed** (12 P01, 6 benchmark, 7 estimator).
 
 ## Reproduced synthetic anchors
 
@@ -50,9 +50,11 @@ The real-data pilot and CMIP6 extraction were not treated as findings.
 ## Code and document changes
 
 - `src/shared/queue_core.py`: added service-flux separation, blocked-demand accounting, backlog exposure, served/admitted/abandoned totals, conservation residual and corrected one-year spin-up.
-- `tests/test_queue_core.py`: five new tests, including claim-scale invariance.
+- `tests/test_queue_core.py`: seven new tests, including blocked demand, ledger closure, stock/flux separation, Box 1, claim-scale invariance, figure-data anchors and literature counts.
 - `src/P01/box1_sensitivity.py`: reproducible 44-case synthetic sensitivity grid.
 - `src/P01/claim_scale_envelope.py`: 30-case physical-invariance and finite-claim scale check.
+- `src/P01/figure_data.py`, `src/P01/make_figures.py`: reproducible manuscript figures.
+- `src/P01/validate_literature_counts.py`: read-only bibliometric count validator.
 - `P01/P01_draft_v2.md`: corrected indicator contract, Box 1, scope status, prior art and identifiability-first programme.
 - `P01/queueing_howto.md`, `P01/README.md`, `START_HERE.md`, `P01/literature_audit.md`, `P01/search_protocol.md`: synchronized status and definitions.
 - This directory: attached novelty workflow adapted to the existing project.
@@ -60,7 +62,7 @@ The real-data pilot and CMIP6 extraction were not treated as findings.
 ## Limitations
 
 - Evidence confidence is MODERATE; search coverage is exploratory.
-- No Scopus/WoS rerun was performed on 25 November.
+- WoS was refreshed through institutional IP access on 25 November; Scopus's current UI returned no targeted records, so no new Scopus screen is claimed.
 - The Phase-A trace preserves two citing-set exports; two other exports are
   absent, and two WoS citation-count discrepancies remain unreconciled.
 - The one-off `build_record_table.py` helper was deleted during housekeeping

@@ -42,7 +42,7 @@ python tests/test_nonstationary_bench.py
 python tests/test_rate_estimators.py
 ```
 
-All **23 tests** should pass. The exact interpreter path is recorded in `START_HERE.md` §8.
+All **25 tests** should pass. The exact interpreter path is recorded in `START_HERE.md` §8.
 
 ## Current status
 
@@ -50,6 +50,7 @@ All **23 tests** should pass. The exact interpreter path is recorded in `START_H
 - **Phase B current:** finish P01 figures, language pass and WRR package.
 - **Claim convention revised:** 45,000 ha district canal-irrigated proxy; 9×10⁶ m³ per 20 mm claim; 30-case scale envelope checked.
 - **P02 design protocol ready:** model stack, data requirements and CAMELS-IND-Proj future route documented in `analysis/P02_methods/`.
-- **Phase C not started:** P02 implementation begins only after Gate B.
+- **P01 Gate B technical pass:** figures, WRR drafts, provenance and count validator complete; author sign-off pending in `P01/GATE_B_CHECKLIST.md`.
+- **Phase C not started:** P02 implementation begins only after Gate B sign-off.
 
 See `docs/project/SESSION_LOG.md` for the session-by-session record.

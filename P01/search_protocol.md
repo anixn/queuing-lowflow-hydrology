@@ -123,7 +123,7 @@ Extra C = 13); zero retained.** The per-record table lives in
 `literature_audit.md` ("WoS record-level screen"). With this, both databases
 are fully screened at record level: **142 WoS + 295 Scopus = 437 records,
 zero gap-changing findings**. The dated gap sentence is frozen in
-`../docs/project/RESEARCH_PROTOCOL.md` §8. Forward-citation tracing is complete (see §2 below
+`../AGENTS.md` §2 and `P01_draft_v2.md` §6. Forward-citation tracing is complete (see §2 below
 and `../analysis/P01_literature/citation_trace_2026-11-21.md`); the OpenAlex trace is now
 a cross-check, not a substitute.
 

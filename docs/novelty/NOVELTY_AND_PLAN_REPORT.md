@@ -283,11 +283,11 @@ Everything below is in the order I intend to do it. Each phase ends with a decis
 10. **Strengthen non-stationarity — DONE 25 November 2026.** Box 1 now has corrected units, one-year spin-up, Floquet verification, conservation residual and a 44-case sensitivity grid. The direction of the averaging effect persists across the declared grid; real-basin evidence remains outstanding.
 11. **Write a falsifiable programme — DONE 25 November 2026.** P01 §5 now begins with an identification gate and a table of metrics, baselines, held-out units and null clauses.
 12. **Add guardrails — DONE 25 November 2026.** P01 §6 now includes assumptions, conservation, dependence, uncertainty, raw-CMIP6 and null/non-identifiability rules.
-13. **Build the figures/tables:** the queue–drought mapping table, the prior-art table, the Box 1 synthetic comparison, and a flow diagram of the data → rates → queue → indicators chain. Keep them reproducible from code.
-14. **Internal read-through for novelty language.** Search the draft for "no study", "first", "novel" and "new" and check every one against Gate A.
-15. **Prepare the WRR submission package:** abstract, cover letter stating the narrow claim and the search scope, and code/data availability statement.
+13. **Build the figures/tables — DONE 25 November 2026.** Three reproducible PNG/SVG figures and five numbered tables are embedded in P01; generation scripts and captions are in `P01/figures/`.
+14. **Internal read-through for novelty language — DONE 25 November 2026.** The draft uses the exact frozen sentence and avoids prohibited priority language.
+15. **Prepare the WRR submission package — DONE AS DRAFT 25 November 2026.** The 219-word abstract, cover letter and code/data statement are in `P01/submission/`.
 
-**Gate B:** P01 is "stable" only when the gap sentence is frozen, all prior art is cited, and every numerical claim has a reproducible script behind it. Then P02 starts.
+**Gate B:** the technical checklist passes (`P01/GATE_B_CHECKLIST.md`). Author sign-off remains on submission metadata, archive links, recovery/μ definitions and disclosed literature limitations. Then P02 starts.
 
 ### Phase C — Build and test P02
 
@@ -310,7 +310,7 @@ Everything below is in the order I intend to do it. Each phase ends with a decis
 
 ### Phase D — Cross-cutting hygiene
 
-28. **Keep the test suites green** — 10 P01 tests, 6 benchmark tests, 7 estimator tests (23 total) — and add a test for every new feature.
+28. **Keep the test suites green** — 12 P01 tests, 6 benchmark tests, 7 estimator tests (25 total) — and add a test for every new feature.
 29. **Version control — resolved.** The workspace is a Git repository; continue committing coherent paper/analysis changes.
 30. **Write one reproducibility page per paper** with exact run commands (including the Rscript path), file names, and the order to run them. The P02 investigation report is complete; paper-specific pages remain a Gate-B/C task.
 
@@ -323,18 +323,21 @@ Everything below is in the order I intend to do it. Each phase ends with a decis
    (`analysis/P01_literature/wos_screening_2026-11-21.md`).
 2. ~~Freeze the gap sentence using the completed WoS/Scopus scope.~~
    **Done 21 November 2026** — frozen and dated in `AGENTS.md` §2,
-   `START_HERE.md` §5 and `docs/project/RESEARCH_PROTOCOL.md` §8.
+   `START_HERE.md` §5 and `P01/P01_draft_v2.md` §6.
 3. Claim convention is revised and documented (45,000 ha proxy; 9×10⁶ m³ = 20 mm per claim; K=20 = 400 mm). Gauge-specific replacement or the sensitivity envelope remains a P02 task.
 4. Full-text screen the retained prior-art set: nothing was retained, so this
    step is empty; the already-verified prior-art records remain cited as is.
-5. Build the reproducible P01 figures and run the Box 1 sensitivity grid; then prepare the WRR package (Phase B).
+5. ~~Build the reproducible P01 figures and WRR package drafts.~~ **Done 25 November 2026**; the technical Gate B checklist passes and awaits author sign-off.
 
 ---
 
 ## 6. What I need from you
 
-- Scopus access is confirmed and used; no action needed there.
-- Claim-volume proxy is documented (45,000 ha; 9×10⁶ m³ = 20 mm per claim); replace it if gauge-specific canal-command records appear.
-- Confirmation that the WRR target and the HESS target remain the order of work.
+- Sign the P01 Gate B checklist: final title/abstract/keywords, corresponding-author details and declarations.
+- Provide the public repository URL, archived release/DOI and software licence.
+- Confirm recovery means backlog clearance including reneging, or request a service-only redefinition.
+- Confirm aggregate μ uses c=1 unless separate supply sources are documented.
+- Accept the disclosed literature limitations or authorize retrieval of missing restricted records.
+- Confirm that WRR (P01) then HESS (P02) remains the order of work.
 
-Everything else — searches, screening, code, drafts, tests — I can carry forward as described.
+Everything else — searches, screening, code, drafts, tests and figures — is complete for the technical Gate B pass.
