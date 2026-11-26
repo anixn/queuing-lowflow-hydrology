@@ -483,8 +483,10 @@ P1_STORAGE_FAMILIES <- c("storage", "storage_plus_indices")
 p1_design_at_lead <- function(m, target_col, lead_h) {
   stopifnot(lead_h %in% P1_LEADS)
   m <- copy(m)[order(date)]
-  m[, y := data.table::shift(get(target_col), lead_h, type = "lead")]
-  m[, target_year := data.table::shift(year, lead_h, type = "lead")]
+  y_vec <- data.table::shift(m[[target_col]], lead_h, type = "lead")
+  ty_vec <- data.table::shift(m$year, lead_h, type = "lead")
+  m[, y := y_vec]
+  m[, target_year := ty_vec]
   last_train <- max(P$train_years); last_test <- max(P$test_years)
   m[, train := year %in% P$train_years &
       !is.na(target_year) & target_year <= last_train]
