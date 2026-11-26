@@ -1,0 +1,1 @@
+NULL RECORDED: the queue does not clear the frozen bar over the best memory baseline; the null is final for the concurrent design and Study P1 starts (PIVOT.md §3).

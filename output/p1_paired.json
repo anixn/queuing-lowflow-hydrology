@@ -1,9 +1,9 @@
 {
   "file": "p1_paired.csv",
-  "git_hash": "7c2c186",
-  "code_hash": "e053ccde5fa48d5b70914fd0e018ac71",
-  "written": "2026-11-26T21:15:32",
-  "nrow": 2108,
+  "git_hash": "53543e9",
+  "code_hash": "885ea48dce2f30e0bb7d092ef3828356",
+  "written": "2026-11-26T22:12:22",
+  "nrow": 3140,
   "ncol": 12,
   "session": {
     "R": "R version 4.5.1 (2025-06-13 ucrt)",

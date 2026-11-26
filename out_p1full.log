@@ -30,14 +30,14 @@ Sample report (India):
 === P1 confirmatory (India) ===
                           hypothesis  lead     n  median_delta       boot_lo
                               <char> <int> <int>         <num>         <num>
-1: H0 (descriptive: parity expected)     1    88  2.933928e-05 -0.0020656608
-2:                 H1 (confirmatory)     3    87 -4.585627e-04 -0.0005750926
-3:                 H2 (confirmatory)     6    88 -4.246661e-04 -0.0010288613
+1: H0 (descriptive: parity expected)     1   131 -0.0003339335 -1.191471e-03
+2:                 H1 (confirmatory)     3   130 -0.0015151723 -7.137394e-05
+3:                 H2 (confirmatory)     6   131 -0.0007332429 -8.996548e-05
        boot_hi sign_share                                           verdict
          <num>      <num>                                            <char>
-1: 0.002285742  0.5000000 descriptive (H0): report as predicted parity/null
-2: 0.002946326  0.4712644                                              FAIL
-3: 0.002256974  0.4545455                                              FAIL
+1: 0.001884904  0.4732824 descriptive (H0): report as predicted parity/null
+2: 0.003222783  0.4307692                                              FAIL
+3: 0.002676825  0.4122137                                              FAIL
 === P1 region USA ===
 driver built; ids: 671 
   fits 50/671
@@ -46,68 +46,3 @@ driver built; ids: 671
   fits 200/671
   fits 250/671
   fits 300/671
-  fits 350/671
-  fits 400/671
-  fits 450/671
-  fits 500/671
-  fits 550/671
-  fits 600/671
-  fits 650/671
-  propagated 50/671
-  propagated 100/671
-  propagated 150/671
-  propagated 200/671
-  propagated 250/671
-  propagated 300/671
-  propagated 350/671
-  propagated 400/671
-  propagated 450/671
-  propagated 500/671
-  propagated 550/671
-  propagated 600/671
-  propagated 650/671
-ERROR MESSAGES (first 10):
-propagate camels_01466500: Unit assertion failed: S_cap must be positive mm
-propagate camels_06408700: Unit assertion failed: S_cap must be positive mm
-propagate camels_06409000: Unit assertion failed: S_cap must be positive mm
-propagate camels_06431500: Unit assertion failed: S_cap must be positive mm
-propagate camels_06440200: Unit assertion failed: S_cap must be positive mm
-propagate camels_06447500: Unit assertion failed: S_cap must be positive mm
-propagate camels_06847900: Unit assertion failed: S_cap must be positive mm
-propagate camels_06853800: Unit assertion failed: S_cap must be positive mm
-propagate camels_07226500: Unit assertion failed: S_cap must be positive mm
-propagate camels_07301410: Unit assertion failed: S_cap must be positive mm 
-run_region_p1 done: params=671 rows, monthly=652, screens=652
-Sample report (USA):
-   region n_read n_complete n_events_t1 n_events_t2 n_recession_ok n_borrowed
-   <char>  <int>      <int>       <int>       <int>          <int>      <int>
-1:    USA    652        639         593         638            540         85
-=== P1 fitting and scoring (USA transfer arm) ===
-  scored 25/639
-  scored 50/639
-  scored 75/639
-  scored 100/639
-  scored 125/639
-  scored 150/639
-  scored 175/639
-  scored 200/639
-  scored 225/639
-  scored 250/639
-  scored 275/639
-  scored 300/639
-  scored 325/639
-  scored 350/639
-  scored 375/639
-  scored 400/639
-  scored 425/639
-  scored 450/639
-  scored 475/639
-  scored 500/639
-  scored 525/639
-  scored 550/639
-  scored 575/639
-  scored 600/639
-  scored 625/639
-USA transfer arm scored no gauges; skipping its outputs.
-
-P1 study complete. All outputs written with sidecars.
