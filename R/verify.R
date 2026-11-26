@@ -413,6 +413,26 @@ v21_bss <- function() {
                sprintf("BSS %.4f, max diff %.2e", out$bss, d))
 }
 
+# V22: Lyne-Hollick BFI survives a leading gap and recovers BFI = 1 for a
+# pure-baseflow series and BFI -> 0 for a pure-quickflow (flash) series.
+v22_bfi <- function() {
+  set.seed(22)
+  # Leading NA gap must not poison the filter.
+  q_gap <- c(NA, NA, rep(1, 100))
+  bfi_gap <- bfi_lyne_hollick(q_gap)
+  # Pure baseflow: constant flow -> b == q -> BFI = 1.
+  bfi_const <- bfi_lyne_hollick(rep(1, 200))
+  # Flashy: alternates high spikes and near-zero baseflow.
+  q_flash <- rep(c(10, 0.01, 0.01, 0.01), 50)
+  bfi_flash <- bfi_lyne_hollick(q_flash)
+  ok <- is.finite(bfi_gap) && abs(bfi_gap - 1) < 0.05 &&
+    abs(bfi_const - 1) < 1e-12 && bfi_flash < 0.4 && bfi_flash > 0.01
+  verif_result("V22", "BFI filter (leading gap, const, flashy)",
+               ok,
+               sprintf("gap %.3f, const %.3f, flash %.3f",
+                       bfi_gap, bfi_const, bfi_flash))
+}
+
 run_verification <- function(verbose = TRUE) {
   tests <- list(
     v01_mm1k, v02_mmc, v03_rk4_stationary, v04_rk4_des, v05_ledger,
@@ -420,7 +440,7 @@ run_verification <- function(verbose = TRUE) {
     v10_thresholds, v11_indices, v12_metrics, v13_zero_classifier,
     v14_gap_rule, v15_common_rates, v16_fluid_ledger,
     v17_analytic_recession, v18_recession_recovery, v19_storage_scale,
-    v20_leakage_tripwire, v21_bss
+    v20_leakage_tripwire, v21_bss, v22_bfi
   )
   res <- do.call(rbind, lapply(tests, function(f) {
     out <- tryCatch(f(), error = function(e) {
