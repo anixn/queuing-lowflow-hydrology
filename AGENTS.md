@@ -21,7 +21,8 @@ external expert review diagnosed three design causes (no information beyond
 the benchmark's own predictors; the wrong queue class — M/M/1/K artefacts on a
 fluid process; a utilisation screen that selected on assumed constants). That
 study and its manuscript are retired as a negative-result methods note; its
-numbers stay exactly as published in `output/` and git history.
+numbers and backbone live in **git history only** (commit `36f1db1` and its
+descendants; the working tree keeps no retired files, to avoid confusion).
 
 **The current question (Study P1).** Does a **recession-calibrated
 storage-deficit state** — estimated from the catchment's own recession
@@ -158,10 +159,12 @@ either junction. We **reclaim** a lineage (Langbein 1958; Moran 1954; Kendall
 | `R/functions/storage_engine.R` | BFI filter, recession fits, `S_cap` inversion, fluid propagator with ledger | New, P1 |
 | `R/functions/pipeline.R` | Screens, indices, design, fit, paired statistics | Active |
 | `R/functions/{indices,eval,io,audit}.R` | Indices, metrics, IO, zero/gap rules | Stable, tested |
-| `R/study.R` | Retired study backbone (G2 re-run entry) | Superseded; kept for the G2 record |
+| `R/study_gate_g2.R` | Gate G2 record (corrected re-run, decision applied) | Complete |
 | `R/study_p1.R` | **P1 compute backbone**: India primary, US transfer arm | Active |
-| `R/figures.R` | Figures (PDF + 300-dpi PNG) from `output/*.csv` | Active |
-| `R/verify.R` | 15-check verification battery (gate G1) | Rebuilt for P1 |
+| `R/kclass_exploratory.R` | Exploratory post-hoc k-class cut (labelled, not confirmatory) | Descriptive |
+| `R/power_check.R` | Sign-test power curve from the G2 variance | Complete |
+| `R/figures_p1.R` | P1 figures (PDF + 300-dpi PNG) from `output/*.csv` | Active |
+| `R/verify.R` | 22-check verification battery (gate G1) | Rebuilt for P1 |
 | `output/*.csv` + `.json` | Generated results + provenance | Regenerable; never hand-edit |
 | `figures/*.pdf`, `*.png` | Generated figures | Regenerable |
 | `P01/literature_audit.md`, `P01/search_protocol.md`, `analysis/P01_literature/`, `analysis/novelty_2026-11-25/` | Evidence records | Frozen evidence |

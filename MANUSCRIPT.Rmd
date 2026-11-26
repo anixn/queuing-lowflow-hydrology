@@ -56,7 +56,7 @@ measured as paired per-gauge Brier differences on identical held-out months
 (2011–2020) with a two-level block bootstrap. `[result sentence filled from
 output/p1_confirmatory.csv once H1/H2 are scored.]` All state estimation is
 verified by an exact three-way agreement (analytic recession solution,
-fluid propagator, per-day ledger to 1e−9) and a 21-check battery; all
+fluid propagator, per-day ledger to 1e-9) and a 21-check battery; all
 thresholds, screens, standardisation and tuning use training years only.
 
 # Why the queue study retired
@@ -97,7 +97,7 @@ each `storage_plus_indices` vs the per-gauge best-of
 1-month lead is declared in advance as the parity/null expectation. Screens
 are completeness and event-count only. Headline metric: Brier skill score
 vs climatology; paired per-gauge deltas on identical held-out months;
-two-level block bootstrap; sign test at ≥ 60 % consistency; a declared harm
+two-level block bootstrap; sign test at >= 60 percent consistency; a declared harm
 bound lists degraded gauges individually. **Announced limitation:** the
 storage state is a different transform of the same record, not independent
 information.

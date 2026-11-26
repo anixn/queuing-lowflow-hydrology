@@ -49,11 +49,12 @@ R/
     units.R             the unit wall (mm-day; seasonal Kc/phi curves)
     pipeline.R          screens, indices, families, paired statistics
     indices/eval/io/audit.R
-  study.R               retired study backbone (G2 record)
-  study_gate_g2.R       Gate G2: corrected re-run + decision
+  study_gate_g2.R       Gate G2: corrected re-run + decision (record)
   study_p1.R            the P1 backbone: India primary + US transfer arm
-  figures.R / figures_p1.R
-  verify.R              21-check verification battery
+  power_check.R         sign-test power curve from the G2 variance
+  kclass_exploratory.R  labelled post-hoc k-class cut
+  figures_p1.R          P1 figures
+  verify.R              22-check verification battery
 PIVOT.md                the pivot decision, gate tables, change record
 STUDY.Rmd               technical document: data, methods, results
 MANUSCRIPT.Rmd          paper fragment, knits to MANUSCRIPT.pdf

@@ -68,13 +68,14 @@ input only.
 From the repository root:
 
 ```powershell
-Rscript R/verify.R          # 21/21 checks (gate G1); required before any run
+Rscript R/verify.R          # 22/22 checks (gate G1); required before any run
 Rscript R/study_gate_g2.R   # Gate G2 (corrected re-run; writes gateG2_*.csv)
 Rscript R/study_p1.R        # Study P1 (India + US transfer arm; p1_*.csv)
 Rscript R/power_check.R     # power analysis from the G2 variance
+Rscript R/kclass_exploratory.R   # labelled post-hoc k-class cut
 Rscript R/figures_p1.R      # P1 figures
-Rscript R/study.R           # (optional) retired study, kept as the record
 Rscript -e "rmarkdown::render('STUDY.Rmd')"
+Rscript -e "rmarkdown::render('MANUSCRIPT.Rmd')"
 ```
 
 PET source and the US transfer arm are environment switches:
@@ -103,9 +104,11 @@ Every CSV carries a JSON sidecar (git hash, code hash, shape, R session).
 | `p1_paired{,_usa}.csv` | P1 | per-gauge paired deltas |
 | `p1_summary{,_usa}.csv` | P1 | medians, bootstrap CIs, sign tests |
 | `p1_confirmatory.csv` | P1 | H1/H2 (+H0) decision table |
-| `p1_predictions{,_usa}.csv` | P1 | held-out predictions (diagnostics) |
+| `p1_predictions{,_usa}.csv` | P1 | held-out predictions (large; regenerable, untracked) |
 | `p1_power.csv` | power | sign-test power curve |
-| `region_{summary,difference}.csv` | retired | the published retired-study numbers |
+| `p1_bss_by_kclass.csv` | exploratory | labelled post-hoc k-class cut |
+
+The retired study's numbers and backbone live in **git history only**.
 
 ---
 

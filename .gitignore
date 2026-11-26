@@ -10,3 +10,6 @@ output/_*log.txt
 # Python leftovers (the v1 code is on branch legacy-python)
 __pycache__/
 *.pyc
+
+# Regenerable held-out prediction tables (large; reproducible by study_p1.R)
+output/p1_predictions*.csv
