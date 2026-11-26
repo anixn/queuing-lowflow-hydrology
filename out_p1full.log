@@ -47,3 +47,78 @@ driver built; ids: 671
   fits 250/671
   fits 300/671
   fits 350/671
+  fits 400/671
+  fits 450/671
+  fits 500/671
+  fits 550/671
+  fits 600/671
+  fits 650/671
+  propagated 50/671
+  propagated 100/671
+  propagated 150/671
+  propagated 200/671
+  propagated 250/671
+  propagated 300/671
+  propagated 350/671
+  propagated 400/671
+  propagated 450/671
+  propagated 500/671
+  propagated 550/671
+  propagated 600/671
+  propagated 650/671
+ERROR MESSAGES (first 10):
+propagate camels_01466500: Unit assertion failed: S_cap must be positive mm
+propagate camels_06408700: Unit assertion failed: S_cap must be positive mm
+propagate camels_06409000: Unit assertion failed: S_cap must be positive mm
+propagate camels_06431500: Unit assertion failed: S_cap must be positive mm
+propagate camels_06440200: Unit assertion failed: S_cap must be positive mm
+propagate camels_06447500: Unit assertion failed: S_cap must be positive mm
+propagate camels_06847900: Unit assertion failed: S_cap must be positive mm
+propagate camels_06853800: Unit assertion failed: S_cap must be positive mm
+propagate camels_07226500: Unit assertion failed: S_cap must be positive mm
+propagate camels_07301410: Unit assertion failed: S_cap must be positive mm 
+run_region_p1 done: params=671 rows, monthly=652, screens=652
+Sample report (USA):
+   region n_read n_complete n_events_t1 n_events_t2 n_recession_ok n_borrowed
+   <char>  <int>      <int>       <int>       <int>          <int>      <int>
+1:    USA    652        639         593         638            540         85
+=== P1 fitting and scoring (USA transfer arm) ===
+  scored 25/639
+  scored 50/639
+  scored 75/639
+  scored 100/639
+  scored 125/639
+  scored 150/639
+  scored 175/639
+  scored 200/639
+  scored 225/639
+  scored 250/639
+  scored 275/639
+  scored 300/639
+  scored 325/639
+  scored 350/639
+  scored 375/639
+  scored 400/639
+  scored 425/639
+  scored 450/639
+  scored 475/639
+  scored 500/639
+  scored 525/639
+  scored 550/639
+  scored 575/639
+  scored 600/639
+  scored 625/639
+
+=== USA transfer check (descriptive) ===
+   region target  lead baseline     n  median_delta boot_lo boot_hi sign_k
+   <char> <char> <int>   <char> <int>         <num>   <num>   <num>  <int>
+1:    USA     t1     1   bestof   548  0.0006787364      NA      NA    301
+2:    USA     t1     3   bestof   549 -0.0003374572      NA      NA    258
+3:    USA     t1     6   bestof   548 -0.0003617759      NA      NA    239
+   sign_n sign_share     sign_p
+    <int>      <num>      <num>
+1:    548  0.5492701 0.01174185
+2:    549  0.4699454 0.92665573
+3:    548  0.4361314 0.99880438
+
+P1 study complete. All outputs written with sidecars.

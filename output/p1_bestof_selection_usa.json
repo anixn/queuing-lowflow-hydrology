@@ -1,9 +1,9 @@
 {
   "file": "p1_bestof_selection_usa.csv",
-  "git_hash": "228d53f",
-  "code_hash": "67dbfe20581de00a0b07c8e160ca8163",
-  "written": "2026-11-26T20:47:42",
-  "nrow": 36,
+  "git_hash": "deeabc4",
+  "code_hash": "885ea48dce2f30e0bb7d092ef3828356",
+  "written": "2026-11-26T23:09:24",
+  "nrow": 3724,
   "ncol": 4,
   "session": {
     "R": "R version 4.5.1 (2025-06-13 ucrt)",
