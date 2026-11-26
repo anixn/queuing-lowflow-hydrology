@@ -1,22 +1,15 @@
-# Python
+# Never commit credentials or large caches
+.env
+.env.local
+.Renviron
+.Rprofile
+
+# Large regenerable intermediates
+output_us/_cache/
+output_us/reservoir_daily.csv
+output/notebooks/
+output/notebooks_steps/
+
 __pycache__/
-*.py[cod]
-*.egg-info/
-.pytest_cache/
+*.pyc
 
-# R
-.Rhistory
-.RData
-.Rproj.user
-Rplots.pdf
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Editors
-.vscode/
-.idea/
-
-# Temporary outputs
-*.tmp

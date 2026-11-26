@@ -1,0 +1,13 @@
+{
+  "file": "metrics_e1.csv",
+  "git_hash": "a029c56",
+  "written": "2026-11-26T10:58:25",
+  "nrow": 192,
+  "ncol": 7,
+  "session": {
+    "R": "R version 4.5.1 (2025-06-13 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  },
+  "stage": "S7",
+  "seed": 20261125
+}

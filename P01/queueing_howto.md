@@ -1,10 +1,12 @@
-# How to use queueing theory for drought: a working note (v1, 21 Nov 2026)
+# How to use queueing theory for drought: a working note (v2, 26 Nov 2026)
 
-Purpose: the technical core that P01 explains and P02 will implement.
-Everything below is a *proposal*, not a published result. Numbers in Box 1 are
-reproducible with `src/shared/queue_core.py` and are synthetic, not observational.
-Reference details were verified on 20–21 Nov 2026; see `literature_audit.md`.
-Rate-construction code skeletons are in `src/P01/data_pipeline.py`.
+Purpose: the technical core that the merged paper explains and the R pipeline
+implements. Everything below is a *proposal*, not a published result. Numbers in
+Box 1 are reproducible with the R engine (`R/00_utils/queue_engine.R`) and are
+synthetic, not observational. Reference details were verified on 20–21 Nov 2026;
+see `literature_audit.md`. The former Python implementation
+(`src/shared/queue_core.py`, `src/P01/data_pipeline.py`) is preserved on branch
+`legacy-python` and is superseded by the R code.
 
 ---
 

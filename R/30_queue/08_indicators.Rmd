@@ -1,0 +1,62 @@
+---
+title: "S5 - Queue indicators"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Stage:** S5 (indicators).
+**Purpose:** define the queue-state drought quantities that standard indices
+do not provide, and check their ranges against the regime table.
+**Inputs:** `output/queue_meta.csv`.
+**Outputs:** none.
+**Parameters:** `P$q_days`, `P$K_days`, `P$theta_mult`.
+
+## Definitions (daily, per gauge)
+
+| Quantity | Meaning |
+|---|---|
+| `E[Q]` | expected backlog (claims) = `sum_n n p_n` |
+| `P(Q >= q*)` | probability of a severe backlog state |
+| `P(Q >= theta)` | probability of the service-boost state |
+| `P(Q = K)` | probability of saturation (blocking guard) |
+| `served`, `reneged`, `blocked` | integrated daily fluxes (claims) |
+| first passage | mean days from `q*` back to an empty backlog |
+
+```{r}
+qm <- nb_require("queue_meta.csv", "S5")
+nb_assert_cols(qm, c("gauge_id", "max_E_Q", "max_p_ge_q"), "queue metadata")
+nb_assert(all(qm$max_E_Q >= 0), "negative expected backlog")
+nb_assert(all(qm$max_p_ge_q >= 0 & qm$max_p_ge_q <= 1),
+          "probability outside [0,1]")
+
+knitr::kable(
+  qm[order(-max_E_Q),
+     .(gauge_id, max_E_Q = round(max_E_Q, 2),
+       max_p_ge_q = round(max_p_ge_q, 3), q_star, K)],
+  caption = "Peak backlog indicators by gauge")
+```
+
+## Reading the indicators
+
+`[measurement]` `E[Q]` and `P(Q >= q*)` are *state* quantities: they describe
+how much unmet demand has accumulated and how likely the system is to be in a
+severe state, not merely how dry the month was. They are the candidate
+predictors added to SSI-3 in the confirmatory contrast.
+
+`[assumption]` The indicators are *illustrative under the stated Stage-A
+demand and SUP-1 supply assumptions*. They are not observed unmet demand;
+they are the model's representation of it under declared assumptions.
+
+```{r fig-regime}
+qm[, gauge_label := factor(gauge_id, levels = gauge_id[order(max_p_ge_q)])]
+ggplot(qm, aes(max_p_ge_q, gauge_label)) +
+  geom_segment(aes(x = 0, xend = max_p_ge_q, yend = gauge_label),
+               colour = "#999999") +
+  geom_point(colour = "#D55E00", size = 2) +
+  labs(x = expression(max[t]~P(Q >= q^"*")), y = "gauge",
+       title = "Peak probability of a severe backlog state") +
+  theme_bw(base_size = 11)
+```

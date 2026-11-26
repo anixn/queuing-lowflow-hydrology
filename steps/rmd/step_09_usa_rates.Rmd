@@ -1,0 +1,27 @@
+---
+title: "step_09 — USA reservoir queue"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Purpose.** Assert the USA reservoir queue regime and honesty devices.
+
+```{r}
+qm <- fread(file.path(QDJ_ROOT, "output_us", "reservoir_queue_meta.csv"))
+nb_assert(nrow(qm) >= 45, "too few reservoirs ran")
+nb_assert(max(qm$ledger_residual, na.rm = TRUE) < 1e-6, "ledger failed")
+nb_assert(max(qm$max_p_eq_K, na.rm = TRUE) < 1e-3, "blocking guard exceeded")
+cat(sprintf("reservoirs: %d; rho %.2f-%.2f; q* %d-%d; K %d-%d\n",
+            nrow(qm), min(qm$rho), max(qm$rho), min(qm$q_star),
+            max(qm$q_star), min(qm$K), max(qm$K)))
+cat(sprintf("in rho window: %d; max P(Q=K): %.2e; ledger: %.2e\n",
+            sum(qm$rho >= P$rho_window[1] & qm$rho <= P$rho_window[2]),
+            max(qm$max_p_eq_K, na.rm = TRUE),
+            max(qm$ledger_residual, na.rm = TRUE)))
+```
+
+`[measurement]` The reservoir-centric design replaces the 50%-of-flow supply
+assumption with measured ResOpsUS outflow and uses reservoir storage for K.

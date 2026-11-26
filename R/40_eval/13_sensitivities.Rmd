@@ -1,0 +1,77 @@
+---
+title: "S8 - Sensitivity grid"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Stage:** S8 (sensitivities).
+**Purpose:** report every predeclared one-factor-at-a-time axis around the
+baseline, regardless of direction. No axis was added after seeing E1/E2.
+**Inputs:** `output/sensitivity_meta.csv`, `output/sensitivity_grid.csv`.
+**Outputs:** none.
+**Parameters:** the sweep values in `R/config.R`
+(`f_irr_sweep`, `cap_mm_sweep`, `q_days_sweep`, `K_days_sweep`).
+
+## Every predeclared axis level must appear
+
+```{r}
+sm <- nb_require("sensitivity_meta.csv", "S8")
+sg <- nb_require("sensitivity_grid.csv", "S8")
+nb_assert_cols(sm, c("axis", "level", "n_gauges", "median_delta_brier",
+                     "boot_lo", "boot_hi", "sign_k", "sign_n", "sign_p",
+                     "median_delta_auc", "max_p_eq_K"), "sensitivity meta")
+
+expected <- list(
+  zero_variant = c("V0", "V2"),
+  demand_f_irr = c("0.03", "0.25"),
+  supply_variant = c("SUP-2", "SUP-3"),
+  intake_cap_mm = c("5", "20"),
+  q_days = c("45", "90"),
+  K_days = c("180"),
+  pet_source = c("Hargreaves"),
+  target = c("SPI3_training_only")
+)
+for (ax in names(expected)) {
+  got <- sm[axis == ax, level]
+  miss <- setdiff(expected[[ax]], got)
+  nb_assert(length(miss) == 0,
+            sprintf("axis '%s' is missing level(s): %s", ax,
+                    paste(miss, collapse = ", ")))
+}
+nb_assert(sm[axis == "baseline", .N] == 1, "baseline row missing or duplicated")
+cat("all predeclared axis levels present\n")
+```
+
+## Long results table (all directions reported)
+
+```{r}
+knitr::kable(
+  sm[, .(axis, level, n_gauges,
+         median_dBrier = round(median_delta_brier, 5),
+         lo = round(boot_lo, 5), hi = round(boot_hi, 5),
+         sign = sprintf("%d/%d", sign_k, sign_n),
+         sign_p = round(sign_p, 3),
+         median_dAUC = round(median_delta_auc, 3),
+         harm = harm_count,
+         max_pK = signif(max_p_eq_K, 2))],
+  caption = "One-factor-at-a-time sensitivity around the baseline")
+```
+
+## Blocking guard across the grid
+
+```{r}
+nb_assert(all(sm$max_p_eq_K < P$block_guard),
+          "a sensitivity configuration exceeded the blocking guard")
+cat(sprintf("max P(Q=K) across all configurations: %.3e\n",
+            max(sm$max_p_eq_K, na.rm = TRUE)))
+```
+
+`[measurement]` The confirmatory null (if it holds) is checked against every
+axis: the sign of `median(Delta_g)` and the AUC contrast are reported for V0
+and V2 zero semantics, a low/medium/high irrigated fraction, SUP-1/2/3, the
+cap sweep, the threshold sweeps, Hargreaves PET, and the leakage-clean
+training-only target. A conclusion that survives only the baseline would not
+be reported as robust.

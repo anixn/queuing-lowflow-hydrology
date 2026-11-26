@@ -1,0 +1,24 @@
+---
+title: "step_06 — USA screening"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Purpose.** Assert the Caravan-US screening funnel.
+
+```{r}
+s <- fread(file.path(QDJ_ROOT, "output_us", "caravan_us_screen.csv"))
+nb_assert(nrow(s) == 671, "Caravan-US should have 671 catchments")
+nb_assert(sum(s$irrigated, na.rm = TRUE) == 310, "irrigated count changed")
+nb_assert(sum(s$regulated, na.rm = TRUE) == 59, "regulated count changed")
+nb_assert(sum(s$queue_candidate, na.rm = TRUE) == 24, "queue candidate count changed")
+cat(sprintf("catchments %d; irrigated %d; regulated %d; both %d\n",
+            nrow(s), sum(s$irrigated), sum(s$regulated),
+            sum(s$queue_candidate)))
+```
+
+`[measurement]` Only 2 ResOpsUS reservoirs fall inside a Caravan polygon, so the
+gauge is the wrong unit; the USA study is reservoir-centric.

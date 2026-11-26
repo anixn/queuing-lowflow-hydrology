@@ -1,4 +1,8 @@
-# Real-data comparison protocol — locked before results
+# Real-data comparison protocol — locked before results (v1, SUPERSEDED)
+
+> **Superseded 26 November 2026.** This is the v1 two-gauge protocol. The v2
+> predeclared protocol is `../../protocol/PROTOCOL_v2.md`. Retained for
+> provenance only.
 
 Date: 25 November 2026. Amended after independent methodological review and **before any model-comparison results were examined**. This file is the analysis contract.
 

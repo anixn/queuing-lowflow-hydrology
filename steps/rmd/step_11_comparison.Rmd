@@ -1,0 +1,30 @@
+---
+title: "step_11 — India–USA comparison"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Purpose.** Put the two independent tests side by side.
+
+```{r}
+ind <- nb_require("meta_endpoints.csv", "step_11")[endpoint %in% c("E1", "E2")]
+us <- fread(file.path(QDJ_ROOT, "output_us", "us_meta.csv"))
+cmp <- rbind(
+  data.table(study = "India", endpoint = ind$endpoint,
+             median_dBrier = ind$median_delta,
+             lo = ind$boot_lo, hi = ind$boot_hi,
+             median_dAUC = ind$median_delta_auc),
+  data.table(study = "USA", endpoint = us$endpoint,
+             median_dBrier = us$median_delta,
+             lo = us$boot_lo, hi = us$boot_hi,
+             median_dAUC = us$median_dauc)
+)
+knitr::kable(cmp, digits = 5, caption = "India vs USA: paired contrast")
+```
+
+`[measurement]` Both studies: the Brier interval includes zero and AUC is
+positive. The result is a calibrated-probability null with a ranking gain, not a
+superiority claim.

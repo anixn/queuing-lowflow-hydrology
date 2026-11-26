@@ -1,0 +1,14 @@
+{
+  "file": "delta_e1.csv",
+  "git_hash": "a029c56",
+  "written": "2026-11-26T10:58:26",
+  "nrow": 187,
+  "ncol": 3,
+  "session": {
+    "R": "R version 4.5.1 (2025-06-13 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  },
+  "stage": "S7",
+  "endpoint": "E1",
+  "seed": 20261125
+}

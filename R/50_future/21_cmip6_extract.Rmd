@@ -1,0 +1,33 @@
+---
+title: "S9 (gated) - Future-climate extraction"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Stage:** future-climate (gated by plan section 3.12).
+**Status:** **not run.** This notebook is deliberately inert until gates
+G1-G5 pass and the author explicitly opens the future-climate stage.
+
+```{r}
+if (!identical(Sys.getenv("QDJ_ENABLE_FUTURE"), "1")) {
+  stop(paste(
+    "Future-climate stage is gated.",
+    "It stays closed until the main comparison (S5-S8) is complete and the",
+    "author opens it. Set QDJ_ENABLE_FUTURE=1 only after that decision.",
+    sep = "\n"), call. = FALSE)
+}
+```
+
+When opened, this stage must:
+
+1. Use CAMELS-IND-Proj bias-corrected forcing as the primary future supply
+   input and **never correct it twice** (rule inherited from v1).
+2. Reimplement the extraction with the 0.408 radiation conversion and pass a
+   FAO-56 tabulated-value test (`V9`) before emitting any number.
+3. Drive future demand through the same Stage A/B machinery and future supply
+   through the same SUP-1/2/3 variants.
+4. Emit a conditional scenario analysis, clearly separated from observed-period
+   results. **No raw CMIP6 number is ever quoted** in a published result.

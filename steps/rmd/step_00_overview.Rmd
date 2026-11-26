@@ -1,0 +1,40 @@
+---
+title: "step_00 — Overview and sequence"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Purpose.** Orientation for the two-study drought-queue package. The numbered
+R scripts in `steps/` are the executable sequence; this document is the map.
+
+| Step | Stage | Study |
+|---|---|---|
+| 00 | setup and readiness | both |
+| 01 | gauge profiling | India |
+| 02 | inventory → fit → meta | India |
+| 03 | power / MDE | India |
+| 04 | one-factor sensitivity grid | India |
+| 05 | figures | India |
+| 06 | Caravan screening | USA |
+| 07 | ResOpsUS ↔ Caravan match | USA |
+| 08 | county + USDM target | USA |
+| 09 | reservoir rates and queue | USA |
+| 10 | paired evaluation | USA |
+| 11 | manuscript figures | both |
+| 12 | verification battery | both |
+
+```{r}
+need <- c("output/selected_gauges.csv", "output/meta_endpoints.csv",
+          "output_us/reservoir_queue_meta.csv", "output_us/us_meta.csv")
+for (f in need) {
+  cat(sprintf("%-45s %s\n", f, if (file.exists(file.path(QDJ_ROOT, f))) "ok" else "MISSING"))
+}
+```
+
+`[measurement]` The package contains two independent tests. India: 24 gauges,
+11 basins. USA: 50 core reservoir–catchment pairs, 21 paired for the
+confirmatory contrast. The shared result is a calibrated-probability null with a
+small ranking gain.

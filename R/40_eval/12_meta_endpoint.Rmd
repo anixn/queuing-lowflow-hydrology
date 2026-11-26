@@ -1,0 +1,81 @@
+---
+title: "S7 - Meta endpoint and decision rules"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Stage:** S7 (meta endpoint).
+**Purpose:** apply the predeclared cross-gauge success rules to E1 and E2 and
+state the outcome routing without spin.
+**Inputs:** `output/meta_endpoints.csv`, `output/paired_e1.csv`,
+`output/paired_e2.csv`.
+**Outputs:** none.
+**Parameters:** `P$seed`.
+
+## Decision rules (frozen before unblinding)
+
+E1/E2 pass only if **all** hold:
+
+1. `median(Delta_g) > 0`.
+2. two-level bootstrap 95% CI (gauges, then years within gauge) excludes 0.
+3. one-sided sign test `p < 0.05` with improvement in >= 60% of gauges.
+4. harm bound: no gauge with `Delta_g < -0.005` driven by calibration breakdown.
+
+```{r}
+meta <- nb_require("meta_endpoints.csv", "S7")
+nb_assert_cols(meta, c("endpoint", "n_gauges", "median_delta", "boot_lo",
+                       "boot_hi", "sign_n", "sign_k", "sign_p", "sign_share",
+                       "harm_count"), "meta endpoints")
+nb_assert(all(c("E1", "E2") %in% meta$endpoint),
+          "confirmatory endpoints missing from the meta table")
+
+judge <- function(ep) {
+  r <- meta[endpoint == ep]
+  data.table(
+    endpoint = ep,
+    rule1_median_gt0 = r$median_delta > 0,
+    rule2_ci_excludes0 = (r$boot_lo > 0 | r$boot_hi < 0),
+    rule3_sign = (r$sign_p < 0.05 && r$sign_share >= 0.60),
+    rule4_harm = (r$harm_count == 0),
+    all_pass = (r$median_delta > 0 && (r$boot_lo > 0 | r$boot_hi < 0) &&
+                  r$sign_p < 0.05 && r$sign_share >= 0.60 && r$harm_count == 0)
+  )
+}
+rules <- rbind(judge("E1"), judge("E2"))
+knitr::kable(rules, caption = "Confirmatory decision rules")
+```
+
+```{r}
+knitr::kable(meta[, .(endpoint, n_gauges,
+                      median_delta = round(median_delta, 6),
+                      boot_lo = round(boot_lo, 6),
+                      boot_hi = round(boot_hi, 6),
+                      sign = sprintf("%d/%d", sign_k, sign_n),
+                      sign_p = round(sign_p, 4),
+                      share = round(sign_share, 3),
+                      harm = harm_count,
+                      median_dAUC = round(median_delta_auc, 4),
+                      auc_improved)],
+             caption = "Endpoint summary (all rows reported, including null)")
+```
+
+## Outcome routing
+
+```{r}
+n_pass <- sum(rules$all_pass)
+cat(sprintf("confirmatory endpoints fully passing: %d of 2\n", n_pass))
+if (n_pass == 2) {
+  cat("Routing: Path A (positive) -- report as a positive multi-catchment evaluation.\n")
+} else {
+  cat("Routing: Path B (honest null) -- powered, predeclared evaluation with a utilisation diagnosis.\n")
+}
+```
+
+`[measurement]` A failing confirmatory rule is not a licence to change the
+endpoint. The secondary AUC contrast is reported as **secondary** and is
+never upgraded post hoc. If E1/E2 fail while the power analysis shows the
+test was adequate, the outcome is Path B; if not, Path C. The route is stated
+in `analysis/P02_methods/RESULTS_v2.md` with the exact numbers.

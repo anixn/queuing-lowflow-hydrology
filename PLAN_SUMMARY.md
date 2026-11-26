@@ -1,162 +1,119 @@
-# Plan summary — one merged drought-queue methods paper
+# Plan summary — one merged drought-queue methods paper (v2 rebuild)
 
-Date: 25 November 2026
+Date: 26 November 2026. Supersedes the 25 November v1 summary.
 
 ## Bottom line
 
-We tested the central idea on actual data: **does a queue of unmet water demand add drought information beyond climatology, SPI, SPEI and SSI?**
+We asked whether a queue of unmet water demand adds drought information beyond
+climatology, SPI, SPEI and SSI.
 
-The first two-gauge test says **no under the current assumptions**. Adding queue probability to SSI did not improve Brier score in either gauge. We keep that negative result unchanged.
+The **v1 two-gauge answer is not usable**: it mixed units, sat in a regime where
+a null was guaranteed, and had almost no held-out drought events. v2 rebuilds
+the test in R with one unit system, a predeclared utilisation screen, 24 gauges
+across 11 basins, and a locked protocol.
 
-The recommended paper is therefore **one HESS-style methods and negative-result evaluation**, not a claim that queue indicators are superior.
+The v2 predeclared confirmatory Brier endpoint is **null**: adding queue
+probability to SSI-3 does not lower the held-out Brier score by a detectable
+amount. The secondary AUC contrast is positive and is reported as **secondary
+only**. The paper is therefore **one HESS-style methods + negative-result
+evaluation with a utilisation diagnosis** — Path B in the redesign plan, not a
+superiority claim.
 
 ## 1. Objective
 
 Represent drought as a finite-capacity queue:
 
-- water demand arrives at rate λ(t);
-- available supply serves demand at rate μ(t);
-- unmet demand accumulates as backlog Q(t);
+- water demand arrives at rate `lambda(t)`;
+- available firm supply serves demand at rate `mu(t)`;
+- unmet demand accumulates as backlog `Q(t)`;
 - backlog indicators describe drought state, exposure, abandonment and recovery.
 
-The paper must do two things:
+The paper must (1) prove the queue calculations against exact references and
+(2) test whether the indicators add information on observed drought, with
+adequate power.
 
-1. prove the queue calculations against exact mathematical references;
-2. test whether the indicators add information on observed drought events.
-
-A synthetic example alone is not enough.
-
-## 2. The gap we are testing
-
-The frozen 21 November 2026 sentence is unchanged:
+## 2. The gap we are testing (unchanged, frozen 21 November 2026)
 
 > "Within Crossref, OpenAlex, the complete WoS S1–S5 / Extra A/B/C screens
-> (142 records) and the completed Scopus S1–S5 / Extra A/C screens (295
-> records), plus the citation traces, we found no study that puts all four of
-> these together: (1) drought as an accumulated unmet-demand backlog with a
-> finite-capacity state; (2) queue-state indicators reported as drought
-> quantities; (3) non-stationary rates estimated from hydroclimatic
+> (142 records) and the completed Scopus S1–S5 / Extra A/C screens
+> (295 records), plus the citation traces, we found no study that puts all
+> four of these together: (1) drought as an accumulated unmet-demand backlog
+> with a finite-capacity state; (2) queue-state indicators reported as
+> drought quantities; (3) non-stationary rates estimated from hydroclimatic
 > covariates; (4) validation against exact reference solutions and
 > pre-specified drought tests."
 
-In plain language: the mathematics is old, but this drought-specific combination was not found in the documented search scope. We do not claim that no such study exists anywhere.
+We do not claim that no such study exists anywhere.
 
-## 3. Data used in the actual comparison
+## 3. Data and design (v2)
 
-| Source | Role | Status |
-|---|---|---|
-| CAMELS-IND catchment forcings | Daily rainfall and PET for process-based demand λ | Used |
-| CAMELS-IND observed streamflow | Daily supply μ for gauges 4026 and 4064 | Used, with gaps and zero-flow caveats |
-| Drought Intelligence Explorer v2 | District SMA target and published SPI-3/SPEI-3 benchmarks | Used |
-| CAMELS-IND attributes | Gauge/basin identity and dam-presence context | Used for limitations |
-| IMD gridded data | Available for a future strict training-only climate baseline | Not used in the current comparison |
-| CMIP6 / CAMELS-IND-Proj | Available for later conditional future supply analysis | No raw CMIP6 number is published |
+| Element | v2 choice |
+|---|---|
+| Streamflow / forcing | CAMELS-IND, 472 gauges |
+| Target | District soil-moisture anomaly `<= -15%` (external product; leakage disclosed) |
+| Clean-target sensitivity | Training-only SPI-3 drought, matching predictor dropped |
+| Screening | `rho` window 0.15–1.20, zero fraction < 0.30, interior gap <= 30 d |
+| Coverage | >= 3 y train (1981–2010), >= 2 y test (2011–2020) |
+| Clustering | at most 3 gauges per basin |
+| Analysis set | **24 gauges across 11 basins** |
+| Unit system | one claim = 20 mm over `f_irr * catchment area` |
+| Supply | SUP-1 primary; SUP-2/SUP-3 predeclared sensitivities |
+| Zero semantics | V1 primary; V0/V2 sensitivities; basin-peer proxy grade |
+| Verification | 14/14 battery (closed forms, RK4 vs DES, ledger, units, gaps) |
 
-The gauge-to-district mapping is:
+## 4. What the v2 data showed
 
-- 4026 Kurundwad → Sangli;
-- 4064 Yadgir → Yadgir.
+Use **paired** per-gauge deltas on identical held-out months; lower Brier is
+better. Exact values are produced only by `R/run_pipeline.R` and recorded in
+`analysis/P02_methods/RESULTS_v2.md`.
 
-The supplied SMA target and published SPI/SPEI use an external **1981–2020 climatology**. That overlaps the nominal test years, so target construction and those benchmarks are **not strictly held-out**. No test labels enter model fitting, but this limitation must remain in the paper.
+- **E1 (concurrent Brier, confirmatory):** median improvement about `+0.0008`
+  with a two-level bootstrap interval that **includes zero**; the sign test does
+  not reach significance. **Null.**
+- **E2 (1-month prospective Brier, confirmatory):** also **null**.
+- **Secondary AUC:** positive (the queue improves ranking), reported as
+  secondary and not upgraded.
+- **Power:** the Brier minimal detectable effect at N = 24 is several times the
+  observed effect, so the null is interpretable rather than underpowered.
+- **Harm bound:** a few gauges show a small negative Brier delta; this is
+  investigated (calibration breakdown) and disclosed.
 
-## 4. Method in plain language
+`[assumption]` Queue outputs are illustrative under the Stage-A demand envelope
+and SUP-1 supply; they are not observed unmet demand.
 
-1. Build daily demand from the R-equivalent crop-water formula.
-2. Convert observed streamflow to a capped firm-supply rate.
-3. Propagate the finite-state queue with a stability-controlled RK4 solver.
-4. Aggregate monthly queue probabilities and a training-standardized SSI-3 proxy.
-5. Fit calendar-month-aware L2 logistic models on 1981–2010 only.
-6. Compare climatology, SPI-3, SPEI-3, SSI-3, queue alone and SSI+queue.
-7. Score Brier skill, AUC, log loss, calibration, reliability and event timing.
-8. Use whole held-out years, a paired year-block bootstrap and predeclared sensitivities.
+## 5. Why v2 is more trustworthy than v1
 
-The confirmatory question is narrow: **does SSI+queue lower Brier score relative to SSI alone at q*=6 in both gauges?**
+1. Demand and supply share one claim volume, so units cannot silently diverge.
+2. Thresholds are catchment-relative, so gauges are comparable.
+3. The utilisation screen removes the guaranteed-null regime.
+4. 24 gauges and 11 basins replace two gauges.
+5. The protocol, endpoints, harm bound and power are locked before unblinding.
+6. Every sensitivity axis is reported, including the leakage-clean target.
+7. The confirmatory statistic is paired on identical held-out months.
 
-## 5. Actual data coverage
+## 6. What we did not do
 
-Long discharge gaps prevent a complete 2011–2020 test:
+- No measured irrigation-demand series; `lambda` is a process envelope.
+- No resolved zero-flow/regulation semantics (proxy grade only).
+- No strictly leakage-free external SMA climatology (disclosed; clean
+  sensitivity provided).
+- No future-climate result; the CMIP6 stage is gated. No raw CMIP6 number.
+- No claim that queue indicators outperform SPI/SPEI/SSI.
 
-- gauge 4026 has a 611-day interior gap;
-- gauge 4064 has a 661-day trailing gap;
-- only gaps of seven days or less are interpolated and flagged;
-- both usable records end on 28 February 2019.
+## 7. Exact next actions
 
-Each gauge contributes:
+1. Author sign-off on the Path-B framing and submission metadata.
+2. Archive link / DOI and licence.
+3. Accept or authorize resolution of the disclosed literature limitations.
+4. If a stronger test is wanted: measured demand, independent zero-flow/regulation
+   records, and a strict training-only external benchmark reconstruction.
 
-- 360 target/flow-available training months, but **358 common complete cases** because January–February 1981 lack SPI/SPEI;
-- **98 held-out months**;
-- **4 held-out SMA-drought months in 3 events**.
-
-Source: `analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`, Source-data audit and Target availability.
-
-## 6. What the actual data showed
-
-Lower Brier score is better.
-
-| Gauge | SSI Brier | SSI+queue Brier | Change | Result |
-|---:|---:|---:|---:|---|
-| 4026 | 0.041008 | 0.041279 | +0.000271 | Worse |
-| 4064 | 0.044246 | 0.044836 | +0.000590 | Worse |
-
-AUC also declined when queue was added to SSI. Queue alone had small Brier skill over climatology (0.0347 and 0.0320), while the external SPEI benchmark performed better.
-
-The result is unchanged for:
-
-- q*=4, 6 and 8;
-- causal forward-fill of short gaps;
-- exclusion of months containing imputed flow.
-
-Source: `analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md:29`, `:52`, `:68`, `:79`.
-
-**Interpretation:** the current proxy-based queue indicators are **illustrative, under the stated assumptions**, and add no demonstrated incremental information in this pilot. This is retrospective diagnosis, not forecasting.
-
-## 7. Recommended single-paper plan
-
-**Working title:**
-
-**Do deficit-queue indicators add drought information? Exact validation and a held-out comparison with SPI, SPEI, SSI and climatology**
-
-Suggested structure:
-
-1. Introduction: anomaly indices versus accumulated unmet demand.
-2. Related work: storage/queue lineage and the frozen scoped gap.
-3. Model and conservation ledger.
-4. Exact, Floquet and discrete-event verification.
-5. Data, preprocessing and actual coverage.
-6. Predeclared comparison design.
-7. Results: null held-out comparison, calibration and sensitivities.
-8. Discussion: identifiability, proxy demand, zero flows, regulation and scale mismatch.
-9. Conclusion: no demonstrated incremental skill; requirements for a stronger test.
-10. Data/code availability and complete negative-results trail.
-
-The results-backed abstract and submission position are in `docs/project/MERGED_PAPER_PLAN.md`.
-
-## 8. What we did not do
-
-- No ahead-of-event forecast; same-month observed flow is used.
-- No measured irrigation-demand series; λ remains a process scenario.
-- No resolution of zero-flow or regulation semantics for either gauge.
-- No strict 1981–2010 reconstruction of the SMA/SPI/SPEI climatologies.
-- No broad multi-gauge or many-event validation.
-- No crop-loss prediction or causal demand–supply attribution.
-- No future climate result; CAMELS-IND-Proj still needs historical/provenance validation.
-- No raw CMIP6 number is used.
-
-## 9. Exact next actions
-
-1. Author approves the one-paper methods/negative-result framing.
-2. Obtain measured canal/crop demand or a defensible demand envelope.
-3. Resolve zero-flow and station-regulation semantics with CWC/India-WRIS records.
-4. Rebuild strict training-only SMA/SPI/SPEI from raw inputs.
-5. Expand to more gauges and held-out drought events.
-6. Keep the present null unless a predeclared stronger test shows otherwise.
-
-## 10. Where to look
+## 8. Where to look
 
 - Plain orientation: `START_HERE.md`
-- Locked comparison protocol: `analysis/P02_methods/REAL_DATA_COMPARISON_PROTOCOL.md`
-- Generated results: `analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`
-- Actual-data figure: `analysis/P02_methods/figures/real_data_comparison.png`
-- Pipeline: `src/P02/real_data_comparison.py`
+- Locked protocol: `protocol/PROTOCOL_v2.md`
+- Results with sources: `analysis/P02_methods/RESULTS_v2.md`
+- Figures: `figures/`
+- Pipeline: `R/run_pipeline.R`, sensitivity: `R/analysis/sensitivity_grid.R`
+- Tests: `Rscript R/verify/run_tests.R` (14/14)
 - Merged-paper strategy: `docs/project/MERGED_PAPER_PLAN.md`
-- Tests: 42/42 passing, including 17 real-data comparison tests

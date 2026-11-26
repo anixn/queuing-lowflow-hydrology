@@ -1,0 +1,32 @@
+---
+title: "step_02 — India pipeline outputs"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Purpose.** Assert the India selection, regime and conservation results.
+**Inputs.** `output/selected_gauges.csv`, `output/queue_meta.csv`.
+
+```{r}
+sel <- nb_require("selected_gauges.csv", "step_02")
+qm <- nb_require("queue_meta.csv", "step_02")
+nb_assert_cols(sel, c("gauge_id", "basin", "rho"), "selected gauges")
+nb_assert_cols(qm, c("gauge_id", "q_star", "K", "max_p_eq_K",
+                     "ledger_residual"), "queue meta")
+nb_assert(nrow(sel) >= 15, "fewer than 15 gauges in the window")
+nb_assert(max(qm$ledger_residual, na.rm = TRUE) < 1e-6, "ledger failed")
+nb_assert(max(qm$max_p_eq_K, na.rm = TRUE) < 1e-3, "blocking guard exceeded")
+cat(sprintf("gauges: %d; basins: %d; rho range %.3f-%.3f\n",
+            nrow(sel), data.table::uniqueN(sel$basin),
+            min(sel$rho), max(sel$rho)))
+cat(sprintf("q*: %d-%d; K: %d-%d; max P(Q=K): %.2e\n",
+            min(qm$q_star), max(qm$q_star), min(qm$K), max(qm$K),
+            max(qm$max_p_eq_K)))
+```
+
+`[measurement]` The India study uses one claim volume per gauge and
+catchment-relative thresholds. The conservation ledger holds on every day of
+every run; the blocking guard never fires.

@@ -1,0 +1,65 @@
+---
+title: "S3 - Catchment table and command area"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Stage:** S3 (catchment table).
+**Purpose:** fix one command area and one claim volume per gauge, so that
+demand and supply are expressed in the *same* claims/day unit. This is the
+unit wall that removes the v1 unit-mix defect (F1/U1/U2).
+**Inputs:** `output/catchment_table.csv`, `output/selected_gauges.csv`.
+**Outputs:** none.
+**Parameters:** `P$d_mm` (claim depth 20 mm), `P$f_irr` (irrigated fraction).
+
+## Load and check the unit wall
+
+```{r}
+ct <- nb_require("catchment_table.csv", "S3")
+sel <- nb_require("selected_gauges.csv", "S3")
+nb_assert_cols(ct,
+  c("gauge_id", "basin", "area_km2", "area_m2", "lat", "lon", "f_irr",
+    "area_cmd_m2", "area_source", "district_id", "claim_m3"),
+  "catchment table")
+nb_assert_cols(sel, c("gauge_id", "basin", "rho", "n_train", "n_test"),
+               "selected gauges")
+
+# area_m2 is the catchment; area_cmd_m2 is f_irr * catchment
+nb_assert(all(abs(ct$area_m2 - ct$area_km2 * 1e6) < 1e-6),
+          "area_m2 must equal area_km2 * 1e6")
+nb_assert(all(abs(ct$area_cmd_m2 - ct$f_irr * ct$area_m2) < 1),
+          "area_cmd_m2 must equal f_irr * area_m2")
+nb_assert(all(abs(ct$claim_m3 - (P$d_mm / 1000) * ct$area_cmd_m2) < 1),
+          "claim_m3 must equal (d/1000) * area_cmd_m2")
+knitr::kable(ct[, .(gauge_id, basin, area_km2, f_irr,
+                    area_cmd_m2, claim_m3 = signif(claim_m3, 4),
+                    district_name)],
+             digits = 1, caption = "Analysis catchment table (one claim volume per gauge)")
+```
+
+## Selected gauges (G3 funnel)
+
+```{r}
+cat(sprintf("selected: %d gauges across %d basins\n",
+            nrow(sel), data.table::uniqueN(sel$basin)))
+cat(sprintf("utilisation rho range: %.3f to %.3f (window %.2f-%.2f)\n",
+            min(sel$rho), max(sel$rho), P$rho_window[1], P$rho_window[2]))
+nb_assert(nrow(sel) >= 15,
+          "Gate G3 requires at least 15 gauges inside the utilisation window")
+nb_assert(all(sel$rho >= P$rho_window[1] & sel$rho <= P$rho_window[2]),
+          "a selected gauge lies outside the utilisation window")
+print(sel[, .N, by = basin][order(-N)])
+```
+
+`[assumption]` The command area is `f_irr * catchment area`, a Stage-A
+envelope. Measured Stage-B irrigation demand was not available; the
+`f_irr` sweep {0.03, 0.10, 0.25} carries this uncertainty into stage S8.
+Every gauge's `area_source` string records the provenance so the assumption
+cannot drift silently.
+
+`[measurement]` The **same** `claim_m3` scales demand and supply for a gauge.
+Area cancels from demand (demand is a depth rate), so a claim is a physical
+volume of water over the command area, never a free constant.

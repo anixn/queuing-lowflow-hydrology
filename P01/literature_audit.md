@@ -45,6 +45,16 @@ rejected the `TS=(...)` prefix with "Invalid query"; the bare Boolean
 expression must be pasted instead. The strings in `search_protocol.md`
 should be used without `TS=` in this interface.
 
+**Dated reconciliation (26 November 2026, v2 rebuild).** The two `TS=` notes in
+this file are not a contradiction. The 20 November interface rejected
+`TS=(...)`; the 21 November record-level pass used the interface where
+`TS=(...)` was accepted (see the "WoS record-level screen" section below). Both
+are recorded as run, on their dates. Separately, the frozen sentence keeps the
+completed-screen count of **142** WoS records; a 25 November refresh returned
+one additional record (143 in the live export), which was screened under the
+same criteria and retained nothing. The frozen sentence is therefore **not**
+reworded.
+
 | # | Query as run (Topic field) | Hits | Titles/abstracts screened | Retained for full text |
 |---|---|---:|---:|---:|
 | S1 | `((queue* OR "queuing theory" OR "queueing theory" OR "mass service") AND (drought OR "low flow" OR "water storage" OR "unmet demand" OR "water deficit"))` | 25 | 25 | 0 |
@@ -248,6 +258,12 @@ echoes are recorded but do not change the gap:
 **Database screens are now complete in both WoS (142 records screened:
 25 + 24 + 0 + 6 + 66 + 8 + 0 + 13) and Scopus (295 records); 437 records in
 total, zero gap-changing findings.**
+
+**Count note (26 November 2026, v2 rebuild).** The frozen sentence quotes 142,
+the completed 21 November screen. A 25 November refresh returned one additional
+WoS record (143 in the live export); it was screened with the same criteria and
+retained nothing, so the gap is unchanged and the frozen sentence remains
+verbatim at 142.
 
 **Frozen gap sentence (21 November 2026):** "Within Crossref, OpenAlex, the
 complete WoS S1–S5 / Extra A/B/C screens (142 records) and the completed

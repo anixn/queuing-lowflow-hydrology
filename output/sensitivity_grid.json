@@ -1,0 +1,13 @@
+{
+  "file": "sensitivity_grid.csv",
+  "git_hash": "a029c56",
+  "written": "2026-11-26T10:43:54",
+  "nrow": 72,
+  "ncol": 12,
+  "session": {
+    "R": "R version 4.5.1 (2025-06-13 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  },
+  "stage": "S8",
+  "seed": 20261125
+}

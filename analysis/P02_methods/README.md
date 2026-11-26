@@ -1,32 +1,49 @@
-# P02 methods analysis
+# P02 methods analysis (v2 rebuild)
 
-**Current status:** the first predeclared two-gauge retrospective comparison is complete. The confirmatory result is null: adding queue probability to SSI did not improve nominally held-out Brier score in either gauge. The supplied SMA target uses an external 1981–2020 climatology, so target construction is not strictly leakage-free. Broader methods work awaits author sign-off.
+**Status (26 November 2026):** the v2 multi-catchment rebuild is complete through
+S9. The predeclared confirmatory Brier endpoints are **null**; the secondary AUC
+contrast is positive but not upgradable. The outcome is **Path B** (predeclared
+evaluation + utilisation diagnosis). See `RESULTS_v2.md`.
 
-## Completed first-cycle artifacts
+## v2 artifacts (current)
 
-- `REAL_DATA_COMPARISON_PROTOCOL.md` — locked target, split, models, decision rule and sensitivities.
-- `REAL_DATA_COMPARISON_RESULTS.md` — generated results, source audit, calibration, bootstrap, sensitivities and negative-result interpretation.
-- `data/real_data_*.csv` — daily queue states, monthly predictors, predictions, metrics, reliability, events, bootstrap and missing-flow sensitivities.
-- `data/real_data_run_metadata.json` — settings, numerical diagnostics and source SHA-256 hashes.
-- `figures/real_data_comparison.png` / `.svg` — Brier-skill and reliability figure.
+| File | Purpose |
+|---|---|
+| `RESULTS_v2.md` | Assembled v2 results, corrected paired statistics, sensitivity grid, limitations |
+| `../protocol/PROTOCOL_v2.md` | Locked predeclared protocol (tag `protocol-v2-locked`) |
+| `../output/*.csv` + `.json` | Generated per-gauge metrics, paired deltas, meta endpoints, sensitivity grid |
+| `../figures/*.pdf`, `*.png` | Publication figures |
+| `../R/run_pipeline.R` | The single compute backbone (S2–S7) |
+| `../R/analysis/sensitivity_grid.R` | Every predeclared sensitivity axis (S8) |
+| `data_v1_superseded/` | Audited-defective v1 CSV outputs, provenance only |
+
+## v1 artifacts (superseded, provenance only)
+
+The v1 two-gauge comparison and its generated CSVs are retained only for
+provenance. They are **not** v2 results and must not be cited as such:
+
+- `REAL_DATA_COMPARISON_PROTOCOL.md`
+- `REAL_DATA_COMPARISON_RESULTS.md`
+- `data_v1_superseded/real_data_*.csv`
+- `figures/real_data_comparison.{png,svg}`
+
+The v1 Python code that produced them is on branch `legacy-python`
+(tag `v1-audited`).
 
 ## Design and inventory
 
-- `MODELLING_PLAN.md` — broader model stack, equations, validation ladder and work packages.
-- `DATA_REQUIREMENTS.md` — what is required now, before validation and only for stronger claims.
+- `MODELLING_PLAN.md` — broader model stack, equations and validation ladder.
+- `DATA_REQUIREMENTS.md` — what a stronger test would need.
 - `data_inventory_2026-11-25.csv` — verified local/remote data inventory.
 
 ## Remaining work after sign-off
 
-1. Expand to more gauges and held-out drought events.
-2. Replace or envelope proxy demand with measured canal/crop evidence.
-3. Resolve zero-flow and regulation semantics with CWC/India-WRIS records.
-4. Rebuild strict training-only SPI/SPEI from raw gridded inputs.
-5. Complete indicator-contract, recovery and identification work.
-6. Complete the μ-error diagnostic, Floquet convergence study and MMPP sweep.
-7. Validate CAMELS-IND-Proj historical skill/provenance before conditional future μ.
-8. Propagate uncertainty and write the merged methods/negative-result paper.
+1. Measured irrigation demand to replace the Stage-A envelope.
+2. Independent zero-flow/regulation records (CWC/India-WRIS).
+3. A strictly leakage-free external benchmark reconstruction.
+4. A stronger multi-gauge test that beats climatology on held-out data, or an
+   honest null written up.
+5. Conditional future `mu` from CAMELS-IND-Proj (gated; no raw CMIP6 number).
 
-Generated CSV files must never be hand-edited. Regenerate them with `src/P02/real_data_comparison.py`.
-
-Details are in `../../docs/project/RESEARCH_PROTOCOL.md`, `../../docs/project/MERGED_PAPER_PLAN.md` and `../../docs/novelty/NOVELTY_AND_PLAN_REPORT.md`.
+Generated files must never be hand-edited. Regenerate them with the R scripts in
+`../R/`.

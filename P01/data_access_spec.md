@@ -16,29 +16,34 @@ the files on disk and the CAMELS-IND data-description PDF.
 | CMIP6 SSP | `D:\Datasets\Download_CMIP\SSP\{pr,tasmax,tasmin}` | Raw SSP126/245/370/585 forcing; 3,564 files per variable | Present. Fallback/sensitivity forcing; bias correction required before published use. |
 | CAMELS-IND-Proj | `D:\Datasets\CAMELS_IND_Proj` | 13 CMIP6 models × historical + four SSPs; daily projected streamflow 1980–2100; bias-corrected forcing archive | Present. Gauge 4026 is complete in all 65 streamflow files. Conditional future μ ensemble after historical/provenance validation; do not double bias correct forcing. |
 
-## 1. Claim convention — revisable working assumption (unlocked 25 November 2026)
+## 1. Claim convention — v2 per-gauge unit system (current)
 
-Decision recorded in `../START_HERE.md` §4 and applied in both code packages.
-**This is a stated assumption, not a calibrated value.** It is written at the
-top of `P02/R/01_build_rates.R` and in `src/P01/data_pipeline.py` so it
-can be changed in one place.
+Updated 26 November 2026 for the R/v2 rebuild. The v1 district proxies
+(45,000 ha Sangli; 72,252 ha Yadgir) are **superseded** and retained only as
+provenance in `../analysis/claim_convention_2026-11-25/`. The current convention
+lives in exactly one place in code — `R/config.R` (`P$d_mm`, `P$f_irr`,
+`P$s_firm`, `P$cap_mm`) applied through `R/00_utils/units.R` — and is documented
+in `protocol/PROTOCOL_v2.md` §2.
 
-| Quantity | Value | Physical reading |
+**This is a stated assumption, not a calibrated value.**
+
+| Quantity | v2 definition | Physical reading |
 |---|---|---|
-| Command area | 45,000 ha | Sangli district canal-irrigated area used as a proxy; not gauge-specific |
-| Yadgir command-area proxy | 72,252 ha | 14% of 516,088 ha net sown area, rounded; `[assumption]` for gauge 4064, not gauge-specific |
-| One claim | 20 mm depth | 9×10⁶ m³ over 45,000 ha; 1.44504×10⁷ m³ over 72,252 ha — a modelling unit, not a measured release |
-| Capacity K | 20 claims | 400 mm over either proxy; 1.8×10⁸ m³ for Sangli and 2.89008×10⁸ m³ for Yadgir |
-| Service cap | 3 claims/day | 60 mm/day; 2.7×10⁷ m³/day for Sangli and 4.33512×10⁷ m³/day for Yadgir |
-| Firm share | 0.5 of streamflow | Dry-season baseflow treated as dependable supply |
+| Command area (per gauge) | `A_cmd = f_irr * A_catchment` | `f_irr = 0.10` default; swept {0.03, 0.10, 0.25} |
+| One claim | `V_claim = d/1000 * A_cmd` | `d = 20 mm`; one volume per gauge, used by BOTH demand and supply |
+| Demand | `lambda = need_mm / d` | claims/day; area cancels because demand is a depth rate |
+| Supply | `mu = min(S_mm, cap_mm) / d` | `S_mm = Q*86400*s_firm/A_cmd*1000`; `s_firm = 0.5`, `cap_mm = 10` |
+| Capacity `K` | `min(80, max(25, ceil(K_days*lam_bar)))` | catchment-relative; `K_days = 365` |
+| Severe state `q*` | `ceil(q_days*lam_bar)` | `q_days = 60` |
+| Service boost `theta` | `ceil(1.5*q*)` | catchment-relative |
 
-Why this scale: 45,000 ha is the canal-irrigated area reported for Sangli in
-the official agriculture contingency plan. It is a documented district proxy,
-not a gauge-4026 command area. A 20 mm delivery unit preserves readable physical
-depths: K=20 remains 400 mm and the service cap remains 60 mm/day. Rescaling the
-claim rescales λ, μ and K together, so pilot numbers stay illustrative until
-gauge-specific canal/crop records are found. Source and envelope:
-`../analysis/claim_convention_2026-11-25/`.
+Why this is more defensible than v1: the same claim volume scales demand and
+supply, so the unit-mix defect (F1) cannot recur; thresholds are functions of
+each gauge's mean demand, so a wet and a dry gauge are comparable; and the
+`f_irr` sweep carries the demand-uncertainty envelope. Stage-B measured demand
+would replace the envelope but was unavailable.
+
+Source: `R/config.R`, `R/00_utils/units.R`, `protocol/PROTOCOL_v2.md`.
 
 ## 2. Pilot regions — revised
 

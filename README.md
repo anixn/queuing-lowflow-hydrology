@@ -1,59 +1,109 @@
-# Queueing–Drought Junction
+# Queueing–Drought Junction (v2, R rebuild)
 
-The recommended product is **one merged HESS-style methods and negative-result paper**. It asks whether a finite-capacity unmet-demand queue adds drought information beyond climatology, SPI, SPEI and SSI, using exact verification and an actual-data comparison.
+This repository tests one question: **does a finite-capacity deficit queue add
+drought information beyond climatology, SPI, SPEI and SSI?**
 
-- `P01/` retains the perspective, literature audit and frozen novelty evidence.
-- `P02/` retains the methods, real-data pipeline and generated results.
+The v1 Python analysis returned a null that was not defensible: it mixed units,
+sat in a demand/supply regime where a null was guaranteed, and used a
+two-gauge pilot with almost no held-out drought events. v2 is a **full rebuild in
+R and R Markdown only**, following `REDESIGN_PLAN_v2_R.md`: one unit system, a
+predeclared utilisation screen, a multi-catchment design, a locked protocol, an
+exact verification battery, and every sensitivity axis reported.
 
-The first actual-data test returned a null; the paper must not claim queue-indicator superiority.
+## What is new in v2
 
-## Start here
+- **Python removed from `main`.** The audited v1 code is preserved on the
+  `legacy-python` branch and tagged `v1-audited`; nothing is deleted from
+  history. All current code is linear R / R Markdown.
+- **One claim volume per gauge.** Demand and supply share a single command-area
+  claim (`R/00_utils/units.R`); the queue engine only ever sees claims/day.
+- **Catchment-relative thresholds** (`q*`, `K`, `theta`) instead of absolute
+  counts, so gauges are comparable.
+- **Utilisation screen.** Gauges are admitted only when
+  `0.15 <= rho = sum(lambda)/sum(mu) <= 1.20`, fixing the v1 regime defect.
+- **Multi-catchment.** 24 CAMELS-IND gauges across 11 basins, both split
+  periods, at most 3 per basin.
+- **Predeclared protocol and power analysis** (`protocol/PROTOCOL_v2.md`), with
+  every one-factor-at-a-time sensitivity reported (`R/analysis/sensitivity_grid.R`).
+- **Exact engine verification**: 14/14 checks (closed forms, RK4 vs
+  discrete-event simulation, conservation ledger, unit wall, gap rules).
 
-1. `PLAN_SUMMARY.md` — root-level plain-language plan, actual result and next actions.
-2. `START_HERE.md` — plain-language orientation and current phase.
-3. `AGENTS.md` — operating rules, frozen novelty sentence and verification protocol.
-4. `docs/project/RESEARCH_PROTOCOL.md` — gates, objectives and analysis plan.
-5. `P01/README.md` and `P02/README.md` — paper-package contents and run commands.
+## Outcome (updated 26 November 2026)
+
+The predeclared confirmatory Brier endpoint is **null**: the paired per-gauge
+improvement from adding queue probability to SSI-3 has a median of about
+`+0.0008` with a two-level bootstrap 95% interval that includes zero. The
+secondary AUC contrast is positive and is reported as **secondary only**.
+The outcome is therefore **Path B (honest null)**: a predeclared multi-catchment
+evaluation plus a utilisation diagnosis. The exact numbers live in
+`analysis/P02_methods/RESULTS_v2.md` and are produced only by the scripts below.
+
+## Run it (from the repository root)
+
+```powershell
+Rscript steps/run_all_steps.R            # India baseline + USA + figures + verification
+Rscript steps/run_all_steps.R --full     # also the long India sensitivity grid
+Rscript steps/step_12_verify.R           # 14/14 engine + unit + gap tests
+```
+
+`HELP.md` is the operator's manual: every step, input, output, credential and
+troubleshooting note. The numbered scripts in `steps/` are the executable
+sequence; the matching R Markdown documents are in `steps/rmd/`.
+
+`output/_recon_gauge_stats.csv` is the committed one-time gauge-profiling table;
+`Rscript R/analysis/recon.R` regenerates it only with `--force` (the frozen table
+defines the analysis set, so a regeneration must be checked against
+`output/selected_gauges.csv`).
+
+`output/` and `figures/` are generated; never hand-edit them. Every CSV carries
+a JSON sidecar with the git hash, parameters, seed and R session.
+
+## Manuscript
+
+| File | Contents |
+|---|---|
+| `manuscript/MANUSCRIPT.md` | Full HESS-style draft: literature, hypothesis, data, LaTeX methods, results, India–USA comparison, discussion |
+| `manuscript/_draft_literature.md` | Extended literature review (audited references only) |
+| `manuscript/_draft_methods.md` | Extended data and methods draft |
+| `manuscript/figures/` | Figure index / copies for the manuscript build |
 
 ## Repository map
 
 | Path | Purpose |
 |---|---|
-| `PLAN_SUMMARY.md` | Root-level plain-language plan, actual result, limitations and next actions |
-| `P01/` | Current P01 manuscript, literature audit, search protocol and technical notes |
-| `P02/` | P02 methods package, R pipeline and generated data |
-| `src/shared/` | Queueing engine shared by both papers |
-| `src/P01/` | P01 demonstrations and data-to-rates skeleton |
-| `src/P02/` | Exact benchmarks, rate estimators and evaluation code |
-| `tests/` | Full Python acceptance suite |
-| `analysis/P01_literature/` | Completed WoS screen, citation trace and raw exports |
-| `analysis/novelty_2026-11-25/` | Dated novelty-strengthening investigation and sensitivity outputs |
-| `analysis/claim_convention_2026-11-25/` | Official area evidence, WoS refresh and revisable claim convention |
-| `analysis/P02_methods/` | P02 model protocol, data requirements, inventory and planned outputs |
-| `docs/` | Project protocol, session log, novelty plan and data specifications |
-| `references/` | Original roadmap source retained for historical provenance |
-| `P02/data/generated/` | Reproducible R outputs; never hand-edit |
+| `R/config.R` | **The only place** for paths, seeds and scientific parameters |
+| `R/00_utils/` | Unit wall, queue engine, indices, metrics, IO, audit, pipeline |
+| `R/verify/` | 14-test verification battery (gate G1) |
+| `R/run_pipeline.R` | Single compute backbone for stages S2–S7 |
+| `R/analysis/` | Power, sensitivity grid, publication figures |
+| `R/10_data/ … R/50_future/` | R Markdown notebooks (documentation + assertions) |
+| `protocol/PROTOCOL_v2.md` | Locked predeclared protocol (tag `protocol-v2-locked`) |
+| `output/` | Generated CSVs + `.json` sidecars (regenerable) |
+| `figures/` | Generated PDF + 300-dpi PNG figures |
+| `analysis/P02_methods/RESULTS_v2.md` | Assembled v2 results (numbers referenced, not retyped) |
+| `analysis/P02_methods/data_v1_superseded/` | Audited-defective v1 outputs, provenance only |
+| `P01/`, `analysis/P01_literature/` | Literature audit, frozen gap sentence, search trail |
+| `docs/project/` | Plan, protocol history, session log |
 
-## Run the tests
+## Reading order
 
-Use the existing `drought` Conda environment:
+1. `START_HERE.md` — plain-language orientation and current phase.
+2. `PLAN_SUMMARY.md` — one-page plan, result and next actions.
+3. `protocol/PROTOCOL_v2.md` — what was fixed before the data were unblinded.
+4. `AGENTS.md` — operating rules, frozen novelty sentence, verification protocol.
+5. `analysis/P02_methods/RESULTS_v2.md` — the results with sources.
+6. `docs/project/MERGED_PAPER_PLAN.md` — outcome-contingent paper framing.
 
-```powershell
-python tests/test_queue_core.py
-python tests/test_nonstationary_bench.py
-python tests/test_rate_estimators.py
-python tests/test_real_data_comparison.py
-```
+## The frozen novelty sentence
 
-All **42 tests** should pass. The exact interpreter path is recorded in `START_HERE.md` §8.
+The scoped gap sentence (frozen 21 November 2026) is unchanged by the rebuild.
+It states only what these databases and screens did **not** contain. It never
+says "no such study exists" and never uses "first", "novel" or "unique" about
+the junction itself. See `AGENTS.md` §2.
 
-## Current status
+## Requirements
 
-- **Phase A complete:** 142 WoS and 295 Scopus records screened; citation traces complete; the 21 November 2026 gap sentence is frozen.
-- **Phase B current:** P01 technical Gate B passes; author sign-off is pending.
-- **Claim convention revised:** 45,000 ha district canal-irrigated proxy; 9×10⁶ m³ per 20 mm claim; 30-case scale envelope checked.
-- **First real-data comparison complete:** queue+SSI did not improve held-out Brier score in either pilot gauge; the null is retained in `analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`.
-- **Merged-paper strategy updated:** one HESS-style methods/negative-result paper, with a results-backed title and abstract in `docs/project/MERGED_PAPER_PLAN.md`.
-- **Broader Phase C not started:** more gauges/events, measured demand, strict SPI/SPEI and future μ remain gated on author sign-off.
-
-See `docs/project/SESSION_LOG.md` for the session-by-session record.
+R 4.5+, with `data.table`, `ggplot2`, `sf`, `rmarkdown`, `knitr`, `jsonlite`,
+`lubridate`. Run `Rscript R/install_packages.R` to install any that are missing.
+`renv` is not installed in this environment; a lockfile is a known pending
+deliverable, and `R/install_packages.R` is the documented fallback.

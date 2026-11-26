@@ -1,0 +1,77 @@
+---
+title: "S3 - Supply model and variants"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Stage:** S3 (supply).
+**Purpose:** convert observed river flow into a firm abstraction rate over the
+command area and express it in claims/day, capped by infrastructure.
+**Inputs:** `output/catchment_table.csv`, raw streamflow via `io.R`.
+**Outputs:** none (worked example + assertions).
+**Parameters:** `P$s_firm = 0.5`, `P$cap_mm = 10`, `P$eco_frac = 0.10`,
+`P$d_mm`.
+
+## Equations
+
+```
+S_raw(t) = Q(t) * 86400 * s_firm           [m^3/day]
+S_mm(t)  = S_raw(t) / A_cmd * 1000         [mm/day]
+mu(t)    = min(S_mm(t), cap_mm) / d        [claims/day]
+```
+
+Three predeclared variants:
+
+- **SUP-1** firm share of observed flow (primary), capped at `cap_mm`.
+- **SUP-2** dependable flow: flow clipped at its 5th percentile, then capped.
+- **SUP-3** infrastructure-first: full `cap_mm` whenever flow is above an
+  ecological floor, otherwise SUP-1.
+
+## Worked example
+
+```{r}
+ct <- nb_require("catchment_table.csv", "S3")
+g <- ct$gauge_id[1]
+cr <- ct[gauge_id == g]
+fl <- read_camels_flow(g)[, c("date", as.character(g))]
+q <- fl[[as.character(g)]]
+
+s1 <- rep(NA_real_, length(q))
+s2 <- rep(NA_real_, length(q))
+s3 <- rep(NA_real_, length(q))
+ok <- !is.na(q)
+s1[ok] <- supply_mm_day(q[ok], cr$area_cmd_m2, P$s_firm, P$cap_mm)
+q_dep <- quantile(q, 0.05, na.rm = TRUE)
+s2[ok] <- pmin(q_m3s_to_mm_day(pmin(q[ok], q_dep), cr$area_cmd_m2), P$cap_mm)
+q_eco <- P$eco_frac * mean(q, na.rm = TRUE)
+s3[ok] <- ifelse(q[ok] >= q_eco, P$cap_mm,
+                 supply_mm_day(q[ok], cr$area_cmd_m2, P$s_firm, P$cap_mm))
+mu1 <- s1 / P$d_mm; mu2 <- s2 / P$d_mm; mu3 <- s3 / P$d_mm
+
+nb_assert(all(mu1 >= 0, na.rm = TRUE), "negative SUP-1 supply")
+nb_assert(all(mu1 <= P$cap_mm / P$d_mm + 1e-12, na.rm = TRUE),
+          "SUP-1 exceeds the infrastructure cap")
+nb_assert(all(abs(mu1 - s1 / P$d_mm) < 1e-12, na.rm = TRUE),
+          "mu must equal S_mm / d")
+```
+
+```{r fig-supply}
+dt <- data.table(
+  variant = rep(c("SUP-1", "SUP-2", "SUP-3"), each = length(q)),
+  mu = c(mu1, mu2, mu3)
+)[is.finite(mu)]
+ggplot(dt, aes(mu, fill = variant)) +
+  geom_histogram(bins = 40, colour = "white") +
+  facet_wrap(~variant, ncol = 3) +
+  scale_fill_manual(values = c("#0072B2", "#E69F00", "#009E73"), guide = "none") +
+  labs(x = "supply (claims/day)", y = "days",
+       title = sprintf("Gauge %d: supply distributions by variant", g)) +
+  theme_bw(base_size = 11)
+```
+
+`[measurement]` The cap binds on high-flow days, so supply saturates at
+`cap_mm/d = 0.5` claims/day. This is what keeps utilisation `rho` in a
+physically meaningful range instead of collapsing to zero.

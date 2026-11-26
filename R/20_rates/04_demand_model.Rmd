@@ -1,0 +1,72 @@
+---
+title: "S3 - Demand model (Stage A)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Stage:** S3 (demand).
+**Purpose:** build the daily crop-water demand envelope and convert it to
+claims/day through the unit wall.
+**Inputs:** `output/catchment_table.csv` (for the gauge list), raw CAMELS-IND
+forcing via `R/00_utils/io.R`.
+**Outputs:** none (worked example + assertions).
+**Parameters:** `P$sowing_doy`, `P$season_length`, `P$kc_base`, `P$kc_peak`,
+`P$kc_off`, `P$phi`, `P$d_mm`.
+
+## Equation
+
+`[assumption]` Demand is the crop-water envelope
+
+```
+need_mm(t) = max(Kc(doy) * PET0(t) - phi * P(t), 0)
+lambda(t) = need_mm(t) / d
+```
+
+with a kharif `Kc` curve, `phi = 0.7` effective rain, and claim depth
+`d = 20 mm`. PET0 is GLEAM PET (Hargreaves with the 0.408 radiation
+conversion is the predeclared alternative, swept in S8).
+
+## Worked example: first selected gauge
+
+```{r}
+ct <- nb_require("catchment_table.csv", "S3")
+g <- ct$gauge_id[1]
+f <- .read_forcing_one(g)
+nb_assert(!is.null(f), sprintf("no forcing file for gauge %d", g))
+
+pet <- f$pet_gleam_mm
+if (anyNA(pet)) {
+  ra <- extraterrestrial_radiation(ct$lat[1], as.integer(format(f$date, "%j")))
+  hg <- hargreaves_et0(f$tmax_c, f$tmin_c, f$tavg_c, ra)
+  pet[is.na(pet)] <- hg[is.na(pet)]
+}
+doy <- as.integer(format(f$date, "%j"))
+kc <- kc_curve(doy)
+need <- crop_need_mm(kc * pet, f$prcp_mm, P$phi)
+lambda <- demand_claims(need, P$d_mm)
+
+nb_assert(all(need >= 0, na.rm = TRUE), "negative crop need")
+nb_assert(all(abs(lambda - need / P$d_mm) < 1e-12, na.rm = TRUE),
+          "lambda must equal need / d")
+cat(sprintf("gauge %d: mean need %.3f mm/day, mean lambda %.4f claims/day\n",
+            g, mean(need, na.rm = TRUE), mean(lambda, na.rm = TRUE)))
+```
+
+```{r fig-demand}
+mon <- data.table(date = f$date, lambda = lambda)[
+  , .(lambda = mean(lambda, na.rm = TRUE)), by = .(month = as.integer(format(date, "%m")))]
+ggplot(mon, aes(month, lambda)) +
+  geom_col(fill = "#0072B2") +
+  scale_x_continuous(breaks = 1:12) +
+  labs(x = "calendar month", y = "mean demand (claims/day)",
+       title = sprintf("Gauge %d: seasonal demand envelope", g)) +
+  theme_bw(base_size = 11)
+```
+
+`[measurement]` The seasonal peak sits inside the kharif window; demand is
+zero when rain exceeds crop water use. Demand is a *depth rate*, so it is
+independent of catchment area by construction -- the gauge dependence enters
+through supply and the catchment-relative queue thresholds.

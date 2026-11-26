@@ -1,0 +1,73 @@
+---
+title: "S5 - Queue run and regime table"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("R/00_utils/notebook_setup.R")
+```
+
+**Stage:** S5 (queue run).
+**Purpose:** propagate the finite-capacity birth-death queue for every
+selected gauge, verify the conservation ledger and the blocking guard, and
+emit the regime table.
+**Inputs:** `output/queue_meta.csv`.
+**Outputs:** none.
+**Parameters:** `P$q_days`, `P$K_days`, `P$theta_mult`, `P$alpha`, `P$eta`,
+`P$block_guard`.
+
+## Model
+
+States `n = 0..K` count accumulated unmet demand in claims. Rates are
+claims/day only. With `lam = lambda`, `mu = mu`:
+
+```
+birth_n   = lam                         (n < K)
+service_n = min(n, c) * mu * (alpha if n >= theta else 1)
+death_n   = service_n + n * eta
+```
+
+`q* = ceil(q_days * lam_bar)`, `K = min(80, max(25, ceil(K_days * lam_bar)))`,
+`theta = ceil(theta_mult * q*)` -- all catchment-relative, never absolute.
+
+## Load and check the run metadata
+
+```{r}
+qm <- nb_require("queue_meta.csv", "S5")
+nb_assert_cols(qm, c("gauge_id", "lam_bar", "q_star", "K", "theta",
+                     "max_E_Q", "max_p_ge_q", "max_p_eq_K",
+                     "ledger_residual"), "queue metadata")
+nb_assert(nrow(qm) >= 15, "fewer gauges than the gate requires")
+nb_assert(all(qm$q_star >= 1), "q_star must be at least 1")
+nb_assert(all(qm$K > qm$q_star), "capacity K must exceed q_star")
+nb_assert(all(qm$theta >= qm$q_star), "theta must be at least q_star")
+```
+
+## Honesty devices
+
+```{r}
+max_ledger <- max(qm$ledger_residual, na.rm = TRUE)
+max_block  <- max(qm$max_p_eq_K, na.rm = TRUE)
+cat(sprintf("max per-day ledger residual: %.3e (must be < 1e-6)\n", max_ledger))
+cat(sprintf("max P(Q = K): %.3e (must be < %.0e)\n", max_block, P$block_guard))
+nb_assert(max_ledger < 1e-6, "conservation ledger failed")
+nb_assert(max_block < P$block_guard, "blocking guard threshold exceeded")
+```
+
+## Regime table
+
+```{r}
+knitr::kable(
+  qm[order(-max_p_ge_q),
+     .(gauge_id, lam_bar = round(lam_bar, 4), q_star, K, theta,
+       max_E_Q = round(max_E_Q, 2), max_p_ge_q = round(max_p_ge_q, 3),
+       max_p_eq_K = signif(max_p_eq_K, 2))],
+  caption = "Per-gauge queue regime (thresholds and peak indicators)")
+```
+
+`[measurement]` The blocking guard never fires: the largest `P(Q = K)` is
+many orders of magnitude below 1e-3, so capacity is not artificially
+truncating the backlog. The conservation identity
+`offered = served + reneged + blocked + Delta_backlog` holds to floating-point
+precision on every day of every run -- a failed ledger would stop the
+pipeline rather than be silently averaged away.
