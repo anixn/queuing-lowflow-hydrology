@@ -268,12 +268,16 @@ local({
     d <- merge(s, p[, .(gauge_id, n_segments, zero_frac, BFI, k_days,
                         S_cap_mm, borrowed_parameters)],
                by = "gauge_id")
-    # Event counts come from the monthly tables (feature years for train).
+    # Event counts and month-completeness from the monthly tables. A
+    # month is complete when every day is present (month_complete rule);
+    # on the monthly grid that is exactly a finite `flow`.
     ev <- rbindlist(lapply(names(rg$monthly), function(g) {
       m <- rg$monthly[[g]]
       fy <- m$year >= P1_FEATURE_START_YEAR & m$year %in% P$train_years
       ty <- m$year %in% P$test_years
-      data.table(gauge_id = as.integer(g),
+      data.table(gauge_id = g,
+                 complete_train_months = sum(fy & is.finite(m$flow)),
+                 complete_test_months = sum(ty & is.finite(m$flow)),
                  t1_train = sum(m$t1[fy], na.rm = TRUE),
                  t2_train = sum(m$t2[fy], na.rm = TRUE),
                  t1_test = sum(m$t1[ty], na.rm = TRUE),
@@ -282,7 +286,10 @@ local({
                  balance_t2 = mean(m$t2[fy], na.rm = TRUE))
     }), fill = TRUE)
     d <- merge(d, ev, by = "gauge_id", all.x = TRUE)
-    d[, pass_complete := complete_only]
+    # Screen 2 (PIVOT.md §4.2): >= 30 complete training months and >= 10
+    # complete test months per gauge (NOT the retired day-count rule).
+    d[, pass_complete := !is.na(complete_train_months) &
+        complete_train_months >= 30 & complete_test_months >= 10]
     d[, pass_events_t1 := !is.na(t1_train) & t1_train >= P1_MIN_TRAIN_EVENTS]
     d[, pass_events_t2 := !is.na(t2_train) & t2_train >= P1_MIN_TRAIN_EVENTS]
     d[, pass_recession := !is.na(n_segments) & n_segments >= P1_MIN_SEGMENTS]
