@@ -122,7 +122,7 @@ either junction. We **reclaim** a lineage (Langbein 1958; Moran 1954; Kendall
 
 1. **Run the R test suite after every change** and before reporting:
    ```powershell
-   Rscript R/verify.R                    # 15 checks; gate G1 requires 15/15
+   Rscript R/verify.R                    # 21 checks; gate G1 requires 21/21
    ```
    Any new feature ships with a new test *before* the first run that uses it.
 2. **Keep the three-way agreement.** On the P1 path it is: analytic recession

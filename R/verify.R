@@ -17,8 +17,8 @@ local({
   root <- normalizePath(file.path(dirname(script), ".."))
   source(file.path(root, "R", "config.R"))
   suppressMessages(library(data.table))
-  for (u in c("units.R", "queue_engine.R", "indices.R", "eval.R", "io.R",
-              "audit.R", "pipeline.R")) {
+  for (u in c("units.R", "queue_engine.R", "storage_engine.R", "indices.R",
+            "eval.R", "io.R", "audit.R", "pipeline.R")) {
     source(file.path(root, "R", "functions", u))
   }
 # =====================================================================
@@ -302,12 +302,124 @@ v15_common_rates <- function() {
                        max(abs(r2$mu - mu1 / 2)), r$api_p[n]))
 }
 
+# V16: fluid ledger identity on a seasonal run with zero-flow spells.
+v16_fluid_ledger <- function() {
+  days <- 1500
+  d <- seq(as.Date("2000-01-01"), by = "day", length.out = days)
+  set.seed(16)
+  pr <- pmax(6 * sin(2 * pi * seq_len(days) / 365) + rnorm(days, 0, 2), 0)
+  pe <- rep(4, days)
+  zero <- rep(FALSE, days); zero[sort(sample(100:1400, 40))] <- TRUE
+  out <- propagate_storage(d, pr, pe, as.integer(format(d, "%m")), "India",
+                           S_cap = 120, K_a = 0.05, b_s = 0.85,
+                           zero_day = zero)
+  res <- attr(out, "max_ledger_residual")
+  pinned <- all(out$S_mm[out$zero_day] == 0)
+  verif_result("V16", "Fluid ledger identity + zero pinning",
+               res < 1e-9 && pinned,
+               sprintf("max residual = %.3e; S=0 on all %d zero days",
+                       res, sum(zero)))
+}
+
+# V17: analytic linear recession vs the fluid propagator.
+v17_analytic_recession <- function() {
+  n <- 400
+  d <- seq(as.Date("2000-01-01"), by = "day", length.out = n)
+  K_a <- 1 / 30; S0 <- 50
+  out <- propagate_storage(d, rep(0, n), rep(0, n), rep(1, n), "India",
+                           S_cap = 100, K_a = K_a, b_s = 1, S0 = S0)
+  # S_mm[t] is the state after t daily updates (Euler), so the exact
+  # solution is exp(-K_a * t).
+  exact <- S0 * exp(-K_a * (1:n))
+  rel <- max(abs(out$S_mm - exact)) / S0
+  verif_result("V17", "Analytic recession vs fluid propagator", rel < 0.02,
+               sprintf("max |diff| / S0 = %.2e (Euler, dt = 1 day)", rel))
+}
+
+# V18: recession fit recovers a known k from a synthetic recession.
+v18_recession_recovery <- function() {
+  k_true <- 20
+  set.seed(18)
+  seg_len <- 60; nseg <- 30
+  q <- c()
+  for (s in seq_len(nseg)) {
+    q <- c(q, 100 * exp(-(seq_len(seg_len) - 1) / k_true))
+  }
+  pr <- rep(0, length(q))
+  f <- fit_recession(q, pr)
+  rel <- abs(f$k_days - k_true) / k_true
+  verif_result("V18", "Recession k recovered (synthetic)", rel < 0.02,
+               sprintf("k fitted %.3f vs true %.1f (rel %.2e, %d segments)",
+                       f$k_days, k_true, rel, f$n_segments))
+}
+
+# V19: storage-scale inversion recovers the known S_cap envelope.
+v19_storage_scale <- function() {
+  k_true <- 20; K_a <- 1 / k_true; b_s <- 1
+  set.seed(19)
+  q <- c(); S_all <- c()
+  for (s in seq_len(40)) {
+    S0 <- stats::runif(1, 30, 100)
+    len <- 80
+    S <- S0 * exp(-(seq_len(len) - 1) / k_true)
+    S_all <- c(S_all, S)
+    q <- c(q, K_a * S)
+  }
+  f <- fit_storage_scale(q, rep(0, length(q)))
+  S_cap_true <- stats::quantile(S_all, 0.95, names = FALSE)
+  rel <- abs(f$S_cap - S_cap_true) / S_cap_true
+  verif_result("V19", "S_cap inversion (synthetic)", rel < 0.10,
+               sprintf("S_cap fitted %.2f vs true %.2f (rel %.2e)",
+                       f$S_cap, S_cap_true, rel))
+}
+
+# V20: leakage tripwire -- training-only standardisation and CV must
+# ignore test rows, however extreme.
+v20_leakage_tripwire <- function() {
+  set.seed(20)
+  n_tr <- 200; n_te <- 50
+  x_tr <- stats::rnorm(n_tr, 0, 1)
+  x_te <- c(1e6, rep(0, n_te - 1))   # extreme test rows must not move mu/sd
+  d <- data.table::data.table(x = c(x_tr, x_te))
+  mask <- c(rep(TRUE, n_tr), rep(FALSE, n_te))
+  st <- standardize_train(d, "x", mask)
+  ok_std <- abs(st$mu[1] - mean(x_tr)) < 1e-12 &&
+    abs(st$sd[1] - stats::sd(x_tr)) < 1e-12
+  # CV must never score a training fold on a test row: the fold ids live
+  # on training rows only by construction in stage7_fit.
+  y <- c(rep(0, n_tr / 2), rep(1, n_tr / 2), rep(0, n_te))
+  Xmat <- cbind(1, st$X)
+  folds <- rep(1:5, length.out = n_tr)
+  lam <- cv_ridge_lambda(Xmat[mask, , drop = FALSE], y[mask], folds)
+  ok_cv <- lam %in% RIDGE_GRID
+  verif_result("V20", "Leakage tripwire (train-only moments, CV folds)",
+               ok_std && ok_cv,
+               sprintf("mu/sd exact on training only; lambda=%.1f in grid", lam))
+}
+
+# V21: Brier skill score vs climatology on identical months.
+v21_bss <- function() {
+  y <- c(0, 0, 1, 1)
+  p_fam <- c(0.1, 0.4, 0.35, 0.8)
+  p_clim <- c(0.5, 0.5, 0.5, 0.5)
+  b <- 1 - mean((p_fam - y)^2) / mean((p_clim - y)^2)
+  dt <- data.table::data.table(gauge_id = 1, date = Sys.Date() + 1:4,
+                               y = y, p = p_fam, family = "f")
+  dt2 <- copy(dt); dt2$family <- "climatology"; dt2$p <- p_clim
+  out <- bss_vs_climatology(rbind(dt, dt2))
+  d <- max(abs(out$bss - b), abs(out$brier - mean((p_fam - y)^2)))
+  verif_result("V21", "BSS vs climatology hand case", d < 1e-12,
+               sprintf("BSS %.4f, max diff %.2e", out$bss, d))
+}
+
 run_verification <- function(verbose = TRUE) {
   tests <- list(
     v01_mm1k, v02_mmc, v03_rk4_stationary, v04_rk4_des, v05_ledger,
     v06_first_passage, v07_blocking, v08_unit_wall, v09_hargreaves,
     v10_thresholds, v11_indices, v12_metrics, v13_zero_classifier,
-    v14_gap_rule, v15_common_rates
+    v14_gap_rule, v15_common_rates, v16_fluid_ledger,
+    v17_analytic_recession, v18_recession_recovery, v19_storage_scale,
+    v20_leakage_tripwire, v21_bss
   )
   res <- do.call(rbind, lapply(tests, function(f) {
     out <- tryCatch(f(), error = function(e) {
