@@ -1,6 +1,6 @@
 ---
-title: "Drought as a deficit queue: one study, two regions"
-subtitle: "India (CAMELS-IND) and the USA (Caravan-US), identical method"
+title: "Storage-deficit states for seasonal hydrological-drought and low-flow forecasting in Indian catchments"
+subtitle: "Study P1 of the pivot; Gate G2 record and the retired queue study"
 date: "26 November 2026"
 output:
   html_document:
@@ -26,280 +26,282 @@ source(file.path(root, "R", "config.R"))
 suppressMessages(library(data.table))
 OUT <- function(f) file.path(OUTPUT_DIR, f)
 have <- function(f) file.exists(OUT(f))
+rd <- function(f) if (have(f)) fread(OUT(f)) else NULL
+num <- function(x, d = 4) formatC(x, format = "f", digits = d)
 ```
 
 # What this study is
 
-A drought is read as a **queue**. Farm demand arrives at rate $\lambda(t)$,
-river supply serves it at rate $\mu(t)$, unmet demand accumulates as a backlog
-$Q$, capacity is $K$, and abandoned demand is *reneging*. The queue state gives
-quantities that standard drought indices do not: expected backlog
-$\mathbb{E}[Q]$, the probability of a severe backlog state
-$\Pr(Q \ge q^\star)$, total unmet demand, and recovery time.
+A drought is no longer read as a *deficit queue*. The retired queue study
+(26 November 2026) asked whether an M/M/1/K backlog of irrigation claims adds
+drought information beyond SSI-3, concurrently, in two regions with identical
+assumed constants. It produced a small, partly unresolved effect, and an
+external expert review diagnosed the three design causes that produced it:
+the queue carried no information its benchmark lacked; the queue class was
+wrong for a fluid storage process; and the utilisation screen selected on
+assumed constants (`PIVOT.md` §1). **That study is retired as a
+negative-result methods note; its numbers remain exactly as published in
+`output/region_summary.csv` and git history.**
 
-The study is applied **identically** to two regions:
+**Study P1** replaces the queue with what the hydrology literature has used
+for seventy years (Moran 1954; Kendall 1957; Brutsaert 2008): a
+**storage-deficit state** estimated from the catchment's own recession
+behaviour and propagated by a mass-balance-verified fluid water balance. The
+question is prospective: does this state improve probabilistic forecasts of
+**hydrological drought** (SSI-3 ≤ −1) and **low-flow** events at **1, 3 and
+6-month leads**, beyond persistence, lagged standard indices and an
+antecedent precipitation index? **India (CAMELS-IND) is the study; the USA
+(Caravan-US) runs the identical protocol as a declared transfer check, never
+as a contrast.**
 
-- **India**: CAMELS-IND gauge catchments (Mangukiya et al., 2025).
-- **USA**: Caravan-US gauge catchments (Kratzert et al., 2023).
+**Announced limitation (binding wording, PIVOT.md §4.1).** The storage state
+is estimated from P, ET and Q of the same catchment record that builds the
+indices; it is therefore a *different transform with different memory
+properties*, not independent information. The confirmatory question is
+exactly whether the physically-shaped transform (recession constants,
+storage capacity, mass-balance dynamics) out-predicts the standardised
+3-month boxcar that SSI-3 applies.
 
-Every rule below is the same in both regions: the unit (gauge catchment), the
-demand model, the supply model, the target, the split, the screen and the
-statistics. Only the catchments and their climate differ.
+# Gate G2 — the corrected re-run (the retired design's acceptance gate)
 
-> **[assumption]** The demand envelope is a stated assumption, not a measured
-> irrigation record. Every queue number here is therefore **illustrative under
-> the stated assumptions**; it is not an observed finding.
+Before P1 scoring could start (`AGENTS.md` rule), the retired design was
+re-run once, corrected: **dataset PET** (GLEAM `pet_gleam`, shipped in
+CAMELS-IND forcings; FAO Penman–Monteith in Caravan-US), the **measured
+irrigated fraction** (`irrigation_frac`, CAMELS-IND anth attributes)
+replacing the flat `f_irr = 0.10`, a **seasonal kharif/rabi Kc and effective-
+rainfall φ** `[assumption: FAO-56-style two-season simplification]`, queue
+thresholds computed on **training years only** (FQ4), the honest **memory
+baselines** `ssi6`, `api`, `persistence` added (FQ1), the ridge penalty
+**tuned per family** by calendar-block CV (FS3), and **BSS vs climatology**
+reported (FS1). The decision rule below was frozen in `PIVOT.md` §3 *before*
+the gate ran.
+
+```{r gate-g2, eval=have("gateG2_summary.csv")}
+g2 <- rd("gateG2_summary.csv")
+if (!is.null(g2)) {
+  g2p <- g2[baseline %in% c("persistence", "ssi6", "api", "bestof")]
+  knitr::kable(g2p[, .(
+    region, target, baseline, n,
+    median_delta = sprintf("%+.4f", median_delta),
+    CI = sprintf("[%+.4f, %+.4f]", boot_lo, boot_hi),
+    sign = sprintf("%d/%d", sign_k, sign_n), sign_p = signif(sign_p, 2)
+  )], caption = "Gate G2: median paired Brier delta of ssi3_plus_queue over each baseline (positive favours the queue), two-level bootstrap 95% interval, one-sided sign test. Source: output/gateG2_summary.csv.")
+  dec <- if (have("gateG2_decision.txt")) {
+    paste(readLines(OUT("gateG2_decision.txt")), collapse = " ")
+  } else "(decision not yet written)"
+  cat("\n**Gate G2 decision (frozen rule applied as written):**", dec, "\n")
+}
+```
+
+```{r gate-g2-sample, eval=have("gateG2_sample_report.csv")}
+sr <- rd("gateG2_sample_report.csv")
+if (!is.null(sr)) {
+  agg <- sr[, .(read = .N,
+                complete_only = sum(complete_only),
+                retired_window = sum(in_window_retired)),
+            by = region]
+  knitr::kable(agg, caption = "Gate G2 sample probe: completeness-only screens vs the retired rule. The completeness rule (training-year day counts) retains far fewer Indian gauges than the literature expected; Study P1 therefore counts complete months instead (§4.2 of PIVOT.md). Source: output/gateG2_sample_report.csv.")
+}
+```
 
 # Data
 
-| Region | Source | Unit | Catchment area | Period used |
-|---|---|---|---|---|
-| India | CAMELS-IND (ESSD, doi:10.5194/essd-17-461-2025) | gauge catchment | `cwc_area` (km²) | 1981–2020 |
-| USA | Caravan-US (Sci. Data, doi:10.1038/s41597-023-01975-w) | gauge catchment | `area` (km²) | 1981–2020 |
+The data contract follows `PIVOT.md` §4.3. India: CAMELS-IND daily catchment-
+mean forcings (precipitation, temperature, **GLEAM PET shipped in the
+dataset**), observed streamflow, and attributes including the **measured
+irrigated fraction** and land-cover fractions. USA (transfer check):
+Caravan-US forcings with FAO Penman–Monteith PET. Missing streamflow days are
+never interpolated; a month containing a missing day is excluded from
+indices and targets. Zero-flow days are kept as recorded and treated as
+**censored** observations on the storage path: recession segments start after
+the last zero-flow day and the storage state sits at its floor through a
+zero-flow spell. No gauge is dropped for a high zero-flow fraction alone.
 
-Both regions supply daily precipitation, daily maximum/minimum/mean
-temperature and daily streamflow. **No district soil-moisture product, no US
-Drought Monitor, no reservoir record and no remote-sensing ET are used.** The
-study map uses the Drought Intelligence Explorer outline and state boundaries
-for India and state polygons for the conterminous USA; these are figure inputs
-only.
+# The storage engine (`R/functions/storage_engine.R`)
 
-Catchment size enters explicitly. The irrigated command area is
+One fluid state, three fitted quantities, no queue artefacts. Fitted per
+gauge on **training years (1981–2010) only**:
 
-$$
-A_{\text{cmd}} = f_{\text{irr}} \, A_{\text{catchment}},
-\qquad f_{\text{irr}} = 0.10,
-$$
+1. **Baseflow index** — Lyne–Hollick single-pass filter, `alpha = 0.925`
+   `[assumption: standard value]`.
+2. **Recession constant `k`** — on recession segments (≥ 10 consecutive days
+   of strictly negative daily flow change with no rain day
+   `[assumption: rain day ≥ 5 mm/day]`, censored at zero-flow days): per
+   segment $\ln Q(t+1) - \ln Q(t) = -1/k$; median across segments. The
+   low-flow nonlinearity exponent $p$ in $-dQ/dt = a\,Q^{p}$ is fitted on the
+   pooled segment pairs and clipped to $[0.5, 1]$
+   `[assumption: declared physical range]`.
+3. **Storage scale `S_cap` (mm)** — storage-outflow inversion: with
+   $Q_g = (K_a S)^{b_s}$ and $dS/dt = -Q_g$ along a recession, $b_s =
+   1/(2-p)$ and $K_a = a/b_s$; $S_{cap}$ is the 95th percentile of the
+   implied storage over the training segments. Gauges with fewer than
+   `r P1_MIN_SEGMENTS` segments **borrow the basin-median** parameters and
+   are flagged `borrowed_parameters`.
 
-and one claim is $d = 20$ mm of water over $A_{\text{cmd}}$. Demand is a depth
-rate, so area cancels there by design; supply and capacity use $A_{\text{cmd}}$.
+Propagated daily, no observed-Q input:
 
-# Methods
+$$S(t+1) = \mathrm{clip}\big(S(t) + P_e(t) - E_a(t) - Q_g(t),\ 0,\ S_{cap}\big)$$
+$$P_e(t) = \max(P(t) - \varphi_m(\mathrm{month})\,P(t), 0), \qquad
+E_a(t) = \min(\mathrm{PET}(t)\,K_{c,m}(\mathrm{month}),\ S(t) + P_e(t))$$
+$$Q_g(t) = \min\big((K_a\,S(t))^{b_s},\ S(t)\big)$$
 
-## Demand rate $\lambda(t)$
+Initialised at $S(0) = S_{cap}/2$ with a 2-year warm-up excluded from
+features `[assumption]`. The state is millimetres of depth over the
+catchment — no claims, no hectares; the unit wall (`units.R`) carries every
+conversion. The **per-day ledger identity**
+$S(t+1)-S(t) = P_e - E_a - Q_g - \mathrm{overflow} + \mathrm{deficit}$ holds
+to floating point (checks V16–V19 of the battery; residual tolerance 1e−9).
 
-Reference evapotranspiration uses **Hargreaves–Samani** with extraterrestrial
-radiation from latitude and day of year (no radiation data needed, so the same
-equation works in both regions):
+# Screens, sample and power (PIVOT.md §4.2)
 
-$$
-\mathrm{ET}_0 = 0.0023\,(T_{\text{mean}} + 17.8)\,
-\sqrt{\max(T_{\text{max}} - T_{\text{min}}, 0)}\; (0.408\,R_a).
-$$
+Screens are completeness and event-count only; the utilisation window is
+gone. (1) record in the 1981–2020 window; (2) ≥ 30 complete training months
+and ≥ 10 complete test months (a month is complete when every day is
+present); (3) ≥ `r P1_MIN_TRAIN_EVENTS` target events in the training feature
+years per target (dropped per target and reported); (4) recession quality:
+≥ `r P1_MIN_SEGMENTS` segments of ≥ 10 days in training years — gauges
+failing this are excluded from the storage families only, never from the
+baselines, and the asymmetry is reported; (5) zero-flow rivers are kept with
+censoring and the fraction is reported.
 
-Daily unmet depth and the arrival rate of claims are
+```{r p1-sample, eval=have("p1_sample_report.csv")}
+s1 <- rd("p1_sample_report.csv")
+if (!is.null(s1)) {
+  agg <- s1[, .(
+    read = .N,
+    complete = sum(pass_complete),
+    events_T1 = sum(pass_complete & pass_events_t1),
+    events_T2 = sum(pass_complete & pass_events_t2),
+    storage_scored = sum(pass_complete & pass_events_t1 & pass_recession),
+    borrowed = sum(borrowed_parameters)
+  )]
+  agg$region <- "India"
+  knitr::kable(agg, caption = "Sample report, India: n per screen stage. Source: output/p1_sample_report.csv.")
+}
+s2 <- rd("p1_sample_report_usa.csv")
+if (!is.null(s2)) {
+  agg <- s2[, .(
+    read = .N,
+    complete = sum(pass_complete),
+    events_T1 = sum(pass_complete & pass_events_t1),
+    events_T2 = sum(pass_complete & pass_events_t2),
+    storage_scored = sum(pass_complete & pass_events_t1 & pass_recession),
+    borrowed = sum(borrowed_parameters)
+  )]
+  agg$region <- "USA (transfer)"
+  knitr::kable(agg, caption = "Sample report, USA transfer arm. Source: output/p1_sample_report_usa.csv.")
+}
+```
 
-$$
-\text{need}(t) = \max\!\big(K_c\,\mathrm{ET}_0(t) - \phi\,P(t),\; 0\big),
-\qquad
-\lambda(t) = \frac{\text{need}(t)}{d},
-$$
+```{r p1-power, eval=have("p1_power.csv")}
+pw <- rd("p1_power.csv")
+if (!is.null(pw)) {
+  knitr::kable(pw[n %in% c(100, 200, 300), .(region, target, n_gauges_obs,
+    sd_delta = sprintf("%.4f", sd_delta),
+    median_delta = sprintf("%+.4f", median_delta),
+    p_true = signif(p_true, 2), n, power = signif(power, 2),
+    clears_080)],
+    caption = "Sign-test power at consistency 0.60, from the Gate-G2 variance (normal approximation for p_true [assumption]). Source: output/p1_power.csv.")
+}
+```
 
-with $K_c = 0.8$ (common crop coefficient, both regions), $\phi = 0.7$
-(effective-rain fraction), $d = 20$ mm. Both $K_c$ and $\phi$ are
-**[assumption]** values.
+# Frozen evaluation protocol (PIVOT.md §4.5–§4.8)
 
-## Supply rate $\mu(t)$
-
-Observed streamflow $Q(t)$ (m³ s⁻¹) is converted to a depth rate over the
-command area, with a firm share and an infrastructure cap:
-
-$$
-\mu(t) = \frac{1}{d}\,
-\min\!\left(\frac{Q(t)\cdot 86400 \cdot s_{\text{firm}}}{A_{\text{cmd}}}\,1000,\;
-\text{cap}\right),
-\qquad s_{\text{firm}} = 0.5,\;\; \text{cap} = 10\ \text{mm d}^{-1}.
-$$
-
-The firm share and the cap are **[assumption]** values representing a
-regulated delivery system.
-
-## The queue
-
-A finite-capacity continuous-time Markov chain on $Q \in \{0,1,\dots,K\}$:
-
-- arrivals at $\lambda(t)$ (Poisson **[assumption]**),
-- service at $\mu(t)$ when $Q>0$ (exponential **[assumption]**),
-- reneging at $\eta$ per day above threshold $\theta$,
-- service boost $\alpha$ above $\theta$.
-
-Thresholds come from the mean arrival rate $\bar\lambda$:
-
-$$
-q^\star = \lceil q_{\text{days}}\,\bar\lambda \rceil,
-\qquad
-K = \min\!\big(K_{\max}, \max(K_{\min}, \lceil K_{\text{days}}\,\bar\lambda\rceil)\big),
-$$
-
-with $q_{\text{days}} = 60$, $K_{\text{days}} = 365$, $K_{\min}=25$,
-$K_{\max}=80$, $\theta = \lceil 1.5\,q^\star\rceil$, $\alpha = 1.5$,
-$\eta = 1/60$ d⁻¹.
-
-The chain is solved by RK4 with the stability cap retained
-($\Delta t \cdot \max|\text{eigenvalue}| \le 2.78$). It is verified against
-(a) the exact product-form stationary solution and (b) a Gillespie/thinning
-simulation — 15/15 checks, `R/verify.R`.
-
-## Target: catchment SPEI-3
-
-The target is the catchment's **own** climate, not a district product. Monthly
-precipitation $P$ and Hargreaves $\mathrm{ET}_0$ are accumulated over three
-months and standardized **per calendar month on training years only**
-(1981–2010):
-
-$$
-D_3(t) = \sum_{i=0}^{2}\big(P(t-i) - \mathrm{ET}_0(t-i)\big),
-\qquad
-\text{SPEI-3}(t) = \frac{D_3(t) - \mu_{m(t)}}{\sigma_{m(t)}},
-$$
-
-where $\mu_m$ and $\sigma_m$ are the training-period mean and standard
-deviation for calendar month $m(t)$. The target is
-
-$$
-Y(t) = \mathbb{1}\!\left[\text{SPEI-3}(t) \le -1\right].
-$$
-
-SPI-3 ≤ −1 is the sensitivity target; it is fitted with a gamma distribution
-per calendar month on training years only. Standardizing on training years
-alone keeps both indices leakage-free with respect to the test window.
-
-The benchmark predictor SSI-3 is the 3-month accumulation of
-$\log(1+Q(t))$, standardized per calendar month on training years only.
-
-## Screen (identical in both regions)
-
-A catchment enters if
-
-| Rule | Threshold |
-|---|---|
-| utilisation $\rho = \bar\lambda/\bar\mu$ | 0.15 ≤ ρ ≤ 1.20 |
-| zero-flow fraction | < 0.30 |
-| largest interior gap | ≤ 30 days |
-| training record | ≥ 1095 days (3 y) |
-| test record | ≥ 730 days (2 y) |
-| training design events | ≥ 5 |
-| test design events | ≥ 3 |
-| per basin | ≤ 3 catchments (US basin = HUC4) |
-| total per region | ≤ 60 catchments |
-
-Missing days are **not** interpolated: a missing day pauses the queue state,
-and any calendar month containing a missing day is excluded from the indices
-and target. Every flag is written out.
-
-## Evaluation
-
-Eight model families are fitted with ridge logistic regression ($\lambda_{\text{L2}} = 1$)
-and month dummies, standardized on training rows only. The **confirmatory
-contrast** is
-
-$$
-\Delta_g = \text{Brier}_g(\text{SSI-3}) - \text{Brier}_g(\text{SSI-3} + \text{queue}),
-$$
-
-computed per gauge on **identical held-out months** (2011–2020) and summarized
-by the median with a **two-level bootstrap** (gauges, then years within gauge).
-A one-sided sign test is reported alongside. The families that use SPEI-3 *as a
-predictor* are near-deterministic by construction and are descriptive only;
-they never enter the confirmatory statistic.
+- **Targets.** T1 (confirmatory): monthly SSI-3 ≤ −1, all months of a spell
+  (the joint series). T2 (descriptive): monthly mean flow below the gauge's
+  training-period daily Q90. Leads h ∈ {1, 3, 6} months, strictly
+  prospective: a forecast issued at month *t* uses only information
+  available at *t*; the strict split keeps every issue/target pair fully
+  inside its window (no end-of-window leakage).
+- **Families** (identical ridge machinery, penalty tuned per family by
+  calendar-block CV inside the training years, grid and folds frozen in
+  `R/config.R`): `climatology` (reference), `persistence` (target index at
+  issue time), `lagged_indices` (SPI-3, SSI-3, SSI-6, SPI-6 at issue time),
+  `api` (recursive antecedent index, decay 0.95 `[assumption]`, effective
+  memory ≈ 90 days), `storage` (state anomaly, 1- and 3-month storage
+  change, days since high flow, and the fitted attributes), and
+  **`storage_plus_indices`** (the confirmatory family).
+- **Confirmatory contrasts.** H1: `storage_plus_indices` vs the **frozen
+  best-of** `{persistence, lagged_indices, api}` at **h = 3**; H2: same at
+  **h = 6**; selected per gauge on training-year CV only, before any test
+  scoring. H0 (descriptive, declared in advance): at h = 1 the storage
+  family is expected to reach **parity**, and a null there is the predicted
+  outcome.
+- **Headline metric.** Brier skill score vs `climatology`; paired per-gauge
+  Brier deltas on identical held-out months; two-level block bootstrap
+  (years within gauges, then gauges; B = `r P1_BOOT_B`); one-sided sign test
+  at ≥ 60 % consistency; harm bound `r P1_HARM_BOUND` Brier
+  `[assumption: smallest season-scale change an operator would act on]` —
+  gauges beyond it are listed in the outputs, never hidden behind a median.
+- **Class-balance rule.** Gauge-target cells with a training positive rate
+  below 2 % or above 98 % are flagged and excluded from Brier contrasts.
+- **No model sees a test year until scoring, once, at the end.**
 
 # Results
 
-```{r results-tables}
-summ <- if (have("region_summary.csv")) fread(OUT("region_summary.csv")) else NULL
-diff_tab <- if (have("region_difference.csv")) fread(OUT("region_difference.csv")) else NULL
-if (is.null(summ)) {
-  cat("Run `Rscript R/study.R` first; output/region_summary.csv is missing.\n")
-} else {
-  knitr::kable(
-    summ[, .(target, region, n, median_delta, boot_lo, boot_hi,
-             sign_k, sign_n, sign_p, median_dauc, harm)],
-    digits = 6,
-    col.names = c("target", "region", "n", "median dBrier", "CI low",
-                  "CI high", "sign k", "sign n", "sign p", "median dAUC",
-                  "harm"),
-    caption = "Regional paired improvement (positive favours the queue). SPEI-3 is the primary target; SPI-3 is the sensitivity target."
-  )
+```{r p1-bss, eval=have("p1_bss.csv")}
+b <- rd("p1_bss.csv")
+if (!is.null(b)) {
+  med <- b[is.finite(bss), .(bss_med = stats::median(bss)), by = .(family, lead, target)]
+  tw <- dcast(med, family + target ~ lead, value.var = "bss_med")
+  setnames(tw, c("1", "3", "6"), c("h=1", "h=3", "h=6"))
+  knitr::kable(tw, digits = 4,
+    caption = "Median Brier skill score vs climatology per family and lead (India). Positive = better than climatology. Source: output/p1_bss.csv.")
 }
 ```
 
-```{r diff-table}
-if (!is.null(diff_tab)) {
-  knitr::kable(diff_tab, digits = 6,
-               caption = "USA minus India for each target; independent bootstrap of the difference in medians.")
+```{r p1-confirmatory, eval=have("p1_confirmatory.csv")}
+cf <- rd("p1_confirmatory.csv")
+if (!is.null(cf)) {
+  knitr::kable(cf[, .(hypothesis, lead, n,
+    median_delta = sprintf("%+.4f", median_delta),
+    CI = sprintf("[%+.4f, %+.4f]", boot_lo, boot_hi),
+    sign = sprintf("%d/%d", sign_k, sign_n),
+    share = signif(sign_share, 2), verdict)],
+    caption = "Confirmatory table, India: storage_plus_indices vs the frozen best-of memory baseline, SSI-3 <= -1 target. H0 at lead 1 is the predicted parity/null and is reported as such. Source: output/p1_confirmatory.csv.")
 }
 ```
 
-```{r read-result}
-rd <- function(tgt, reg, col) {
-  if (is.null(summ)) return(NA_real_)
-  z <- summ[summ$target == tgt & summ$region == reg]
-  if (!nrow(z)) NA_real_ else z[[col]][1]
+```{r p1-usa, eval=have("p1_summary_usa.csv")}
+us <- rd("p1_summary_usa.csv")
+if (!is.null(us)) {
+  knitr::kable(us[baseline == "bestof", .(target, lead, n,
+    median_delta = sprintf("%+.4f", median_delta),
+    sign = sprintf("%d/%d", sign_k, sign_n), sign_p = signif(sign_p, 2))],
+    caption = "USA transfer check (descriptive; no cross-region test is planned). Source: output/p1_summary_usa.csv.")
 }
 ```
 
-`[measurement]` In the USA the median paired Brier improvement is positive for
-both targets (`r sprintf("%+.4f", rd("SPEI-3","USA","median_delta"))` for
-SPEI-3, `r sprintf("%+.4f", rd("SPI-3","USA","median_delta"))` for SPI-3), and
-both bootstrap intervals exclude zero. In India the medians are also positive
-(`r sprintf("%+.4f", rd("SPEI-3","India","median_delta"))` and
-`r sprintf("%+.4f", rd("SPI-3","India","median_delta"))`) but both intervals
-include zero with 12 catchments. The USA-minus-India difference includes zero
-for both targets, so the regional contrast is not resolved by these samples.
-
-```{r figures, fig.cap="Generated by R/figures.R from output/*.csv."}
-for (f in c("fig_utilisation.png", "fig_paired_brier.png", "fig_region.png")) {
-  p <- file.path(FIG_DIR, f)
-  if (file.exists(p)) {
-    cat(sprintf("\n\n![](%s)\n\n", p))
+```{r p1-figures, eval=TRUE, fig.height=4.6}
+figs <- c("fig_p1_leadtime", "fig_p1_paired", "fig_p1_map", "fig_p1_storage",
+          "fig_p1_state", "fig_p1_reliability")
+for (fg in figs) {
+  png <- file.path(FIG_DIR, paste0(fg, ".png"))
+  if (file.exists(png)) {
+    cat("\n\n![", fg, "](", png, ")\n\n", sep = "")
   }
 }
 ```
 
-# Reading the result
+# Verification battery (gate G1)
 
-The study asks a single question in both regions: **does the queue state add
-information beyond SSI-3 for a catchment SPEI-3 drought?** The answer is read
-from the table above, not asserted in advance.
+`R/verify.R` carries `r 21` checks and must pass 21/21 before any run: the
+frozen CTMC's exact-solution checks (V1–V7), the unit wall (V8–V9), the
+catchment-relative thresholds (V10), the index standardisation (V11), the
+metric hand cases (V12), the zero classifier and gap rule (V13–V14), the
+G2 rate builder (V15), and the storage engine's checks — fluid ledger
+identity with zero-flow pinning (V16), analytic recession vs propagator
+(V17), recession-constant recovery (V18), storage-scale inversion (V19),
+the leakage tripwire (V20), and the BSS hand case (V21). The three-way
+agreement on the P1 path is: analytic recession solution ↔ fluid propagator
+↔ daily mass-balance ledger.
 
-Three cautions belong with any reading:
+# Reproducibility
 
-1. **Illustrative demand.** $K_c$, $\phi$, $s_{\text{firm}}$ and the cap are
-   stated assumptions, not measurements. A different demand envelope moves the
-   magnitude.
-2. **Target choice.** SPEI-3 is the primary climate-deficit target and SPI-3
-   the precipitation-only sensitivity. Both give the same qualitative answer
-   here; a different target (for example a management record) need not.
-3. **Zero-flow data quality.** In CAMELS-IND, zeros may be measured no-flow
-   days or a coding convention. The study uses zeros as recorded; a reader who
-   treats them differently should re-run with that rule and report both.
-
-# Verification and reproducibility
-
-```{r assertions}
-ok <- TRUE
-if (!is.null(summ)) {
-  stopifnot(all(c("India", "USA") %in% summ$region))
-  stopifnot(all(summ$n >= 1))
-  stopifnot(all(is.finite(summ$median_delta)))
-  ok <- ok && all(summ$n >= 1)
-}
-cat("Region summary rows:", if (is.null(summ)) 0 else nrow(summ), "\n")
-cat("Assertions passed:", ok, "\n")
-```
-
-- Engine battery: `Rscript R/verify.R` must print **15/15 passed**.
-- Pipeline: `Rscript R/study.R`; figures: `Rscript R/figures.R`.
-- Every parameter is in `R/config.R`; every output CSV is regenerable and is
-  never hand-edited.
-- The frozen novelty sentence (21 November 2026) is unchanged and lives in
-  `AGENTS.md` §2 and `P01/literature_audit.md`.
-
-# Limitations
-
-- No measured irrigation deliveries; demand is a Stage-A envelope.
-- SPEI-3 uses Hargreaves ET0, a temperature-based approximation.
-- Poisson arrivals and exponential service are modelling assumptions.
-- The screen is common in rules, not in sample size: the number of catchments
-  that pass differs between regions.
-- No future-climate scenario; CMIP6 output is out of scope.
+Every output CSV is written by `R/study_gate_g2.R`, `R/study_p1.R`,
+`R/power_check.R` or `R/figures_p1.R` through `write_csv_sidecar()`, so each
+carries a JSON sidecar with the git hash, code hash, shape and R session.
+Nothing in `output/` is hand-edited. The retired study's backbone
+(`R/study.R`) is kept as the record; the frozen CTMC engine
+(`R/functions/queue_engine.R`) is untouched and will be reused unchanged by
+Study P3 (climate-projection queue reliability, CAMELS-IND-Proj).
