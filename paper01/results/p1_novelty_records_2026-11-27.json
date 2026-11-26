@@ -1,0 +1,13 @@
+{
+  "file": "p1_novelty_records_2026-11-27.csv",
+  "git_hash": "8bbaa1c",
+  "code_hash": "4b6c90eb8af8e47cfb5cc2cd6f5a10ff",
+  "written": "2026-11-27T00:16:21",
+  "nrow": 822,
+  "ncol": 17,
+  "session": {
+    "R": "R version 4.5.1 (2025-06-13 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  },
+  "scope": "top 100 per database/query plus top-100 OpenAlex citation traces"
+}

@@ -501,10 +501,11 @@ The 15-check battery is rebuilt as a **new battery with the same rigidity**
 > claim "storage states add seasonal skill" is dead in this data.** The
 > centre of gravity moves to **Study P3** (climate-projection queue
 > reliability), where no ML benchmark exists. The positive deliverables
-> that survive: the lead-time skill curves for India (BSS 0.42–0.50 at
-> 1 month → 0.01–0.08 at 3 → ≤0.02 at 6 — the first India-wide benchmark
-> of its kind, `output/p1_bss.csv`), the confirmed pre-registration, the
-> verified engine and the 22-check battery, and the trustworthy G2 null.
+> that survive: the lead-time skill curves for India (BSS 0.42-0.50 at
+> 1 month -> 0.01-0.08 at 3 -> at most 0.02 at 6 - no equivalent India-wide
+> large-sample benchmark was identified in the rapid Crossref/OpenAlex
+> screen, `output/p1_bss.csv`), the confirmed pre-registration, the verified
+> engine and the 22-check battery, and the trustworthy G2 null.
 
 **Absolute falsifier:** if the storage family does not beat the frozen
 best baseline at any lead ≥ 3 months on the primary target, the claim
@@ -605,18 +606,29 @@ in writing.
 
 ## 9. Novelty record for the pivot
 
-**Constraint:** `AGENTS.md` §2 forbids agents from rewording the frozen
-sentence. That sentence remains attached to the **retired study**. P1 requires
-a **new frozen sentence**, to be produced by a Phase-A-style screen run *before*
-the P1 manuscript is drafted. Draft to be confirmed by that screen (not a claim):
+**Sentence B — FROZEN 27 November 2026 after the rapid P1 screen**
+(`P01/p1_novelty_screen_2026-11-27.md`; 903 relevance-ranked records
+retrieved, 822 deduplicated records screened, 21 candidates manually reviewed,
+103 citing records included; zero gap-changing findings):
 
-> "Within [databases and screens to be run], we found no large-sample study for
-> Indian catchments that evaluates recession-derived storage-deficit states as
-> forecasting features for hydrological drought and low-flow events at
-> sub-seasonal to seasonal leads against pre-specified memory baselines, with
-> mass-balance-verified state estimation and pre-registered confirmatory tests."
+> "Within rapid Crossref and OpenAlex title/abstract screens run on
+> 27 November 2026 (four PIVOT queries and two OpenAlex forward-citation
+> traces; 903 relevance-ranked records retrieved, 822 deduplicated records
+> screened, 21 candidates manually reviewed; 103 citing records included),
+> we found no large-sample study for Indian catchments that evaluates
+> recession-derived storage-deficit states as forecasting features for
+> hydrological drought and low-flow events at 1-, 3-, and 6-month leads
+> against pre-specified memory baselines, with mass-balance-verified state
+> estimation and pre-registered confirmatory tests."
 
-**Search queries to run (screen protocol as in `P01/search_protocol.md`):**
+**Scope note (binding).** This is a rapid Crossref/OpenAlex title/abstract
+screen, not the exhaustive WoS/Scopus record-level protocol used for Sentence
+A. The sentence says *within these screens*, not *no such study exists*. A
+stronger claim requires a WoS/Scopus follow-up. The screen supports the P1
+title and the scoped benchmark statement; it does not change the negative
+confirmatory storage-state result.
+
+**Search queries run (screen protocol as in `P01/search_protocol.md`):**
 `(storage deficit OR "storage state" OR recession OR baseflow) AND (drought forecast* OR "low flow" forecast*) AND (India OR "large sample" OR CAMELS)`; 
 `("catchment memory" AND drought AND forecast)`; 
 `(SPEI OR SSI OR "flow duration" OR Q90) AND (sub-seasonal OR seasonal) AND (forecast* OR prediction) AND India`; 

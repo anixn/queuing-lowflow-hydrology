@@ -96,7 +96,7 @@ pre-registered H0-parity at 1-month lead is confirmed exactly as predicted;
 the confirmatory contrasts **H1 (3-month) and H2 (6-month) FAIL** — the
 recession-calibrated storage state adds no skill beyond lagged indices and
 persistence for Indian catchments (`output/p1_confirmatory.csv`). What the
-study delivers instead is the **first India-wide lead-time skill benchmark**:
+study delivers instead is the **India-wide lead-time skill benchmark**:
 BSS vs climatology of 0.42–0.50 at 1 month collapsing to 0.01–0.08 at 3 and
 ≤ 0.02 at 6 months across 231 catchments, with the US transfer arm scored on
 639 gauges. The centre of gravity moves to Study P3 (climate-projection

@@ -13,7 +13,8 @@ paper01/
   MANUSCRIPT_Paper01.pdf    the knitted PDF (key-highlights box, figures, tables)
   figures/                  Fig01-Fig08, each in PDF + 300-dpi PNG
   tables/                   Table 1-5 + appendix tables, CSV + JSON sidecars
-  results/                  frozen copies of the study outputs (+ sidecars)
+  results/                  frozen study outputs + the completed P1 prior-art
+                            screen (CSV/JSON + Markdown, with sidecars)
   figure_table_captions.md  suggested captions and sources for every figure/table
   README.md                 this file
 ```
@@ -57,6 +58,8 @@ Rscript R/verify.R               # 22/22 checks must pass first
 Rscript R/study_p1.R             # the study (India + USA transfer arm)
 Rscript R/study_gate_g2.R        # Gate G2 record
 Rscript R/power_check.R          # power curve
+Rscript R/kclass_exploratory.R   # labelled post-hoc k-class cut (optional)
+Rscript R/novelty_p1_screen.R     # rapid Crossref/OpenAlex P1 screen
 Rscript R/figures_paper01.R      # this folder's figures
 Rscript R/tables_paper01.R       # this folder's tables
 Rscript -e "rmarkdown::render('paper01/MANUSCRIPT_Paper01.Rmd')"
@@ -75,5 +78,11 @@ Rscript -e "rmarkdown::render('paper01/MANUSCRIPT_Paper01.Rmd')"
 - Reference entries marked "[standard reference; details to be verified
   before submission]" are deliberately left incomplete rather than invented -
   verify them (AGENTS.md rule 7) before submission.
-- The P1 novelty sentence (PIVOT.md section 9) needs its Phase-A-style
-  literature screen before any title claiming a gap is finalised.
+- The P1 novelty sentence is **frozen as of 27 November 2026** after a rapid
+  Crossref/OpenAlex title/abstract screen: 903 relevance-ranked records
+  retrieved, 822 deduplicated records screened, 21 candidates manually
+  reviewed, 103 forward-citation records included, zero gap-changing
+  findings. The full record and the exact scoped sentence are in
+  `P01/p1_novelty_screen_2026-11-27.md` and `PIVOT.md` section 9. This supports
+  finalising the current title; it is not an exhaustive WoS/Scopus screen and
+  no stronger claim is permitted.

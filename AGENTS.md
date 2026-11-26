@@ -56,14 +56,18 @@ It may never be strengthened, weakened, renumbered or reworded; Phase A owns it.
 > covariates; (4) validation against exact reference solutions and
 > pre-specified drought tests."
 
-**Sentence B (draft, PIVOT.md §9) — the P1 claim, pending its Phase-A-style
-screen, which must run before any P1 manuscript is drafted:**
+**Sentence B (FROZEN 27 November 2026; rapid Crossref/OpenAlex screen, see
+`P01/p1_novelty_screen_2026-11-27.md` and `PIVOT.md` §9):**
 
-> "Within [databases and screens to be run], we found no large-sample study for
-> Indian catchments that evaluates recession-derived storage-deficit states as
-> forecasting features for hydrological drought and low-flow events at
-> sub-seasonal to seasonal leads against pre-specified memory baselines, with
-> mass-balance-verified state estimation and pre-registered confirmatory tests."
+> "Within rapid Crossref and OpenAlex title/abstract screens run on
+> 27 November 2026 (four PIVOT queries and two OpenAlex forward-citation
+> traces; 903 relevance-ranked records retrieved, 822 deduplicated records
+> screened, 21 candidates manually reviewed; 103 citing records included),
+> we found no large-sample study for Indian catchments that evaluates
+> recession-derived storage-deficit states as forecasting features for
+> hydrological drought and low-flow events at 1-, 3-, and 6-month leads
+> against pre-specified memory baselines, with mass-balance-verified state
+> estimation and pre-registered confirmatory tests."
 
 An agent must never use the words *novel*, *first*, *new*, *unique* about
 either junction. We **reclaim** a lineage (Langbein 1958; Moran 1954; Kendall
