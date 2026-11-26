@@ -69,6 +69,51 @@ INDIA_STATES_FILE <- file.path(DIE_DATA_ROOT, "boundaries", "india_states.geojso
 OUTPUT_DIR <- file.path(QDJ_ROOT, "output")
 FIG_DIR <- file.path(QDJ_ROOT, "figures")
 
+# --- Pivot parameters (PIVOT.md §3 Gate G2 and §4 Study P1) ------------
+# PET source: "shipped" = the dataset PET column carried by the forcings
+# (GLEAM `pet_gleam(mm/day)` in CAMELS-IND; FAO Penman-Monteith in
+# Caravan-US); "hargreaves" = the retired temperature-based arm, kept only
+# as a declared sensitivity axis (PIVOT.md §4.4/FQ6).
+PET_SOURCE <- Sys.getenv("QDJ_PET_SOURCE", unset = "shipped")
+stopifnot(PET_SOURCE %in% c("shipped", "hargreaves"))
+# US transfer arm on/off (PIVOT.md §4.2; India is the study).
+TRANSFER_ARM <- Sys.getenv("QDJ_TRANSFER_ARM", unset = "on")
+stopifnot(TRANSFER_ARM %in% c("on", "off"))
+
+# Seasonal demand envelope [assumption: FAO-56-style two-season
+# simplification of kharif (Jun-Oct) / rabi (Nov-Mar) crop stages; a
+# sensitivity axis, not a claim]. Annual means: India Kc 0.846 (old 0.80),
+# phi 0.675 (old 0.70). The USA keeps the flat retired values [assumption:
+# flat envelope for the transfer region; not calibrated on US data].
+KC_MONTHLY <- list(
+  India = c(0.85, 0.85, 0.85, 0.70, 0.70, 0.90, 0.90, 0.90, 0.90, 0.90,
+            0.85, 0.85),
+  USA   = c(0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
+)
+PHI_MONTHLY <- list(
+  India = c(0.85, 0.85, 0.85, 0.85, 0.60, 0.45, 0.45, 0.45, 0.45, 0.60,
+            0.85, 0.85),
+  USA   = c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
+)
+
+# Ridge-penalty grid and fold structure for per-family CV tuning (FS3
+# fix, PIVOT.md §3 change 6 / §4.7). Folds are contiguous calendar-year
+# blocks inside the training years, frozen here before any scoring run.
+RIDGE_GRID  <- c(0.1, 0.3, 1, 3, 10)
+RIDGE_FOLDS <- 5L
+
+# Antecedent Precipitation Index (memory baseline, PIVOT.md §3 change 5 /
+# §4.6): recursive API_t = k * API_{t-1} + P_t [assumption: decay k = 0.95,
+# effective memory ~90 days (1 - 0.95^90 ~= 0.99)].
+API_DECAY <- 0.95
+API_DAYS  <- 90L
+
+# P1 leads in months (PIVOT.md §4.5) and the frozen family list for the
+# G2 gate (§3 change 5): the queue vs honest memory baselines.
+P1_LEADS <- c(1L, 3L, 6L)
+G2_FAMILIES <- c("climatology", "ssi3", "queue", "ssi3_plus_queue",
+                 "persistence", "ssi6", "api")
+
 # --- Scientific parameters (plan Appendix A) --------------------------
 P <- list(
   # Unit definitions
@@ -102,6 +147,12 @@ P <- list(
   # Minimum design events per catchment in the paired set.
   min_test_events   = 3L,
   min_train_events  = 5L,
+  # G2 measured demand envelope (FQ6 fix): per-catchment irrigated fraction
+  # from CAMELS-IND `irrigation_frac` (HydroATLAS), replacing the flat 0.10
+  # [assumption: floor of 0.01 keeps the command area defined where the
+  # attribute is 0; the floor is a declared default, not a measurement].
+  f_irr_floor       = 0.01,
+  f_irr_cap         = 1.0,
   # Reproducibility
   seed              = 20261125L
   # Note: the transient starts empty at ANALYSIS_START (1981-01-01). The plan's

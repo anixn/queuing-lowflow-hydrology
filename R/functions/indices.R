@@ -73,6 +73,13 @@ spi3 <- function(precip_month, dates, train_mask) {
   gamma_spi_month(acc, calendar_month(dates), train_mask)
 }
 
+# SPI-6: same construction at a 6-month accumulation (memory baseline,
+# FQ1 fix, PIVOT.md §3 change 5).
+spi6 <- function(precip_month, dates, train_mask) {
+  acc <- rolling_sum(precip_month, 6L)
+  gamma_spi_month(acc, calendar_month(dates), train_mask)
+}
+
 # SPEI-3 proxy: 3-month climatic water balance (P - PET), standardized
 # with per-calendar-month training moments.
 spei3 <- function(precip_month, pet_month, dates, train_mask) {
@@ -85,5 +92,12 @@ spei3 <- function(precip_month, pet_month, dates, train_mask) {
 # per-calendar-month training moments. Flow must be in m^3/s.
 ssi3 <- function(flow_month, dates, train_mask) {
   acc <- rolling_sum(log1p(pmax(flow_month, 0)), 3L)
+  standardize_normal_month(acc, calendar_month(dates), train_mask)
+}
+
+# SSI-6 proxy: same construction at a 6-month accumulation (memory
+# baseline, FQ1 fix, PIVOT.md §3 change 5). Flow must be in m^3/s.
+ssi6 <- function(flow_month, dates, train_mask) {
+  acc <- rolling_sum(log1p(pmax(flow_month, 0)), 6L)
   standardize_normal_month(acc, calendar_month(dates), train_mask)
 }

@@ -120,6 +120,36 @@ hargreaves_et0 <- function(tmax_c, tmin_c, tmean_c, ra_mj) {
   pmax(et0, 0)
 }
 
+# --- Seasonal demand curves (FQ6 fix, PIVOT.md §3 change 2) -----------
+# Month-of-year crop coefficient Kc_m and effective-rainfall fraction
+# phi_m. Values live in R/config.R (KC_MONTHLY / PHI_MONTHLY, one entry
+# per region); this is the only place they are applied, with assertions.
+# [assumption: FAO-56-style two-season simplification, declared in config.]
+kc_month <- function(month, region = "India") {
+  assert_true(all(month %in% 1:12), "month must be in 1:12")
+  v <- KC_MONTHLY[[region]]
+  assert_true(length(v) == 12, "KC_MONTHLY must have 12 monthly values")
+  assert_true(all(v >= 0 & v <= 2), "Kc monthly values must lie in [0, 2]")
+  v[as.integer(month)]
+}
+
+phi_month <- function(month, region = "India") {
+  assert_true(all(month %in% 1:12), "month must be in 1:12")
+  v <- PHI_MONTHLY[[region]]
+  assert_true(length(v) == 12, "PHI_MONTHLY must have 12 monthly values")
+  assert_true(all(v >= 0 & v <= 1), "phi monthly values must lie in [0, 1]")
+  v[as.integer(month)]
+}
+
+# Measured irrigated fraction from the dataset attribute (irrigation_frac),
+# replacing the flat 0.10 on the G2/P1 path [assumption: floor/cap in
+# config.R keep the command area defined; applied exactly once here].
+f_irr_measured <- function(irrigation_frac) {
+  x <- as.numeric(irrigation_frac)
+  if (!is.finite(x)) return(P$f_irr)  # unknown attribute -> retired default
+  pmin(pmax(x, P$f_irr_floor), P$f_irr_cap)
+}
+
 # --- Worked check mandated by the plan (┬º3.1) -------------------------
 # With 45,000 ha, d = 20 mm, s_firm = 0.5 and Q = 500 m^3/s:
 #   S_mm = 0.5*500*86400/4.5e8*1000 = 48 mm/day -> capped at 10

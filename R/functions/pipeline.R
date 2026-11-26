@@ -48,8 +48,11 @@ gauge_meta <- function() {
 
 # Run the queue for one gauge's daily rate table. Returns daily and monthly
 # tables plus run metadata (thresholds, blocking diagnostics).
+# FQ4 fix: lam_bar (and therefore q*, K, theta) is computed on TRAINING
+# years only; test years are touched only at scoring time.
 stage5_queue <- function(rates, q_days = P$q_days, K_days = P$K_days) {
-  ok <- !rates$missing_day
+  yr <- as.integer(format(rates$date, "%Y"))
+  ok <- !rates$missing_day & yr %in% P$train_years
   lam_bar <- mean(rates$lambda[ok])
   th <- thresholds_from_lambda(lam_bar, q_days = q_days, K_days = K_days,
                                theta_mult = P$theta_mult)
@@ -109,7 +112,9 @@ stage6_indices <- function(rates) {
   d <- rates[, .(
     prcp = if (all(!is.na(prcp_mm)) && all(month_complete)) sum(prcp_mm) else NA_real_,
     pet = if (all(!is.na(pet_mm)) && all(month_complete)) sum(pet_mm) else NA_real_,
-    flow = if (all(month_complete)) mean(q_used) else NA_real_
+    flow = if (all(month_complete)) mean(q_used) else NA_real_,
+    api_p = if (all(month_complete)) mean(api_p) else NA_real_,
+    api_pet = if (all(month_complete)) mean(api_pet) else NA_real_
   ), by = ym]
   grid <- data.table::data.table(
     date = seq(as.Date("1981-01-01"), as.Date("2020-12-01"), by = "month"))
@@ -118,8 +123,10 @@ stage6_indices <- function(rates) {
   mon <- mon[order(date)]
   train <- format(mon$date, "%Y") %in% as.character(P$train_years)
   mon[, spi3 := spi3(prcp, date, train)]
+  mon[, spi6 := spi6(prcp, date, train)]
   mon[, spei3 := spei3(prcp, pet, date, train)]
   mon[, ssi3 := ssi3(flow, date, train)]
+  mon[, ssi6 := ssi6(flow, date, train)]
   mon[, c("ym", "flow") := NULL]
   mon
 }
@@ -133,11 +140,16 @@ stage6_design <- function(monthly, indices) {
   d[, target_spi3 := as.integer(!is.na(spi3) & spi3 <= -1)]
   d[, target_spei3 := as.integer(!is.na(spei3) & spei3 <= -1)]
   d <- d[order(date)]
-  # Lagged predictors for E2 (prospective, 1-month lead).
+  # Lagged predictors for the memory baselines (1-month lag; the G2 gate
+  # and P1 extend leads in the design builders of each script).
   d[, `:=`(
     spi3_lag = data.table::shift(spi3, 1),
+    spi6_lag = data.table::shift(spi6, 1),
     spei3_lag = data.table::shift(spei3, 1),
     ssi3_lag = data.table::shift(ssi3, 1),
+    ssi6_lag = data.table::shift(ssi6, 1),
+    api_p_lag = data.table::shift(api_p, 1),
+    api_pet_lag = data.table::shift(api_pet, 1),
     p_ge_q_lag = data.table::shift(mean_p_ge_q, 1),
     p_ge_q_lag2 = data.table::shift(mean_p_ge_q, 2),
     E_Q_lag = data.table::shift(mean_E_Q, 1)
@@ -162,44 +174,86 @@ interior_gap_days <- function(x) {
   if (!any(r$values)) 0L else max(r$lengths[r$values])
 }
 
-# Build daily demand/service rates for one gauge catchment.
-# Units: prcp, ET0 and need in mm/day; lambda and mu in claims/day.
-# A_cmd = f_irr * A_catchment (m^2) from the explicit catchment area.
+# Build daily demand/service rates for one gauge catchment (G2 corrected
+# version, PIVOT.md §3 changes 1-2).
+# Units: prcp, PET, need in mm/day; lambda and mu in claims/day.
+# PET: dataset column (pet_obs) when shipped, else Hargreaves (declared by
+# the caller via pet_source). Demand envelope: seasonal Kc_m(month) and
+# phi_m(month) from R/functions/units.R; the USA keeps the flat values.
+# A_cmd = f_irr_measured * A_catchment (m^2) from the measured attribute.
 common_rates <- function(gauge_id, date, q, prcp, tmax, tmin, tmean,
-                         area_km2, lat) {
+                         area_km2, lat, pet_obs = NULL, region = "India",
+                         irrigation_frac = NA_real_) {
   d <- data.table::data.table(
     date = as.Date(date), q = as.numeric(q), prcp = as.numeric(prcp),
     tmax = as.numeric(tmax), tmin = as.numeric(tmin), tmean = as.numeric(tmean))
   doy <- as.integer(format(d$date, "%j"))
+  mo <- as.integer(format(d$date, "%m"))
   et0 <- rep(NA_real_, nrow(d))
-  if (is.finite(lat)) {
-    ra <- extraterrestrial_radiation(lat, doy)
-    ok <- is.finite(ra)
-    if (any(ok)) {
-      et0[ok] <- hargreaves_et0(d$tmax[ok], d$tmin[ok], d$tmean[ok], ra[ok])
+  if (!is.null(pet_obs)) {
+    x <- as.numeric(pet_obs)
+    assert_true(all(is.na(x) | x >= 0), "pet_obs must be non-negative mm/day")
+    et0 <- x
+  }
+  if (is.null(pet_obs) || !any(is.finite(et0))) {
+    if (is.finite(lat)) {
+      ra <- extraterrestrial_radiation(lat, doy)
+      ok <- is.finite(ra)
+      if (any(ok)) {
+        et0[ok] <- hargreaves_et0(d$tmax[ok], d$tmin[ok], d$tmean[ok], ra[ok])
+      }
     }
   }
   d[, et0 := et0]
-  d[, need := pmax(P$Kc * et0 - P$phi * prcp, 0)]
+  # Seasonal demand envelope (FQ6 fix): Kc_m and phi_m by month and region.
+  d[, need := pmax(kc_month(mo, region) * et0 - phi_month(mo, region) * prcp, 0)]
   d[, lambda := need / P$d_mm]
-  A_cmd <- P$f_irr * area_km2 * 1e6
+  f_irr <- f_irr_measured(irrigation_frac)
+  A_cmd <- f_irr * area_km2 * 1e6
   d[, mu := if (is.finite(A_cmd)) {
     pmin(q * 86400 * P$s_firm / A_cmd * 1000, P$cap_mm) / P$d_mm
   } else NA_real_]
+  # Antecedent Precipitation Index, daily recursive (memory baseline,
+  # FQ1 fix): API_t = k * API_{t-1} + P_t [assumption: decay API_DECAY,
+  # effective memory ~API_DAYS]. PET-side accumulation weighted by Kc_m.
+  n_d <- nrow(d)
+  api_p <- numeric(n_d); api_pet <- numeric(n_d)
+  p_ok <- is.finite(d$prcp); e_ok <- is.finite(d$et0)
+  kc <- kc_month(mo, region)
+  for (i in seq_len(n_d)) {
+    prev_p <- if (i > 1) api_p[i - 1] else 0
+    prev_e <- if (i > 1) api_pet[i - 1] else 0
+    api_p[i] <- API_DECAY * prev_p + if (p_ok[i]) d$prcp[i] else 0
+    api_pet[i] <- API_DECAY * prev_e + if (e_ok[i]) kc[i] * d$et0[i] else 0
+  }
+  d[, api_p := api_p]
+  d[, api_pet := api_pet]
   d[, missing_day := is.na(q) | is.na(et0) | is.na(prcp) | is.na(mu)]
   d[, ym := format(date, "%Y-%m")]
   d[, month_complete := !any(missing_day), by = ym]
   d[, .(gauge_id = gauge_id, date, q_used = q, prcp_mm = prcp, pet_mm = et0,
-        need_mm = need, lambda, mu, missing_day, ym, month_complete,
+        need_mm = need, lambda, mu, api_p, api_pet, missing_day, ym,
+        month_complete,
         flag_pause = missing_day, flag_excluded_month = !month_complete)]
 }
 
-# One utilisation screen for both regions.
+# One screen for both regions (FQ3/FQ4 fix, PIVOT.md §3 changes 3-4).
+# All statistics are computed on TRAINING years only.
+#   in_window     : the RETIRED study's rule, kept only so the G2 gate can
+#                   score its confirmatory sample unchanged (rho window,
+#                   zero-flow cap and basin caps stay in the calling
+#                   script).
+#   complete_only : the pivot's completeness-only rule (the sample the
+#                   study "could have been"); it selects nothing here.
 common_screen <- function(rates, basin) {
-  ok <- !rates$missing_day
-  rho <- if (any(ok)) sum(rates$lambda[ok]) / sum(rates$mu[ok]) else NA_real_
   yr <- as.integer(format(rates$date, "%Y"))
-  n_train <- sum(!is.na(rates$q_used) & yr %in% P$train_years)
+  tr <- yr %in% P$train_years
+  ok <- !rates$missing_day
+  # FQ4 fix: utilisation from TRAINING years only (descriptive reporting
+  # column; it selects nothing on the pivot path).
+  rho <- if (any(ok & tr)) sum(rates$lambda[ok & tr]) /
+    sum(rates$mu[ok & tr]) else NA_real_
+  n_train <- sum(!is.na(rates$q_used) & tr)
   n_test <- sum(!is.na(rates$q_used) & yr %in% P$test_years)
   zf <- mean(rates$q_used == 0, na.rm = TRUE)
   gp <- interior_gap_days(rates$q_used)
@@ -209,7 +263,9 @@ common_screen <- function(rates, basin) {
     n_train = n_train, n_test = n_test,
     in_window = is.finite(rho) & rho >= P$rho_window[1] &
       rho <= P$rho_window[2] & zf < 0.30 & !is.na(gp) & gp <= 30 &
-      n_train >= 1095 & n_test >= 730)
+      n_train >= 1095 & n_test >= 730,
+    complete_only = n_train >= 1095 & n_test >= 730 &
+      !is.na(gp) & gp <= 30)
 }
 
 # ---------------------------------------------------------------------
@@ -239,6 +295,20 @@ FAMILY_FEATURES <- list(
   spei3_plus_queue = c("spei3", "mean_E_Q", "mean_p_ge_q"),
   ssi3_plus_spei3_plus_queue = c("ssi3", "spei3", "mean_E_Q", "mean_p_ge_q")
 )
+
+# Model families for the G2 gate (PIVOT.md §3 change 5, FQ1 fix): the
+# concurrent families PLUS the honest memory baselines. `persistence` =
+# lag-1 SSI-3 (what an operator does today); `ssi6` = lag-1 SSI-6;
+# `api` = the recursive antecedent index (decay + window in config.R).
+FAMILY_FEATURES_G2 <- list(
+  climatology = character(0),
+  ssi3 = "ssi3",
+  queue = c("mean_E_Q", "mean_p_ge_q"),
+  ssi3_plus_queue = c("ssi3", "mean_E_Q", "mean_p_ge_q"),
+  persistence = "ssi3_lag",
+  ssi6 = "ssi6_lag",
+  api = c("api_p_lag", "api_pet_lag")
+)
 FAMILY_FEATURES_E2 <- list(
   climatology = character(0),
   spi3 = "spi3_lag",
@@ -251,11 +321,20 @@ FAMILY_FEATURES_E2 <- list(
 )
 
 stage7_fit <- function(design, target_col = "target_sma", endpoint = "E1",
-                       drop_spi3 = FALSE) {
-  feats <- if (endpoint == "E1") FAMILY_FEATURES else FAMILY_FEATURES_E2
+                       drop_spi3 = FALSE, features = NULL) {
+  feats <- if (!is.null(features)) features else
+    if (endpoint == "E1") FAMILY_FEATURES else FAMILY_FEATURES_E2
   y <- design[[target_col]]
   train_mask <- design$train & is.finite(y)
   test_mask <- design$test & is.finite(y)
+  # Calendar-year-block fold ids inside the training years (FS3 fix; fold
+  # structure frozen in config.R: RIDGE_FOLDS contiguous year blocks).
+  yrs <- sort(unique(design$year[train_mask]))
+  fold_of_year <- unlist(split(seq_along(yrs),
+                               cut(seq_along(yrs), breaks = RIDGE_FOLDS,
+                                   labels = FALSE)))
+  names(fold_of_year) <- as.character(yrs)
+  design$fold_id <- as.integer(fold_of_year[as.character(design$year)])
   metrics <- list()
   preds <- list()
   for (fam in names(feats)) {
@@ -268,7 +347,7 @@ stage7_fit <- function(design, target_col = "target_sma", endpoint = "E1",
     if (sum(ok_train) < 40 || sum(ok_test) < 10 || length(unique(y[ok_train])) < 2) {
       metrics[[fam]] <- data.table::data.table(
         family = fam, n_train = sum(ok_train), n_test = sum(ok_test),
-        brier = NA_real_, auc = NA_real_, logloss = NA_real_)
+        brier = NA_real_, auc = NA_real_, logloss = NA_real_, lambda = NA_real_)
       next
     }
     sel <- ok_train | ok_test
@@ -280,13 +359,17 @@ stage7_fit <- function(design, target_col = "target_sma", endpoint = "E1",
     if (length(cols)) Xmat <- cbind(Xmat, Xtr$X)
     Xmat <- cbind(Xmat, month_dummies(Xd$month))
     colnames(Xmat)[1] <- "intercept"
-    fit <- fit_ridge_logistic(Xmat[tr, , drop = FALSE], y[ok_train], lambda = P$L2)
+    # FS3 fix: ridge penalty tuned per family by calendar-block CV inside
+    # the training years, then one final refit on all training rows.
+    lam <- cv_ridge_lambda(Xmat[tr, , drop = FALSE], y[ok_train],
+                           Xd$fold_id[tr], grid = RIDGE_GRID)
+    fit <- fit_ridge_logistic(Xmat[tr, , drop = FALSE], y[ok_train], lambda = lam)
     p <- predict_ridge_logistic(fit$beta, Xmat[te, , drop = FALSE])
     yt <- y[ok_test]
     metrics[[fam]] <- data.table::data.table(
       family = fam, n_train = sum(ok_train), n_test = sum(ok_test),
       brier = brier_score(yt, p), auc = auc_score(yt, p),
-      logloss = log_loss(yt, p))
+      logloss = log_loss(yt, p), lambda = lam)
     preds[[fam]] <- data.table::data.table(
       date = Xd$date[te], year = Xd$year[te], y = yt, p = p, family = fam)
   }

@@ -259,29 +259,47 @@ v14_gap_rule <- function() {
                        sum(g$pause), sum(g$exclude_month)))
 }
 
-# V15: the common rate builder and screen (both regions, one definition).
+# V15: the G2 rate builder and screen (PIVOT.md §3 changes 1-4).
+# Dataset PET + seasonal envelope + measured irrigated fraction; training-
+# only screen statistics; completeness flag present.
 v15_common_rates <- function() {
-  n <- 400
-  d <- seq(as.Date("1981-01-01"), by = "day", length.out = n)
+  # 1981-1985 daily series so the completeness thresholds (>=1095 training
+  # days, >=730 test days) are reachable inside the test.
+  d <- seq(as.Date("1981-01-01"), as.Date("1985-12-31"), by = "day")
+  n <- length(d)
+  mo <- as.integer(format(d, "%m"))
+  pet_obs <- rep(4, n)
   r <- common_rates(1L, d, rep(10, n), rep(1, n), rep(30, n), rep(20, n),
-                    rep(25, n), 1000, 20)
-  ra <- extraterrestrial_radiation(20, as.integer(format(d, "%j")))
-  et0 <- hargreaves_et0(rep(30, n), rep(20, n), rep(25, n), ra)
-  need <- pmax(P$Kc * et0 - P$phi * 1, 0)
-  mu1 <- 10 * 86400 * P$s_firm / (P$f_irr * 1000 * 1e6) * 1000 / P$d_mm
+                    rep(25, n), 1000, 20, pet_obs = pet_obs, region = "India",
+                    irrigation_frac = 0.20)
+  need <- pmax(kc_month(mo, "India") * pet_obs -
+                 phi_month(mo, "India") * rep(1, n), 0)
+  mu1 <- 10 * 86400 * P$s_firm / (0.20 * 1000 * 1e6) * 1000 / P$d_mm
   r2 <- common_rates(2L, d, rep(10, n), rep(1, n), rep(30, n), rep(20, n),
-                     rep(25, n), 2000, 20)
-  ok_et0 <- max(abs(r$pet_mm - et0)) < 1e-10
+                     rep(25, n), 2000, 20, pet_obs = pet_obs, region = "India",
+                     irrigation_frac = 0.20)
   ok_need <- max(abs(r$need_mm - need)) < 1e-10
   ok_mu <- max(abs(r$mu - mu1)) < 1e-10
   ok_area <- max(abs(r2$mu - mu1 / 2)) < 1e-10
+  # FQ4 fix: rho uses training years only. Temporary year window so the
+  # completeness thresholds are testable on the synthetic series; P is
+  # replaced in the GLOBAL environment (where common_screen resolves it)
+  # and restored immediately after the screen call.
+  p_orig <- P
+  tmp <- P
+  tmp$train_years <- 1981:1983; tmp$test_years <- 1984:1985
+  assign("P", tmp, envir = globalenv())
   sc <- common_screen(r, "test")
-  ok_screen <- is.finite(sc$rho) && "in_window" %in% names(sc)
-  ok <- ok_et0 && ok_need && ok_mu && ok_area && ok_screen
-  verif_result("V15", "Common rates and screen (both regions)", ok,
-               sprintf("ET0 %.1e; need %.1e; mu %.1e; area-halving %.1e",
-                       max(abs(r$pet_mm - et0)), max(abs(r$need_mm - need)),
-                       max(abs(r$mu - mu1)), max(abs(r2$mu - mu1 / 2))))
+  assign("P", p_orig, envir = globalenv())
+  ok_screen <- is.finite(sc$rho) && "complete_only" %in% names(sc) &&
+    isTRUE(sc$complete_only)
+  # API recursion: with k=0.95 and constant P=1, API -> 1/(1-k) = 20.
+  ok_api <- abs(r$api_p[n] - 20) < 0.5
+  ok <- ok_need && ok_mu && ok_area && ok_screen && ok_api
+  verif_result("V15", "G2 rates: dataset PET + seasonal envelope + screen", ok,
+               sprintf("need %.1e; mu %.1e; area-halving %.1e; API@n=%.2f",
+                       max(abs(r$need_mm - need)), max(abs(r$mu - mu1)),
+                       max(abs(r2$mu - mu1 / 2)), r$api_p[n]))
 }
 
 run_verification <- function(verbose = TRUE) {

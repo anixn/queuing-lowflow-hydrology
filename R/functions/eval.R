@@ -92,6 +92,47 @@ predict_ridge_logistic <- function(beta, X) {
   stats::plogis(as.numeric(as.matrix(X) %*% beta))
 }
 
+# --- Per-family CV tuning of the ridge penalty (FS3 fix, PIVOT.md §3
+# change 6 / §4.7). Contiguous calendar-year blocks inside the TRAINING
+# years only; the fold structure and grid are frozen in config.R.
+# Returns the lambda with the lowest mean held-out-fold Brier.
+cv_ridge_lambda <- function(X, y, fold_id, grid = RIDGE_GRID) {
+  folds <- sort(unique(fold_id))
+  if (length(folds) < 2) return(grid[which.min(c(Inf, grid))])  # degenerate: weakest penalty
+  scores <- numeric(length(grid))
+  for (li in seq_along(grid)) {
+    b <- numeric(length(folds))
+    for (fi in seq_along(folds)) {
+      tr <- fold_id != folds[fi]; te <- fold_id == folds[fi]
+      if (sum(tr) < 10 || length(unique(y[tr])) < 2) { b[fi] <- NA; next }
+      fit <- fit_ridge_logistic(X[tr, , drop = FALSE], y[tr], lambda = grid[li])
+      p <- predict_ridge_logistic(fit$beta, X[te, , drop = FALSE])
+      b[fi] <- brier_score(y[te], p)
+    }
+    scores[li] <- if (all(is.finite(b))) mean(b) else NA_real_
+  }
+  if (!any(is.finite(scores))) return(1)
+  grid[which.min(scores)]
+}
+
+# Brier skill score vs the climatology family on IDENTICAL months
+# (FS1 fix, PIVOT.md §3 change 7 / §4.8). Positive = better than
+# climatology. Returns one row per gauge per family.
+bss_vs_climatology <- function(preds) {
+  clim <- preds[family == "climatology", .(gauge_id, date, y_clim = y, p_clim = p)]
+  others <- preds[family != "climatology"]
+  m <- merge(others, clim, by = c("gauge_id", "date"))
+  m[, brier := (p - y)^2]
+  m[, brier_clim := (p_clim - y_clim)^2]
+  out <- m[, .(
+    n_months = .N,
+    brier = mean(brier),
+    brier_clim = mean(brier_clim),
+    bss = 1 - mean(brier) / pmax(mean(brier_clim), 1e-12)
+  ), by = .(gauge_id, family)]
+  out
+}
+
 # Calendar-month dummies (11 columns; January is the reference).
 month_dummies <- function(month) {
   m <- as.integer(month)
