@@ -1,4 +1,4 @@
 "region","target","lead","baseline","n","median_delta","sign_k","sign_n","sign_share","sign_p","boot_lo","boot_hi","hypothesis","criterion_median_pos","criterion_ci_excl0","criterion_sign60","verdict"
-"India","t1",1,"bestof",1,-0.0133312635865445,0,1,0,1,,,"H0 (descriptive: parity expected)",FALSE,,FALSE,"descriptive (H0): report as predicted parity/null"
-"India","t1",3,"bestof",1,0.00150593735833723,1,1,1,0.5,,,"H1 (confirmatory)",TRUE,,TRUE,
-"India","t1",6,"bestof",1,0.000677854486445001,1,1,1,0.5,,,"H2 (confirmatory)",TRUE,,TRUE,
+"India","t1",1,"bestof",88,2.93392778374498e-05,44,88,0.5,0.542406747578561,-0.00206566077124137,0.00228574153205173,"H0 (descriptive: parity expected)",TRUE,FALSE,FALSE,"descriptive (H0): report as predicted parity/null"
+"India","t1",3,"bestof",87,-0.000458562721487588,41,87,0.471264367816092,0.739854203212463,-0.000575092635835266,0.00294632595748065,"H1 (confirmatory)",FALSE,FALSE,FALSE,"FAIL"
+"India","t1",6,"bestof",88,-0.000424666056920393,40,88,0.454545454545455,0.83130048157344,-0.00102886134408205,0.00225697357005796,"H2 (confirmatory)",FALSE,FALSE,FALSE,"FAIL"

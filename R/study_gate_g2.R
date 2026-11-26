@@ -335,8 +335,8 @@ local({
       # Frozen best-of contrast (per gauge, selected on training CV).
       if (!is.null(cv) && nrow(cv)) {
         pbo <- copy(p)[target == tgt]
-        bg <- cv[, .(gauge_id, family)][, .(best_family = family[
-          which.min(cv_brier)]), by = gauge_id]
+        bg <- cv[, .(best_family = family[which.min(cv_brier)]),
+                 by = gauge_id]
         pbo <- merge(pbo, bg, by = "gauge_id", all.x = TRUE)
         pbo_keep <- pbo[family == best_family |
                           family == "ssi3_plus_queue"]

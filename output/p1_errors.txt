@@ -1,2 +1,19 @@
-propagate 3002: object 'flow' not found
-propagate 3005: object 'flow' not found
+propagate camels_01466500: Unit assertion failed: S_cap must be positive mm
+propagate camels_06408700: Unit assertion failed: S_cap must be positive mm
+propagate camels_06409000: Unit assertion failed: S_cap must be positive mm
+propagate camels_06431500: Unit assertion failed: S_cap must be positive mm
+propagate camels_06440200: Unit assertion failed: S_cap must be positive mm
+propagate camels_06447500: Unit assertion failed: S_cap must be positive mm
+propagate camels_06847900: Unit assertion failed: S_cap must be positive mm
+propagate camels_06853800: Unit assertion failed: S_cap must be positive mm
+propagate camels_07226500: Unit assertion failed: S_cap must be positive mm
+propagate camels_07301410: Unit assertion failed: S_cap must be positive mm
+propagate camels_07301500: Unit assertion failed: S_cap must be positive mm
+propagate camels_08082700: Unit assertion failed: S_cap must be positive mm
+propagate camels_08086290: Unit assertion failed: S_cap must be positive mm
+propagate camels_09306242: Unit assertion failed: S_cap must be positive mm
+propagate camels_09404450: Unit assertion failed: S_cap must be positive mm
+propagate camels_09447800: Unit assertion failed: S_cap must be positive mm
+propagate camels_10023000: Unit assertion failed: S_cap must be positive mm
+propagate camels_10166430: Unit assertion failed: S_cap must be positive mm
+propagate camels_13083000: Unit assertion failed: S_cap must be positive mm
