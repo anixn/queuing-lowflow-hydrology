@@ -223,13 +223,32 @@ consistent sign, not a demonstrated mechanism. Source: `output/rho_slope.csv`.
 
 ## 11. US reservoir-centric pilot (exploratory)
 
-`[measurement]` With the same `rho` window, the US primary sample has **14
+`[measurement]` With the same $\rho$ window, the US primary sample has **14
 paired reservoirs**: E1 median **+0.000388** (CI [−0.010481, +0.009345]; 7/14,
 p = 0.605; Delta AUC +0.0077), E2 median −0.002387. The full 21-reservoir sample
 is also null on Brier (+0.000793, 12/21, p = 0.332; Delta AUC +0.0105). With the
 window applied the US arm is null on **both** Brier and AUC. It is an
 **exploratory replication**, not a second confirmatory test. Source:
 `analysis/P02_methods/US_PILOT_RESULTS.md`, `output_us/us_meta.csv`.
+
+---
+
+## 11b. Common-protocol India–US comparison (null in both)
+
+`[measurement]` Under the like-for-like protocol (`protocol/COMMON_PROTOCOL.md`:
+common `Kc = 0.8`, SUP-1, training-only SPI-3 target, same split), the queue does
+not improve the SPI-3 target in either region:
+
+| Region | n | median Delta Brier | 95% CI | sign | p | median Delta AUC |
+|---|---:|---:|---|---:|---:|---:|
+| India | 15 | −0.000321 | [−0.001268, +0.003946] | 6/15 | 0.849 | +0.0025 |
+| USA | 240 | +0.000423 | [−0.000081, +0.000851] | 131/240 | 0.088 | 0.0000 |
+| USA − India | — | +0.000745 | [−0.003298, +0.001489] | — | — | — |
+
+The region difference includes zero and the ranking gain is effectively zero in
+both regions. **The earlier India positive is target- and demand-model-dependent,
+not a general queue advantage.** Source:
+`analysis/P02_methods/COMMON_RESULTS.md`, `output_compare/`.
 
 ---
 

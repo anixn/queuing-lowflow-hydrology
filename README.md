@@ -32,14 +32,15 @@ exact verification battery, and every sensitivity axis reported.
 
 The predeclared confirmatory Brier endpoint is **null**: the paired per-gauge
 improvement from adding queue probability to SSI-3 has a median of about
-`+0.0008` with a two-level bootstrap 95% interval that includes zero. The
-secondary AUC contrast is positive in India and is reported as **secondary
-only**. A reservoir-centric US pilot is an **exploratory replication**: with the
-same utilisation window it is null on both Brier and AUC, so the ranking signal
-is India-specific, not universal. The outcome is **Path B (honest null)**: a
-predeclared multi-catchment evaluation plus a utilisation diagnosis. The exact
-numbers live in `analysis/P02_methods/RESULTS_v2.md` and
-`analysis/P02_methods/US_PILOT_RESULTS.md`.
+`+0.0020` with a two-level bootstrap 95% interval that includes zero. The
+leakage-clean SPI-3 target is **positive** on the kharif demand model, but a
+like-for-like India–US common protocol (same `Kc`, SUP-1, SPI-3 target, same
+split) **removes the effect in both regions** (India −0.0003, USA +0.0004;
+difference CI includes zero). The positive is therefore target- and
+demand-model-dependent, not a general queue advantage. The US reservoir pilot is
+an **exploratory replication**, null on both Brier and AUC with the window
+applied. The outcome is **Path B (honest null)** with a fragile,
+target-dependent secondary signal and a utilisation diagnosis.
 
 ## Run it (from the repository root)
 

@@ -222,8 +222,8 @@ committed; `.gitignore` excludes `.env` and local credentials.
 5. `manuscript/MANUSCRIPT.md` — the HESS draft.
 6. `protocol/PROTOCOL_v2.md` and `protocol/COMMON_PROTOCOL.md` — the
    pre-specified design and the like-for-like comparison rules.
-7. `analysis/P02_methods/RESULTS_v2.md` and `US_PILOT_RESULTS.md` — results
-   with sources.
+7. `analysis/P02_methods/RESULTS_v2.md`, `US_PILOT_RESULTS.md` and
+   `COMMON_RESULTS.md` — results with sources.
 8. `P01/literature_audit.md`, `P01/search_protocol.md`, `analysis/P01_literature/`
    — the frozen-sentence evidence trail.
 9. `docs/project/MERGED_PAPER_PLAN.md` and `docs/project/SESSION_LOG_v2.md` —

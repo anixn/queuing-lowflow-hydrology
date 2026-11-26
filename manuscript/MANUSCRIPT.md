@@ -13,9 +13,9 @@ A deficit queue reads drought as accumulated unmet demand: demand arrives at rat
 
 We test it twice. In India, 15 endpoint gauges across 8 basins pass a V1 utilisation screen and a minimum design-event rule; the target is district soil-moisture drought. In the USA, 14 reservoir–catchment pairs inside the same utilisation window use measured ResOpsUS outflow and the US Drought Monitor. Both use one claim volume per unit, catchment-relative thresholds, an exactly verified finite-capacity queue (14/14 checks), and a paired held-out Brier contrast.
 
-The results are target-dependent, and that is the paper's point. On the **external district soil-moisture target, the confirmatory Brier endpoint is null**: median paired improvement **+0.00204**, 95% CI **[−0.00187, +0.00415]**, 10/15, $p=0.151$. On a **leakage-clean training-only SPI-3 target**, the same contrast is **positive**: median **+0.00397**, CI **[+0.00013, +0.00949]**, **12/15**, $p=0.0176$, with AUC **+0.038** (14/15). The minimal detectable Brier effect at N=15 is **0.0037**, so the primary null is interpretable. Ranking improves (mean AUC 0.771 → 0.815; queue-alone 0.846), but the utilisation slope is positive and not significant (+0.0066, $p=0.188$). The US exploratory replication is null on both Brier and AUC once the window is applied.
+The results are target-dependent, and that is the paper's point. On the **external district soil-moisture target, the confirmatory Brier endpoint is null**: median paired improvement **+0.00204**, 95% CI **[−0.00187, +0.00415]**, 10/15, $p=0.151$. On a **leakage-clean training-only SPI-3 target**, the same contrast is **positive**: median **+0.00397**, CI **[+0.00013, +0.00949]**, **12/15**, $p=0.0176$, with AUC **+0.038** (14/15). The minimal detectable Brier effect at N=15 is **0.0037**, so the primary null is interpretable. Ranking improves in India (mean AUC 0.771 → 0.815; queue-alone 0.846), but the utilisation slope is positive and not significant (+0.0066, $p=0.188$). The US exploratory replication is null on both Brier and AUC once the window is applied. **A like-for-like India–US protocol (common $K_c=0.8$, SUP-1, training-only SPI-3 target, same split) removes the effect in both regions (India −0.0003, USA +0.0004; the region difference CI includes zero), so the positive is target- and demand-model-dependent, not a general queue advantage.**
 
-The work therefore contributes four things: one honest null, one target-dependent positive signal, one verified reusable engine, and one data-quality warning. The zero-flow convention is the warning: feeding artifact zeros as real zeros can flip the sensitivity result, so CAMELS-IND users must audit zeros before interpreting any queue or deficit index. The practical rule is conditional, not universal: use queue indicators as a ranking and descriptive layer in stressed, well-audited basins, not as a replacement for calibrated SPI/SSI probabilities.
+The work therefore contributes five things: one honest null, one fragile target-dependent positive, one like-for-like comparison showing that the positive does not generalise, one verified reusable engine, and one data-quality warning. The zero-flow convention is the warning: feeding artifact zeros as real zeros can flip the sensitivity result, so CAMELS-IND users must audit zeros before interpreting any queue or deficit index. The practical rule is conditional, not universal: use queue indicators as a descriptive layer in stressed, well-audited basins, not as a replacement for calibrated SPI/SSI probabilities.
 
 **Keywords:** hydrological drought; queueing theory; deficit accumulation; SSI; Brier score; target dependence; zero-flow audit; CAMELS-IND; Caravan; ResOpsUS; US Drought Monitor.
 
@@ -66,12 +66,13 @@ This is a scoping-review finding, not a claim that no such study exists. We recl
 
 ### 1.7 What this paper asks
 
-The paper does not ask “does the queue beat SPI?” in the abstract. It asks **what a deficit queue can and cannot do for low-flow hydrology**, and answers with four pieces of evidence:
+The paper does not ask “does the queue beat SPI?” in the abstract. It asks **what a deficit queue can and cannot do for low-flow hydrology**, and answers with five pieces of evidence:
 
-1. a **honest null** on the primary calibrated-probability endpoint;
-2. a **target-dependent positive** on a leakage-clean target;
-3. a **verified, reusable engine** that stands on its own;
-4. a **zero-flow data-quality warning** for CAMELS-IND users.
+1. an **honest null** on the primary calibrated-probability endpoint;
+2. a **fragile, target-dependent positive** on a leakage-clean target;
+3. a **like-for-like India–US comparison** showing that the positive does not generalise;
+4. a **verified, reusable engine** that stands on its own;
+5. a **zero-flow data-quality warning** for CAMELS-IND users.
 
 That framing is deliberate. A single headline “the method lost” would bury the parts that are useful; a single headline “the method won” would overstate a fragile secondary result.
 
@@ -245,6 +246,18 @@ the queue: **audit zeros before interpreting any deficit index**.
 
 With the same $\rho$ window, the US primary sample (14 paired reservoirs) gives E1 median **+0.000388** (CI $[-0.010481, +0.009345]$; 7/14, $p=0.605$; $\Delta$AUC $+0.0077$) and E2 median $-0.002387$. The full 21-reservoir sample is also null on Brier ($+0.000793$, 12/21, $p=0.332$). The India ranking signal does not replicate. The US arm is exploratory, not a second confirmatory test.
 
+### 5.8 Like-for-like India–US comparison: the positive does not generalise
+
+Under the common protocol (common $K_c=0.8$, SUP-1, training-only SPI-3 target, same split), the queue does not improve the SPI-3 target in either region:
+
+| Region | n | median $\Delta$Brier | 95% CI | sign | $p$ | median $\Delta$AUC |
+|---|---:|---:|---|---:|---:|---:|
+| India | 15 | **−0.000321** | $[-0.001268, +0.003946]$ | 6/15 | 0.849 | +0.0025 |
+| USA | 240 | **+0.000423** | $[-0.000081, +0.000851]$ | 131/240 | 0.088 | 0.0000 |
+| USA − India | — | +0.000745 | $[-0.003298, +0.001489]$ | — | — | — |
+
+The region difference includes zero, and the ranking gain is effectively zero in both regions. This is the decisive test: the earlier India positive (+0.00397 on the kharif-demand, leakage-clean target) is **not a general queue advantage**. It depends on the demand model and the target. The common protocol uses a constant $K_c=0.8$ and a precipitation target, and the effect vanishes. The queue's case therefore rests on its descriptive quantities and the verified engine, not on a general calibrated-probability or ranking gain.
+
 ---
 
 ## 6. Discussion
@@ -259,7 +272,7 @@ It does not beat SSI-3 on the primary external target. It does not replicate in 
 
 ### 6.3 Why the result is target-dependent
 
-The primary target is a district soil-moisture anomaly built on an external 1981–2020 climatology. The leakage-clean target is a training-only SPI-3 drought. The queue's demand-side state is closer to the latter: it integrates precipitation and PET deficits over the same growing season, whereas the soil-moisture product carries its own land-surface memory and a climatology that overlaps the test years. The contrast is therefore informative: it says the queue adds information where the target is a growing-season water deficit, and not where the target is a different land-surface state. This is a hypothesis about mechanism, consistent with the data but not proven by them.
+The primary target is a district soil-moisture anomaly built on an external 1981–2020 climatology. The leakage-clean target is a training-only SPI-3 drought. The queue's demand-side state is closer to the latter: it integrates precipitation and PET deficits over the same growing season, whereas the soil-moisture product carries its own land-surface memory and a climatology that overlaps the test years. The common-protocol comparison (§5.8) shows this is not only a target effect: with a common $K_c=0.8$, the effect also vanishes in India. The positive is therefore **target- and demand-model-dependent**. This is a hypothesis about mechanism, consistent with the data but not proven by them.
 
 ### 6.4 The engine is a contribution in its own right
 
@@ -300,7 +313,7 @@ A general positive result needs measured irrigation deliveries, reservoir/delive
 
 ## 8. Conclusion
 
-A deficit queue is useful for what it uniquely provides — backlog, unmet volume, severe-state probability, recovery time — and for event ranking in the India data. It is not a general replacement for calibrated SPI/SSI probabilities: the primary external-target test is null, and the US replication is null. The positive signal is target-dependent and appears on a leakage-clean SPI-3 target. The verified engine and the zero-flow warning are contributions that stand independently of the empirical result. Framed this way, the work is “what queueing can and cannot do for low-flow hydrology”, not a failed attempt to beat an index.
+A deficit queue is useful for what it uniquely provides — backlog, unmet volume, severe-state probability, recovery time — and for descriptive diagnosis. It is not a general replacement for calibrated SPI/SSI probabilities: the primary external-target test is null, the US replication is null, and the like-for-like India–US protocol removes the target-dependent positive. The positive signal is target- and demand-model-dependent: it appears on a leakage-clean SPI-3 target with the kharif demand model, but it does not survive a common protocol. The verified engine and the zero-flow warning are contributions that stand independently of the empirical result. Framed this way, the work is “what queueing can and cannot do for low-flow hydrology”, not a failed attempt to beat an index.
 
 ---
 
@@ -323,6 +336,8 @@ The governing plan is `protocol/REDESIGN_PLAN_v2_R.md`. The engine and the 14-ch
 **Figure 6.** India–USA paired contrasts. `figures/fig_india_us_comparison.png`.
 
 **Figure 7.** Utilisation diagnosis. `figures/fig_utilisation_diagnosis.png`.
+
+**Figure 8.** Like-for-like India–US common-protocol comparison. `figures/fig_common_comparison.png`.
 
 ## Competing interests
 

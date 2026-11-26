@@ -23,6 +23,7 @@ The executable code that produces every number is in `../R/` and `../steps/`.
 | 5 | Example series and reliability | `../figures/fig05_example_series_5018.png`, `fig06_reliability.png` |
 | 6 | India–USA paired contrasts | `../figures/fig_india_us_comparison.png` |
 | 7 | Utilisation diagnosis | `../figures/fig_utilisation_diagnosis.png` |
+| 8 | Like-for-like India–US common protocol | `../figures/fig_common_comparison.png` |
 
 ## Where the numbers come from
 
@@ -37,6 +38,7 @@ The executable code that produces every number is in `../R/` and `../steps/`.
 | USA E1/E2 and AUC (in-window primary) | `../output_us/us_meta.csv`, `../output_us/us_paired_in_window_e1.csv` |
 | USA full-sample sensitivity | `../output_us/us_meta_full.csv`, `../output_us/us_paired_full_e1.csv` |
 | USA target | `../output_us/usdm_monthly.csv` |
+| **Common-protocol India–US** | `../output_compare/common_paired_india.csv`, `common_paired_usa.csv`, `common_region_difference.csv` |
 
 Every CSV has a `.json` sidecar with the git hash, parameters, seed and R
 session. Do not hand-edit the numbers in the manuscript: change the code and
