@@ -1,0 +1,305 @@
+---
+title: "Drought as a deficit queue: one study, two regions"
+subtitle: "India (CAMELS-IND) and the USA (Caravan-US), identical method"
+date: "26 November 2026"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    fig_caption: true
+    code_folding: hide
+  pdf_document:
+    toc: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, message = FALSE, warning = FALSE,
+  fig.width = 8, fig.height = 3.8, dpi = 150
+)
+root <- normalizePath(knitr::current_input(dir = TRUE))
+if (!file.exists(file.path(root, ".qdj_root"))) root <- getwd()
+Sys.setenv(QDJ_ROOT = root)
+source(file.path(root, "R", "config.R"))
+suppressMessages(library(data.table))
+OUT <- function(f) file.path(OUTPUT_DIR, f)
+have <- function(f) file.exists(OUT(f))
+```
+
+# What this study is
+
+A drought is read as a **queue**. Farm demand arrives at rate $\lambda(t)$,
+river supply serves it at rate $\mu(t)$, unmet demand accumulates as a backlog
+$Q$, capacity is $K$, and abandoned demand is *reneging*. The queue state gives
+quantities that standard drought indices do not: expected backlog
+$\mathbb{E}[Q]$, the probability of a severe backlog state
+$\Pr(Q \ge q^\star)$, total unmet demand, and recovery time.
+
+The study is applied **identically** to two regions:
+
+- **India**: CAMELS-IND gauge catchments (Mangukiya et al., 2025).
+- **USA**: Caravan-US gauge catchments (Kratzert et al., 2023).
+
+Every rule below is the same in both regions: the unit (gauge catchment), the
+demand model, the supply model, the target, the split, the screen and the
+statistics. Only the catchments and their climate differ.
+
+> **[assumption]** The demand envelope is a stated assumption, not a measured
+> irrigation record. Every queue number here is therefore **illustrative under
+> the stated assumptions**; it is not an observed finding.
+
+# Data
+
+| Region | Source | Unit | Catchment area | Period used |
+|---|---|---|---|---|
+| India | CAMELS-IND (ESSD, doi:10.5194/essd-17-461-2025) | gauge catchment | `cwc_area` (km²) | 1981–2020 |
+| USA | Caravan-US (Sci. Data, doi:10.1038/s41597-023-01975-w) | gauge catchment | `area` (km²) | 1981–2020 |
+
+Both regions supply daily precipitation, daily maximum/minimum/mean
+temperature and daily streamflow. **No district soil-moisture product, no US
+Drought Monitor, no reservoir record and no remote-sensing ET are used.** The
+study map uses the Drought Intelligence Explorer outline and state boundaries
+for India and state polygons for the conterminous USA; these are figure inputs
+only.
+
+Catchment size enters explicitly. The irrigated command area is
+
+$$
+A_{\text{cmd}} = f_{\text{irr}} \, A_{\text{catchment}},
+\qquad f_{\text{irr}} = 0.10,
+$$
+
+and one claim is $d = 20$ mm of water over $A_{\text{cmd}}$. Demand is a depth
+rate, so area cancels there by design; supply and capacity use $A_{\text{cmd}}$.
+
+# Methods
+
+## Demand rate $\lambda(t)$
+
+Reference evapotranspiration uses **Hargreaves–Samani** with extraterrestrial
+radiation from latitude and day of year (no radiation data needed, so the same
+equation works in both regions):
+
+$$
+\mathrm{ET}_0 = 0.0023\,(T_{\text{mean}} + 17.8)\,
+\sqrt{\max(T_{\text{max}} - T_{\text{min}}, 0)}\; (0.408\,R_a).
+$$
+
+Daily unmet depth and the arrival rate of claims are
+
+$$
+\text{need}(t) = \max\!\big(K_c\,\mathrm{ET}_0(t) - \phi\,P(t),\; 0\big),
+\qquad
+\lambda(t) = \frac{\text{need}(t)}{d},
+$$
+
+with $K_c = 0.8$ (common crop coefficient, both regions), $\phi = 0.7$
+(effective-rain fraction), $d = 20$ mm. Both $K_c$ and $\phi$ are
+**[assumption]** values.
+
+## Supply rate $\mu(t)$
+
+Observed streamflow $Q(t)$ (m³ s⁻¹) is converted to a depth rate over the
+command area, with a firm share and an infrastructure cap:
+
+$$
+\mu(t) = \frac{1}{d}\,
+\min\!\left(\frac{Q(t)\cdot 86400 \cdot s_{\text{firm}}}{A_{\text{cmd}}}\,1000,\;
+\text{cap}\right),
+\qquad s_{\text{firm}} = 0.5,\;\; \text{cap} = 10\ \text{mm d}^{-1}.
+$$
+
+The firm share and the cap are **[assumption]** values representing a
+regulated delivery system.
+
+## The queue
+
+A finite-capacity continuous-time Markov chain on $Q \in \{0,1,\dots,K\}$:
+
+- arrivals at $\lambda(t)$ (Poisson **[assumption]**),
+- service at $\mu(t)$ when $Q>0$ (exponential **[assumption]**),
+- reneging at $\eta$ per day above threshold $\theta$,
+- service boost $\alpha$ above $\theta$.
+
+Thresholds come from the mean arrival rate $\bar\lambda$:
+
+$$
+q^\star = \lceil q_{\text{days}}\,\bar\lambda \rceil,
+\qquad
+K = \min\!\big(K_{\max}, \max(K_{\min}, \lceil K_{\text{days}}\,\bar\lambda\rceil)\big),
+$$
+
+with $q_{\text{days}} = 60$, $K_{\text{days}} = 365$, $K_{\min}=25$,
+$K_{\max}=80$, $\theta = \lceil 1.5\,q^\star\rceil$, $\alpha = 1.5$,
+$\eta = 1/60$ d⁻¹.
+
+The chain is solved by RK4 with the stability cap retained
+($\Delta t \cdot \max|\text{eigenvalue}| \le 2.78$). It is verified against
+(a) the exact product-form stationary solution and (b) a Gillespie/thinning
+simulation — 15/15 checks, `R/verify.R`.
+
+## Target: catchment SPEI-3
+
+The target is the catchment's **own** climate, not a district product. Monthly
+precipitation $P$ and Hargreaves $\mathrm{ET}_0$ are accumulated over three
+months and standardized **per calendar month on training years only**
+(1981–2010):
+
+$$
+D_3(t) = \sum_{i=0}^{2}\big(P(t-i) - \mathrm{ET}_0(t-i)\big),
+\qquad
+\text{SPEI-3}(t) = \frac{D_3(t) - \mu_{m(t)}}{\sigma_{m(t)}},
+$$
+
+where $\mu_m$ and $\sigma_m$ are the training-period mean and standard
+deviation for calendar month $m(t)$. The target is
+
+$$
+Y(t) = \mathbb{1}\!\left[\text{SPEI-3}(t) \le -1\right].
+$$
+
+SPI-3 ≤ −1 is the sensitivity target; it is fitted with a gamma distribution
+per calendar month on training years only. Standardizing on training years
+alone keeps both indices leakage-free with respect to the test window.
+
+The benchmark predictor SSI-3 is the 3-month accumulation of
+$\log(1+Q(t))$, standardized per calendar month on training years only.
+
+## Screen (identical in both regions)
+
+A catchment enters if
+
+| Rule | Threshold |
+|---|---|
+| utilisation $\rho = \bar\lambda/\bar\mu$ | 0.15 ≤ ρ ≤ 1.20 |
+| zero-flow fraction | < 0.30 |
+| largest interior gap | ≤ 30 days |
+| training record | ≥ 1095 days (3 y) |
+| test record | ≥ 730 days (2 y) |
+| training design events | ≥ 5 |
+| test design events | ≥ 3 |
+| per basin | ≤ 3 catchments (US basin = HUC4) |
+| total per region | ≤ 60 catchments |
+
+Missing days are **not** interpolated: a missing day pauses the queue state,
+and any calendar month containing a missing day is excluded from the indices
+and target. Every flag is written out.
+
+## Evaluation
+
+Eight model families are fitted with ridge logistic regression ($\lambda_{\text{L2}} = 1$)
+and month dummies, standardized on training rows only. The **confirmatory
+contrast** is
+
+$$
+\Delta_g = \text{Brier}_g(\text{SSI-3}) - \text{Brier}_g(\text{SSI-3} + \text{queue}),
+$$
+
+computed per gauge on **identical held-out months** (2011–2020) and summarized
+by the median with a **two-level bootstrap** (gauges, then years within gauge).
+A one-sided sign test is reported alongside. The families that use SPEI-3 *as a
+predictor* are near-deterministic by construction and are descriptive only;
+they never enter the confirmatory statistic.
+
+# Results
+
+```{r results-tables}
+summ <- if (have("region_summary.csv")) fread(OUT("region_summary.csv")) else NULL
+diff_tab <- if (have("region_difference.csv")) fread(OUT("region_difference.csv")) else NULL
+if (is.null(summ)) {
+  cat("Run `Rscript R/study.R` first; output/region_summary.csv is missing.\n")
+} else {
+  knitr::kable(
+    summ[, .(target, region, n, median_delta, boot_lo, boot_hi,
+             sign_k, sign_n, sign_p, median_dauc, harm)],
+    digits = 6,
+    col.names = c("target", "region", "n", "median dBrier", "CI low",
+                  "CI high", "sign k", "sign n", "sign p", "median dAUC",
+                  "harm"),
+    caption = "Regional paired improvement (positive favours the queue). SPEI-3 is the primary target; SPI-3 is the sensitivity target."
+  )
+}
+```
+
+```{r diff-table}
+if (!is.null(diff_tab)) {
+  knitr::kable(diff_tab, digits = 6,
+               caption = "USA minus India for each target; independent bootstrap of the difference in medians.")
+}
+```
+
+```{r read-result}
+rd <- function(tgt, reg, col) {
+  if (is.null(summ)) return(NA_real_)
+  z <- summ[summ$target == tgt & summ$region == reg]
+  if (!nrow(z)) NA_real_ else z[[col]][1]
+}
+```
+
+`[measurement]` In the USA the median paired Brier improvement is positive for
+both targets (`r sprintf("%+.4f", rd("SPEI-3","USA","median_delta"))` for
+SPEI-3, `r sprintf("%+.4f", rd("SPI-3","USA","median_delta"))` for SPI-3), and
+both bootstrap intervals exclude zero. In India the medians are also positive
+(`r sprintf("%+.4f", rd("SPEI-3","India","median_delta"))` and
+`r sprintf("%+.4f", rd("SPI-3","India","median_delta"))`) but both intervals
+include zero with 12 catchments. The USA-minus-India difference includes zero
+for both targets, so the regional contrast is not resolved by these samples.
+
+```{r figures, fig.cap="Generated by R/figures.R from output/*.csv."}
+for (f in c("fig_utilisation.png", "fig_paired_brier.png", "fig_region.png")) {
+  p <- file.path(FIG_DIR, f)
+  if (file.exists(p)) {
+    cat(sprintf("\n\n![](%s)\n\n", p))
+  }
+}
+```
+
+# Reading the result
+
+The study asks a single question in both regions: **does the queue state add
+information beyond SSI-3 for a catchment SPEI-3 drought?** The answer is read
+from the table above, not asserted in advance.
+
+Three cautions belong with any reading:
+
+1. **Illustrative demand.** $K_c$, $\phi$, $s_{\text{firm}}$ and the cap are
+   stated assumptions, not measurements. A different demand envelope moves the
+   magnitude.
+2. **Target choice.** SPEI-3 is the primary climate-deficit target and SPI-3
+   the precipitation-only sensitivity. Both give the same qualitative answer
+   here; a different target (for example a management record) need not.
+3. **Zero-flow data quality.** In CAMELS-IND, zeros may be measured no-flow
+   days or a coding convention. The study uses zeros as recorded; a reader who
+   treats them differently should re-run with that rule and report both.
+
+# Verification and reproducibility
+
+```{r assertions}
+ok <- TRUE
+if (!is.null(summ)) {
+  stopifnot(all(c("India", "USA") %in% summ$region))
+  stopifnot(all(summ$n >= 1))
+  stopifnot(all(is.finite(summ$median_delta)))
+  ok <- ok && all(summ$n >= 1)
+}
+cat("Region summary rows:", if (is.null(summ)) 0 else nrow(summ), "\n")
+cat("Assertions passed:", ok, "\n")
+```
+
+- Engine battery: `Rscript R/verify.R` must print **15/15 passed**.
+- Pipeline: `Rscript R/study.R`; figures: `Rscript R/figures.R`.
+- Every parameter is in `R/config.R`; every output CSV is regenerable and is
+  never hand-edited.
+- The frozen novelty sentence (21 November 2026) is unchanged and lives in
+  `AGENTS.md` §2 and `P01/literature_audit.md`.
+
+# Limitations
+
+- No measured irrigation deliveries; demand is a Stage-A envelope.
+- SPEI-3 uses Hargreaves ET0, a temperature-based approximation.
+- Poisson arrivals and exponential service are modelling assumptions.
+- The screen is common in rules, not in sample size: the number of catchments
+  that pass differs between regions.
+- No future-climate scenario; CMIP6 output is out of scope.

@@ -1,21 +1,12 @@
-# Never commit credentials or large caches
+# Never commit credentials or local R settings
 .env
 .env.local
 .Renviron
 .Rprofile
 
-# Large regenerable intermediates
-output_us/_cache/
-output_us/reservoir_daily.csv
-output/notebooks/
-output/notebooks_steps/
+# Generated logs (results CSVs are committed; logs are not)
+output/_*log.txt
 
+# Python leftovers (the v1 code is on branch legacy-python)
 __pycache__/
 *.pyc
-
-
-# generated logs
-output/_*log.txt
-output_us/_*log.txt
-output_compare/_*.txt
-

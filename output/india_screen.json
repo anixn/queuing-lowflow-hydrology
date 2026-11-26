@@ -1,0 +1,12 @@
+{
+  "file": "india_screen.csv",
+  "git_hash": "2bd0aa9",
+  "code_hash": "3b00804a7c11f5c8faacb5ab4cf4e0a6",
+  "written": "2026-11-26T17:42:20",
+  "nrow": 279,
+  "ncol": 10,
+  "session": {
+    "R": "R version 4.5.1 (2025-06-13 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  }
+}

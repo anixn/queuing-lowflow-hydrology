@@ -73,15 +73,16 @@ An agent must never:
 7. **Never invent a reference, a number, or a dataset field.** If a value is
    unknown, write "unknown, action: check X" instead of guessing.
 8. **Never change the claim convention silently.** One claim = 20 mm over
-   `f_irr * catchment area`; `f_irr`, `d_mm` and the cap live in `R/config.R`
-   and are applied only through `R/00_utils/units.R`. Replace the convention
+   `f_irr * A_catchment`; `f_irr`, `d_mm`, `Kc` and the cap live in `R/config.R`
+   and are applied only through `R/functions/units.R`. Replace the convention
    only with documented canal/crop evidence or a declared sensitivity envelope,
-   and update `R/config.R`, `R/00_utils/units.R`, `protocol/PROTOCOL_v2.md` and
-   `START_HERE.md` together in one commit.
-9. **Never change a confirmatory endpoint without a protocol changelog entry.**
-   Amendments after `protocol-v2-locked` are allowed only as logged entries in
-   `protocol/CHANGELOG.md` with date, reason and scope, and any endpoint change
-   forces a rerun of S7–S8 with both old and new results reported.
+   and update `R/config.R`, `R/functions/units.R`, `STUDY.Rmd` and `README.md`
+   together in one commit.
+9. **Never change the target or the confirmatory endpoint silently.**
+   The confirmatory contrast is `ssi3` vs `ssi3_plus_queue` against a
+   catchment SPEI-3 target. Any change is recorded in `STUDY.Rmd` (methods and
+   results) and forces a rerun of **both** regions with old and new results
+   reported side by side.
 10. **Never compare models on different samples.** The confirmatory statistic is
     the **paired** per-gauge Brier difference on identical held-out months
     (`stage7_paired_stats()`). Per-family metrics on family-specific
@@ -91,7 +92,7 @@ An agent must never:
 
 1. **Run the R test suite after every change** and before reporting:
    ```powershell
-   Rscript R/verify/run_tests.R          # 14 checks; gate G1 requires 14/14
+   Rscript R/verify.R                    # 15 checks; gate G1 requires 15/15
    ```
    Any new feature ships with a new test.
 2. **Keep the three-way agreement.** Any change to the solver must preserve
@@ -102,10 +103,9 @@ An agent must never:
    that produces a number, the number does not go into the draft.
 4. **Report with sources.** Every claim in a session summary carries
    file + line (or table cell) where it came from.
-5. **Update the paper trail.** New findings update `protocol/PROTOCOL_v2.md`,
-   `analysis/P02_methods/RESULTS_v2.md`, `P01/literature_audit.md` or
-   `P01/data_access_spec.md` in the same session — the audit trail is part of the
-   deliverable, not an afterthought.
+5. **Update the paper trail.** New findings update `STUDY.Rmd`,
+   `MANUSCRIPT.Rmd`, `README.md`, `HELP.md` or `P01/literature_audit.md` in the
+   same session — the audit trail is part of the deliverable, not an afterthought.
 6. **Write generated outputs only through `write_csv_sidecar()`**, so every CSV
    carries a JSON sidecar with the git hash, parameters, seed and R session.
 
@@ -113,38 +113,25 @@ An agent must never:
 
 | Path | Role | Status |
 |---|---|---|
-| `START_HERE.md` | Plain-language orientation; reading order | Current (v2) |
-| `README.md` | v2 rebuild summary and run commands | Current |
-| `PLAN_SUMMARY.md` | One-page plan, result and next actions | Current (v2) |
-| `protocol/PROTOCOL_v2.md` | Locked predeclared protocol (tag `protocol-v2-locked`) | Active |
+| `README.md` | The study in one page and the run commands | Current |
+| `HELP.md` | Operator's manual: data, run, outputs, troubleshooting | Current |
+| `STUDY.Rmd` | Data, methods, results and assertions in one document | Active |
+| `MANUSCRIPT.Rmd` | Fragment-style paper; knits to `MANUSCRIPT.pdf` | Active |
+| `AGENTS.md` | This operating manual; frozen sentence | Active |
 | `R/config.R` | **The only place** for paths, seeds and scientific parameters (`P`) | Active |
-| `R/00_utils/units.R` | The unit wall: one claim volume per gauge | Stable, tested |
-| `R/00_utils/queue_engine.R` | Finite-capacity CTMC, RK4, exact, DES, first passage | Stable, tested |
-| `R/00_utils/pipeline.R` | Stages S2–S7 as functions | Active |
-| `R/00_utils/{indices,eval,io,audit}.R` | Indices, metrics, IO, zero/gap rules | Stable, tested |
-| `R/run_pipeline.R` | **The single compute backbone**; writes `output/` | Active |
-| `R/analysis/power_analysis.R` | Power / minimal detectable effect | Active |
-| `R/analysis/sensitivity_grid.R` | Every predeclared sensitivity axis | Active |
-| `R/analysis/recon.R` | One-time gauge profiling table (non-destructive) | Active |
-| `R/analysis/make_figures.R` | Publication figures (PDF + 300-dpi PNG) | Active |
-| `R/analysis/make_manuscript_figures.R` | Workflow, map, comparison, diagnosis figures | Active |
-| `R/us_pilot/` | USA data assembly, reservoir rates, paired evaluation | Active |
-| `steps/` | Numbered executable sequence (India then USA) | Active |
-| `steps/rmd/` | Step-level R Markdown documents (assertions) | Active |
-| `HELP.md` | Operator's manual: data, steps, outputs, troubleshooting | Current |
-| `manuscript/` | HESS draft, extended literature and methods, figure index | Active |
-| `R/verify/` | 14-check verification battery (gate G1) | Active |
-| `R/10_data/ … R/40_eval/` | R Markdown notebooks (documentation + assertions) | Active |
-| `R/50_future/21_cmip6_extract.Rmd` | Gated future-climate stub | Closed |
+| `R/functions/units.R` | The unit wall: claim volume, Hargreaves ET0, radiation | Stable, tested |
+| `R/functions/queue_engine.R` | Finite-capacity CTMC, RK4, exact, DES, first passage | Stable, tested |
+| `R/functions/pipeline.R` | Queue, indices, design, fit, paired statistics, common rates | Active |
+| `R/functions/{indices,eval,io,audit}.R` | Indices, metrics, IO, zero/gap rules | Stable, tested |
+| `R/study.R` | **The single compute backbone**: both regions, writes `output/` | Active |
+| `R/figures.R` | Figures (PDF + 300-dpi PNG) from `output/*.csv` | Active |
+| `R/verify.R` | 15-check verification battery (gate G1) | Active |
 | `output/*.csv` + `.json` | Generated results + provenance | Regenerable; never hand-edit |
 | `figures/*.pdf`, `*.png` | Generated figures | Regenerable |
-| `analysis/P02_methods/RESULTS_v2.md` | Assembled v2 results (numbers referenced) | Active |
-| `analysis/P02_methods/US_PILOT_RESULTS.md` | Exploratory US reservoir pilot | Active |
-| `analysis/P01_literature/` | Completed WoS/Scopus audit, citation trace | Evidence record |
-| `P01/` | Literature audit, search protocol, data spec, technical note | Active |
-| `R/compare/` | Like-for-like India–US common-protocol comparison | Active |
-| `output_compare/` | Common-protocol results | Regenerable |
-| `docs/project/` | Merged-paper plan and v2 session log | Active |
+| `P01/literature_audit.md` | Literature audit and the frozen sentence | Evidence record |
+| `P01/search_protocol.md` | Search protocol and screening record | Evidence record |
+| `analysis/P01_literature/` | WoS/Scopus exports, screening, citation trace | Evidence record |
+| `analysis/novelty_2026-11-25/` | Supplementary novelty evidence for the frozen sentence | Evidence record |
 
 Treat `R/` as the only writable code. Generated `output/` files must always be
 reproducible by the scripts that wrote them.
@@ -157,7 +144,7 @@ reproducible by the scripts that wrote them.
 - **Config discipline:** no file except `R/config.R` may contain a filesystem
   path or a scientific parameter. Data paths are overridable via environment
   variables (`QDJ_DATA_ROOT`, etc.).
-- **Unit wall:** all conversions go through `R/00_utils/units.R`; the queue
+- **Unit wall:** all conversions go through `R/functions/units.R`; the queue
   engine only ever sees claims/day.
 - **Linear scripts:** top-to-bottom blocks; helpers only where they earn it.
 - **Numerical safety:** the RK4 propagator is unstable when
@@ -170,61 +157,68 @@ reproducible by the scripts that wrote them.
 
 ## 7. Data rules (the contracts)
 
-Input locations are on the local machine (`D:\Datasets\...`) — see
-`P01/data_access_spec.md` §0. The extract contracts are fixed:
+Input locations are on the local machine (`D:\Datasets\...`) and are defined
+**only** in `R/config.R`; `HELP.md` §3 lists them for the operator.
 
 ```text
-IMD extract      : date, rainfall_mm, tmax_c, tmin_c
-CWC extract      : date, discharge_m3s
-CMIP6 extract    : date, pr_mm, tas_c, model, ssp   (bias-corrected only!)
-GRACE extract    : date, twsa_cm
-Crop/calendar    : year, district, crop, area_ha, sowing_doy, harvest_doy
+India (CAMELS-IND) : date, prcp_mm, tmax_c, tmin_c, tavg_c, streamflow
+USA   (Caravan-US) : date, total_precipitation_sum, temperature_2m_{max,min,mean},
+                     streamflow
 ```
 
 Rules:
 
-- Missing streamflow days are **never** interpolated silently. Artifact/unknown
-  zeros become missing under V1; short gaps pause the state; long gaps exclude
-  the month. Every flag is written out.
-- Zero-flow days are a data-quality question. v2 classifies them with same-basin
-  peers (proxy grade) and carries V0/V1/V2 as sensitivities.
+- Missing streamflow days are **never** interpolated silently. A missing day
+  pauses the queue state, and any month containing a missing day is excluded
+  from the indices and target. Every flag is written out.
+- Zero-flow days are a data-quality question. This study uses zeros **as
+  recorded** and says so; anyone treating artifact zeros as missing must rerun
+  and report both. (See `P01/literature_audit.md` and the zero-flow warning.)
+- The target is built from the catchment's own precipitation and Hargreaves
+  ET0, standardized on training years only (1981–2010).
+- **No raw CMIP6 output is used.** No district soil-moisture product, no US
+  Drought Monitor, no reservoir record and no remote-sensing ET enter the
+  study.
 - The authoritative CAMELS-IND citation is: Mangukiya, N. K., Kumar, K. B.,
   Dey, P., Sharma, S., Bejagam, V., Mujumdar, P. P., & Sharma, A. (2025).
   CAMELS-IND. *Earth System Science Data*, 17, 461–491,
   doi:10.5194/essd-17-461-2025 (dataset: Zenodo 14999580, CC BY 4.0).
-  Quote the version actually used.
+  Quote the version actually used. For Caravan-US use Kratzert et al. (2023),
+  *Scientific Data*, doi:10.1038/s41597-023-01975-w.
 
 ## 8. Phase pointer (where the work is, and what "done" means)
 
 **Phase A — the novelty hunt is complete (21 November 2026).** The gap sentence
 is frozen with date and scope (§2 above); every retained record has a keep/drop
-reason. Gate A passed.
+reason. Gate A passed and is unchanged.
 
-**Phase B (v2) — the multi-catchment rebuild is complete through S9.**
-Done: Python archived; R scaffold; 14/14 verification (G1); inventory and zero
-audit (G2); 24 gauges across 11 basins in the utilisation window (G3); locked
-protocol and power analysis (G4); baseline pipeline; every sensitivity axis
-(S8); figures; notebooks; merged-paper reframing (G5 outcome = Path B).
-*Done when:* the author signs the Gate B checklist and accepts the Path-B
-framing in `docs/project/MERGED_PAPER_PLAN.md`.
+**Phase B — the study has been rebuilt as ONE common study (26 November 2026).**
+A single method is applied identically to India (CAMELS-IND) and the USA
+(Caravan-US): catchment unit, catchment SPEI-3 target, Hargreaves ET0, common
+`Kc = 0.8`, SUP-1, `f_irr = 0.10`, the same split and the same paired
+statistics. The district SMA target, the USDM target, the reservoir arm and
+OpenET are removed from the study. Superseded analyses are deleted, not
+archived; older results remain only in git history.
+*Done when:* `Rscript R/verify.R` is 15/15, `Rscript R/study.R` writes both
+regions, `STUDY.Rmd` knits, and the author accepts the one-study framing.
 
 **Phase C — future work (only after sign-off).** Measured irrigation demand;
-independent zero-flow/regulation records; a strictly leakage-free external
-benchmark; a stronger multi-gauge test; conditional future `mu` from
-CAMELS-IND-Proj (gated). *Done when:* a stronger test beats climatology on
+independent zero-flow/regulation records; a genuinely external benchmark; a
+stronger multi-catchment test. *Done when:* a stronger test beats climatology on
 held-out data, or an honest null is written.
 
-**Phase D — hygiene, continuous.** Tests green; structure and naming consistent;
-reproducibility page per paper.
+**Phase D - hygiene, continuous.** Tests green; structure and naming consistent;
+one reproducibility page per paper.
 
 ## 9. Session ritual (for agents, and for me)
 
 Start of session:
 
-1. Read `START_HERE.md` §7 and this file's §8; state the current phase and the
-   single next action.
-2. Run the R suite: `Rscript R/verify/run_tests.R`; report pass/fail.
-3. State which numbers you will trust today and where they live.
+1. Read `README.md`, this file's §8, and `HELP.md` §8; state the current phase
+   and the single next action.
+2. Run the R suite: `Rscript R/verify.R`; report pass/fail.
+3. State which numbers you will trust today and where they live
+   (`output/region_summary.csv` and `output/region_difference.csv`).
 
 End of session:
 

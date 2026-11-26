@@ -1,124 +1,91 @@
-# Queueing–Drought Junction (v2, R rebuild)
+# Drought as a deficit queue — one study, two regions
 
-This repository tests one question: **does a finite-capacity deficit queue add
-drought information beyond climatology, SPI, SPEI and SSI?**
+**One method, applied identically to India (CAMELS-IND) and the USA
+(Caravan-US).** Nothing about the method changes between regions. Only the
+catchments and their climate differ.
 
-The v1 Python analysis returned a null that was not defensible: it mixed units,
-sat in a demand/supply regime where a null was guaranteed, and used a
-two-gauge pilot with almost no held-out drought events. v2 is a **full rebuild in
-R and R Markdown only**, following `REDESIGN_PLAN_v2_R.md`: one unit system, a
-predeclared utilisation screen, a multi-catchment design, a locked protocol, an
-exact verification battery, and every sensitivity axis reported.
+## The study in one table
 
-## What is new in v2
+| Element | Rule (identical in both regions) |
+|---|---|
+| Unit | gauge catchment |
+| Target | **catchment SPEI-3 ≤ −1** (primary); SPI-3 ≤ −1 (sensitivity) |
+| Demand | `need = max(Kc·ET0 − 0.7·P, 0)`, `lambda = need / 20`, `Kc = 0.8` |
+| Supply | `mu = min(Q·86400·0.5/A_cmd·1000, 10) / 20` |
+| Catchment size | `A_cmd = f_irr · A_catchment`, `f_irr = 0.10`; one claim = 20 mm over `A_cmd` |
+| Capacity | `K = min(80, max(25, ceil(365·lambda_bar)))` |
+| Severe state | `q* = ceil(60·lambda_bar)` |
+| Split | train 1981–2010, test 2011–2020 |
+| Evaluation | 8 model families, paired Brier/AUC, two-level bootstrap |
 
-- **Python removed from `main`.** The audited v1 code is preserved on the
-  `legacy-python` branch and tagged `v1-audited`; nothing is deleted from
-  history. All current code is linear R / R Markdown.
-- **One claim volume per gauge.** Demand and supply share a single command-area
-  claim (`R/00_utils/units.R`); the queue engine only ever sees claims/day.
-- **Catchment-relative thresholds** (`q*`, `K`, `theta`) instead of absolute
-  counts, so gauges are comparable.
-- **Utilisation screen.** Gauges are admitted only when
-  `0.15 <= rho = sum(lambda)/sum(mu) <= 1.20`, fixing the v1 regime defect.
-- **Multi-catchment.** 24 CAMELS-IND gauges across 11 basins, both split
-  periods, at most 3 per basin.
-- **Predeclared protocol and power analysis** (`protocol/PROTOCOL_v2.md`), with
-  every one-factor-at-a-time sensitivity reported (`R/analysis/sensitivity_grid.R`).
-- **Exact engine verification**: 14/14 checks (closed forms, RK4 vs
-  discrete-event simulation, conservation ledger, unit wall, gap rules).
+**Why SPEI-3?** It uses the catchment's own precipitation and PET time series.
+There is no district soil-moisture product, no US Drought Monitor, and no
+reservoir. The target is therefore the same object in both regions.
 
-## Outcome (updated 26 November 2026)
+**Catchment size is explicit.** It sets the command area, the claim volume and
+the supply conversion. Demand is a depth rate, so area cancels there by design;
+supply and capacity use it.
 
-The predeclared confirmatory Brier endpoint is **null**: the paired per-gauge
-improvement from adding queue probability to SSI-3 has a median of about
-`+0.0020` with a two-level bootstrap 95% interval that includes zero. The
-leakage-clean SPI-3 target is **positive** on the kharif demand model, but a
-like-for-like India–US common protocol (same `Kc`, SUP-1, SPI-3 target, same
-split) **removes the effect in both regions** (India −0.0003, USA +0.0004;
-difference CI includes zero). The positive is therefore target- and
-demand-model-dependent, not a general queue advantage. The US reservoir pilot is
-an **exploratory replication**, null on both Brier and AUC with the window
-applied. The outcome is **Path B (honest null)** with a fragile,
-target-dependent secondary signal and a utilisation diagnosis.
+## Files (deliberately few)
 
-## Run it (from the repository root)
-
-```powershell
-Rscript steps/run_all_steps.R            # India baseline + USA + figures + verification
-Rscript steps/run_all_steps.R --full     # also the long India sensitivity grid
-Rscript steps/step_12_verify.R           # 14/14 engine + unit + gap tests
+```text
+R/
+  config.R            paths, seeds, all parameters
+  functions/          verified engine + units + indices + evaluation
+  study.R             the one pipeline: rates -> screen -> queue -> target -> fit
+  figures.R           slides-ready figures (map + three result figures)
+  verify.R            the 15-check battery
+STUDY.Rmd             one technical document: data, methods, results
+MANUSCRIPT.Rmd        fragment-style paper, knits to MANUSCRIPT.pdf
+README.md             this file
+HELP.md               how to run, data locations, outputs
+AGENTS.md             project rules and frozen novelty sentence
+P01/                  literature audit and search protocol (evidence only)
+analysis/P01_literature/  WoS/Scopus exports and screening (evidence only)
+analysis/novelty_2026-11-25/  supplementary novelty evidence (historical)
+output/               generated CSVs + JSON sidecars
+figures/              generated figures
 ```
 
-`HELP.md` is the operator's manual: every step, input, output, credential and
-troubleshooting note. The numbered scripts in `steps/` are the executable
-sequence; the matching R Markdown documents are in `steps/rmd/`.
+## Run
 
-`output/_recon_gauge_stats.csv` is the committed one-time gauge-profiling table;
-`Rscript R/analysis/recon.R` regenerates it only with `--force` (the frozen table
-defines the analysis set, so a regeneration must be checked against
-`output/selected_gauges.csv`).
+From the repository root:
 
-`output/` and `figures/` are generated; never hand-edit them. Every CSV carries
-a JSON sidecar with the git hash, parameters, seed and R session.
+```powershell
+Rscript R/verify.R      # 15/15 checks
+Rscript R/study.R       # the one study (both regions, both targets)
+Rscript R/figures.R     # figures
+```
 
-## Manuscript
+Knit the paper (TinyTeX installed):
 
-| File | Contents |
-|---|---|
-| `manuscript/MANUSCRIPT.md` | Full HESS-style draft: literature, hypothesis, data, LaTeX methods, results, India–USA comparison, discussion |
-| `manuscript/_draft_literature.md` | Extended literature review (audited references only) |
-| `manuscript/_draft_methods.md` | Extended data and methods draft |
-| `manuscript/figures/` | Figure index / copies for the manuscript build |
+```powershell
+Rscript -e "rmarkdown::render('MANUSCRIPT.Rmd')"
+```
 
-## Repository map
+Or open `STUDY.Rmd` for the technical document and `MANUSCRIPT.Rmd` for the paper.
 
-| Path | Purpose |
-|---|---|
-| `R/config.R` | **The only place** for paths, seeds and scientific parameters |
-| `R/00_utils/` | Unit wall, queue engine, indices, metrics, IO, audit, pipeline |
-| `R/verify/` | 14-test verification battery (gate G1) |
-| `R/run_pipeline.R` | Single compute backbone for stages S2–S7 |
-| `R/analysis/` | Power, sensitivity grid, publication figures, slope statistics |
-| `R/us_pilot/` | USA reservoir-centric data assembly and evaluation |
-| `R/compare/` | Like-for-like India–US common-protocol comparison |
-| `R/10_data/ … R/50_future/` | R Markdown notebooks (documentation + assertions) |
-| `HELP.md` | Operator's manual: data, steps, outputs, troubleshooting |
-| `steps/` | Numbered executable sequence (India then USA) |
-| `steps/rmd/` | Step-level R Markdown documents |
-| `manuscript/` | HESS draft, extended literature/methods, figure index |
-| `protocol/PROTOCOL_v2.md` | Locked protocol with timing disclosure |
-| `protocol/COMMON_PROTOCOL.md` | Common rules for the like-for-like India–US comparison |
-| `protocol/REDESIGN_PLAN_v2_R.md` | Governing plan (committed for external verification) |
-| `protocol/CHANGELOG.md` | Dated amendments, including the audit response |
-| `output/` | Generated CSVs + `.json` sidecars (regenerable) |
-| `figures/` | Generated PDF + 300-dpi PNG figures |
-| `analysis/P02_methods/RESULTS_v2.md` | Assembled v2 results (numbers referenced, not retyped) |
-| `analysis/P02_methods/US_PILOT_RESULTS.md` | Exploratory US reservoir pilot results |
-| `P01/`, `analysis/P01_literature/` | Literature audit, frozen gap sentence, search trail |
-| `docs/project/` | Plan, protocol history, session log |
+## Result
 
-## Reading order
+`[measurement]` Under the common protocol:
 
-1. `START_HERE.md` — plain-language orientation and current phase.
-2. `PLAN_SUMMARY.md` — one-page plan, result and next actions.
-3. `HELP.md` — how to run the numbered sequence.
-4. `manuscript/MANUSCRIPT.md` — the reframed HESS draft.
-5. `protocol/PROTOCOL_v2.md` — the pre-specified design, with timing disclosure.
-6. `AGENTS.md` — operating rules, frozen novelty sentence, verification protocol.
-7. `analysis/P02_methods/RESULTS_v2.md` and `US_PILOT_RESULTS.md` — results with sources.
-8. `docs/project/MERGED_PAPER_PLAN.md` — outcome-contingent paper framing.
+| Target | India (n = 12) | USA (n = 58) |
+|---|---|---|
+| SPEI-3 (primary) | +0.0019, CI [−0.0006, +0.0051] | +0.0021, CI [+0.0003, +0.0035] |
+| SPI-3 (sensitivity) | +0.0010, CI [−0.0014, +0.0032] | +0.0011, CI [+0.0000, +0.0028] |
 
-## The frozen novelty sentence
+The USA improvement is small but consistent across both targets; the India
+interval includes zero; the USA-minus-India difference includes zero for both
+targets. The queue does not beat SSI-3 as a general rule. Numbers are written by
+`R/study.R` to `output/region_summary.csv` and `output/region_difference.csv`
+and quoted in `MANUSCRIPT.Rmd`.
 
-The scoped gap sentence (frozen 21 November 2026) is unchanged by the rebuild.
-It states only what these databases and screens did **not** contain. It never
-says "no such study exists" and never uses "first", "novel" or "unique" about
-the junction itself. See `AGENTS.md` §2.
+## Data
 
-## Requirements
+- **India:** CAMELS-IND, 472 gauges (Mangukiya et al., 2025, *ESSD*,
+  doi:10.5194/essd-17-461-2025).
+- **USA:** Caravan-US, 671 gauges (Kratzert et al., 2023, *Scientific Data*,
+  doi:10.1038/s41597-023-01975-w).
 
-R 4.5+, with `data.table`, `ggplot2`, `sf`, `rmarkdown`, `knitr`, `jsonlite`,
-`lubridate`. Run `Rscript R/install_packages.R` to install any that are missing.
-`renv` is not installed in this environment; a lockfile is a known pending
-deliverable, and `R/install_packages.R` is the documented fallback.
+Both are read from local paths defined in `R/config.R`; no data are copied into
+this repository.

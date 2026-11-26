@@ -46,28 +46,9 @@ CAMELS_ROOT <- Sys.getenv(
   "QDJ_CAMELS_ROOT",
   unset = file.path(DATA_ROOT, "CIMP6_India", "data_raw", "camels_ind_forcings")
 )
-DROUGHT_ROOT <- Sys.getenv(
-  "QDJ_DROUGHT_ROOT",
-  unset = file.path(
-    DATA_ROOT, "Drought_Intelligence_Explorer_v2", "source",
-    "anixn-drought-intelligence-explorer-d0b1573", "data"
-  )
-)
-CAMELS_PROJ_ROOT <- Sys.getenv(
-  "QDJ_CAMELS_PROJ_ROOT",
-  unset = file.path(DATA_ROOT, "CAMELS_IND_Proj")
-)
 CARAVAN_ROOT <- Sys.getenv(
   "QDJ_CARAVAN_ROOT",
   unset = file.path(DATA_ROOT, "Caravan_2025")
-)
-RESOPS_ROOT <- Sys.getenv(
-  "QDJ_RESOPS_ROOT",
-  unset = file.path(DATA_ROOT, "ResOpsUS", "extracted", "ResOpsUS")
-)
-US_COUNTY_ZIP <- Sys.getenv(
-  "QDJ_US_COUNTY_ZIP",
-  unset = file.path(DATA_ROOT, "US_boundaries", "cb_2020_us_county_500k.zip")
 )
 
 # --- Derived input files ----------------------------------------------
@@ -75,43 +56,32 @@ CAMELS_FORCING_DIR <- file.path(CAMELS_ROOT, "catchment_mean_forcings")
 CAMELS_FLOW_FILE <- file.path(CAMELS_ROOT, "streamflow_timeseries",
                               "streamflow_observed.csv")
 CAMELS_ATTR_DIR <- file.path(CAMELS_ROOT, "attributes_csv")
-DROUGHT_SOIL_FILE <- file.path(DROUGHT_ROOT, "drought", "soil_moisture.csv")
-DROUGHT_SPI3_FILE <- file.path(DROUGHT_ROOT, "drought", "spi_03.csv")
-DROUGHT_SPEI3_FILE <- file.path(DROUGHT_ROOT, "drought", "spei_03.csv")
-DISTRICT_TABLE_FILE <- file.path(DROUGHT_ROOT, "districts.csv")
-DISTRICT_BOUNDARY_FILE <- file.path(DROUGHT_ROOT, "boundaries",
-                                    "india_districts.geojson")
+
+# Map outlines only (figures; no analysis uses these).
+DIE_DATA_ROOT <- Sys.getenv(
+  "QDJ_DIE_ROOT",
+  unset = file.path(DATA_ROOT, "Drought_Intelligence_Explorer_v2", "source",
+                    "anixn-drought-intelligence-explorer-d0b1573", "data"))
+INDIA_OUTLINE_FILE <- file.path(DIE_DATA_ROOT, "boundaries", "india_outline.geojson")
+INDIA_STATES_FILE <- file.path(DIE_DATA_ROOT, "boundaries", "india_states.geojson")
 
 # --- Output directories ------------------------------------------------
 OUTPUT_DIR <- file.path(QDJ_ROOT, "output")
 FIG_DIR <- file.path(QDJ_ROOT, "figures")
-PROTOCOL_DIR <- file.path(QDJ_ROOT, "protocol")
-SESSION_LOG <- file.path(QDJ_ROOT, "docs", "project", "SESSION_LOG_v2.md")
 
 # --- Scientific parameters (plan Appendix A) --------------------------
 P <- list(
   # Unit definitions
   d_mm              = 20,          # claim depth: 20 mm over the command area
   phi               = 0.7,         # effective-rain fraction [assumption]
-  # Stage A demand (crop-water envelope)
-  sowing_doy        = 200L,        # kharif sowing day-of-year
-  season_length     = 120L,        # growing-season length (days)
-  kc_base           = 0.4,         # Kc at season start/end
-  kc_peak           = 1.2,         # Kc peak
-  kc_off            = 0.35,        # Kc outside the season
-  f_irr             = 0.10,        # irrigated fraction of catchment [default]
-  f_irr_sweep       = c(0.03, 0.10, 0.25),
+  Kc                = 0.8,         # common crop coefficient (both regions)
+  f_irr             = 0.10,        # irrigated fraction of catchment
   # Supply
   s_firm            = 0.5,         # firm share of observed flow (SUP-1)
   cap_mm            = 10,          # infrastructure delivery cap (mm/day)
-  cap_mm_sweep      = c(5, 10, 20),
-  q95_ref           = 0.95,        # SUP-2 dependable-flow quantile
-  eco_frac          = 0.10,        # SUP-3 ecological floor as fraction of mean flow
   # Catchment-relative queue parameters
   q_days            = 60,          # q* = ceil(q_days * lam_bar)
-  q_days_sweep      = c(45, 60, 90),
   K_days            = 365,         # K  = min(80, max(25, ceil(K_days * lam_bar)))
-  K_days_sweep      = c(180, 365),
   theta_mult        = 1.5,         # theta = ceil(theta_mult * q*)
   alpha             = 1.5,         # service boost above theta
   eta               = 1 / 60,      # reneging rate per day (~60-day tolerance)
@@ -129,10 +99,7 @@ P <- list(
   block_guard       = 1e-3,        # max P(Q = K) before a blocking rerun
   # Screening
   rho_window        = c(0.15, 1.20),
-  zero_unresolved_max = 0.30,      # >30% unresolved zeros -> V2 only
-  # Minimum events per unit in the confirmatory set. Applied to the DESIGN
-  # event counts (complete months), not to raw district months, so a unit with
-  # too few usable drought outcomes cannot enter the endpoint as noise.
+  # Minimum design events per catchment in the paired set.
   min_test_events   = 3L,
   min_train_events  = 5L,
   # Reproducibility

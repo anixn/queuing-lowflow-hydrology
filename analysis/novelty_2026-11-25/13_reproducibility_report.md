@@ -1,5 +1,9 @@
 # 13 — Reproducibility report
 
+> **Historical record (25 November 2026).** Paths named below refer to v1 files
+> that were removed in the 26 November 2026 simplification; they remain in git
+> history. This file is retained as novelty-search evidence only.
+
 ## Date and environment
 
 - Investigation date: 25 November 2026.

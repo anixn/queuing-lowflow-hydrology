@@ -123,7 +123,7 @@ Extra C = 13); zero retained.** The per-record table lives in
 `literature_audit.md` ("WoS record-level screen"). With this, both databases
 are fully screened at record level: **142 WoS + 295 Scopus = 437 records,
 zero gap-changing findings**. The dated gap sentence is frozen in
-`../AGENTS.md` §2 and `manuscript/MANUSCRIPT.md` §1.6. Forward-citation tracing is complete (see §2 below
+`../AGENTS.md` §2 and `../STUDY.Rmd`. Forward-citation tracing is complete (see §2 below
 and `../analysis/P01_literature/citation_trace_2026-11-21.md`); the OpenAlex trace is now
 a cross-check, not a substitute.
 
@@ -171,4 +171,4 @@ screens are completed — keep that wording in the manuscript.
 - If a located study learns non-stationary λ(t), μ(t) from hydroclimatic
   covariates for drought, the P02 headline novelty must be narrowed.
 - If nothing new appears, add one sentence to `literature_audit.md` recording
-  the completed database search and keep `manuscript/MANUSCRIPT.md` unchanged.
+  the completed database search and keep `../AGENTS.md` §2 unchanged.

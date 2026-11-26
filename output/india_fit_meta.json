@@ -1,0 +1,12 @@
+{
+  "file": "india_fit_meta.csv",
+  "git_hash": "2bd0aa9",
+  "code_hash": "78e0aac885d140b7acc58a5358999ed8",
+  "written": "2026-11-26T18:08:16",
+  "nrow": 12,
+  "ncol": 7,
+  "session": {
+    "R": "R version 4.5.1 (2025-06-13 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  }
+}
