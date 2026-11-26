@@ -1,50 +1,67 @@
-# Drought as a deficit queue — one study, two regions
+# Storage-deficit states for seasonal drought and low-flow forecasting
 
-**One method, applied identically to India (CAMELS-IND) and the USA
-(Caravan-US).** Nothing about the method changes between regions. Only the
-catchments and their climate differ.
+**Study P1 of the pivot (`PIVOT.md`):** does a *recession-calibrated
+storage-deficit state* — estimated from the catchment's own recession
+behaviour and driven by a mass-balance-verified fluid water balance — improve
+probabilistic forecasts of **hydrological drought and low-flow events** at
+**1, 3 and 6-month leads**, beyond what lagged standard indices, persistence
+and an antecedent precipitation index already carry?
+
+- **India (CAMELS-IND, 472-catchment large sample) is the study.**
+- **USA (Caravan-US) runs the identical protocol as a declared transfer
+  check** — never as a cross-region contrast.
+
+## Why the pivot (one paragraph)
+
+The retired deficit-queue study (see `AGENTS.md` §1, `PIVOT.md` §1) produced a
+trustworthy null: +0.002 Brier over SSI-3 (1–3 % relative) with an
+unresolvable India arm (n = 12 of 472). An external expert review diagnosed
+three design causes — no information beyond the benchmark's own predictors,
+the wrong queue class (M/M/1/K artefacts on a fluid process), and a
+utilisation screen that selected on assumed constants — and a full redesign
+followed (`PIVOT.md`). The queue's artefact parameters (reneging, service
+boost, blocking) are gone on the forecasting path; the state is millimetres of
+catchment storage; the demand envelope is measured where the dataset measures
+it; every threshold, screen, standardisation and fit uses training years
+(1981–2010) only, and test years are touched once, at scoring.
 
 ## The study in one table
 
-| Element | Rule (identical in both regions) |
+| Element | Rule |
 |---|---|
-| Unit | gauge catchment |
-| Target | **catchment SPEI-3 ≤ −1** (primary); SPI-3 ≤ −1 (sensitivity) |
-| Demand | `need = max(Kc·ET0 − 0.7·P, 0)`, `lambda = need / 20`, `Kc = 0.8` |
-| Supply | `mu = min(Q·86400·0.5/A_cmd·1000, 10) / 20` |
-| Catchment size | `A_cmd = f_irr · A_catchment`, `f_irr = 0.10`; one claim = 20 mm over `A_cmd` |
-| Capacity | `K = min(80, max(25, ceil(365·lambda_bar)))` |
-| Severe state | `q* = ceil(60·lambda_bar)` |
-| Split | train 1981–2010, test 2011–2020 |
-| Evaluation | 8 model families, paired Brier/AUC, two-level bootstrap |
+| Unit | gauge catchment; storage state `S` in mm of depth |
+| Engine | fluid balance `S' = clip(S + Pe − Ea − Q_g, 0, S_cap)`, per-day ledger ±1e−9 |
+| Fitted per gauge | baseflow index, recession constant `k`, exponent `p`, release coefficient `K_a`, storage scale `S_cap` (training years only) |
+| Targets | **T1: SSI-3 ≤ −1 (confirmatory)**; T2: monthly mean flow < training Q90 (descriptive) |
+| Leads | 1, 3, 6 months, strictly prospective (issue `t` → target `t+h`) |
+| Split | train 1981–2010 (features from 1982 after warm-up), test 2011–2020 |
+| Families | climatology, persistence, lagged indices (SPI/SSI-3/6), API, **storage**, **storage+indices (confirmatory)** |
+| Headline | Brier skill score vs climatology; paired per-gauge deltas on identical months; two-level block bootstrap |
 
-**Why SPEI-3?** It uses the catchment's own precipitation and PET time series.
-There is no district soil-moisture product, no US Drought Monitor, and no
-reservoir. The target is therefore the same object in both regions.
-
-**Catchment size is explicit.** It sets the command area, the claim volume and
-the supply conversion. Demand is a depth rate, so area cancels there by design;
-supply and capacity use it.
-
-## Files (deliberately few)
+## Files
 
 ```text
 R/
-  config.R            paths, seeds, all parameters
-  functions/          verified engine + units + indices + evaluation
-  study.R             the one pipeline: rates -> screen -> queue -> target -> fit
-  figures.R           slides-ready figures (map + three result figures)
-  verify.R            the 15-check battery
-STUDY.Rmd             one technical document: data, methods, results
-MANUSCRIPT.Rmd        fragment-style paper, knits to MANUSCRIPT.pdf
-README.md             this file
-HELP.md               how to run, data locations, outputs
-AGENTS.md             project rules and frozen novelty sentence
-P01/                  literature audit and search protocol (evidence only)
-analysis/P01_literature/  WoS/Scopus exports and screening (evidence only)
-analysis/novelty_2026-11-25/  supplementary novelty evidence (historical)
-output/               generated CSVs + JSON sidecars
-figures/              generated figures
+  config.R              paths, seeds, all parameters (P, P1_* blocks)
+  functions/
+    queue_engine.R      frozen verified CTMC (reused by Study P3)
+    storage_engine.R    BFI, recession fits, S_cap inversion, fluid propagator
+    units.R             the unit wall (mm-day; seasonal Kc/phi curves)
+    pipeline.R          screens, indices, families, paired statistics
+    indices/eval/io/audit.R
+  study.R               retired study backbone (G2 record)
+  study_gate_g2.R       Gate G2: corrected re-run + decision
+  study_p1.R            the P1 backbone: India primary + US transfer arm
+  figures.R / figures_p1.R
+  verify.R              21-check verification battery
+PIVOT.md                the pivot decision, gate tables, change record
+STUDY.Rmd               technical document: data, methods, results
+MANUSCRIPT.Rmd          paper fragment, knits to MANUSCRIPT.pdf
+README.md               this file
+HELP.md                 operator's manual
+P01/, analysis/         literature-audit evidence records (frozen)
+output/                 generated CSVs + JSON provenance sidecars
+figures/                generated figures
 ```
 
 ## Run
@@ -52,40 +69,33 @@ figures/              generated figures
 From the repository root:
 
 ```powershell
-Rscript R/verify.R      # 15/15 checks
-Rscript R/study.R       # the one study (both regions, both targets)
-Rscript R/figures.R     # figures
+Rscript R/verify.R          # 21/21 checks (gate G1)
+Rscript R/study_gate_g2.R   # Gate G2 (corrected re-run of the retired design)
+Rscript R/study_p1.R        # the P1 study (India + US transfer arm)
+Rscript R/power_check.R     # power analysis from the G2 variance
+Rscript R/figures_p1.R      # P1 figures
 ```
 
-Knit the paper (TinyTeX installed):
+Knit the technical document / paper:
 
 ```powershell
+Rscript -e "rmarkdown::render('STUDY.Rmd')"
 Rscript -e "rmarkdown::render('MANUSCRIPT.Rmd')"
 ```
 
-Or open `STUDY.Rmd` for the technical document and `MANUSCRIPT.Rmd` for the paper.
-
 ## Result
 
-`[measurement]` Under the common protocol:
-
-| Target | India (n = 12) | USA (n = 58) |
-|---|---|---|
-| SPEI-3 (primary) | +0.0019, CI [−0.0006, +0.0051] | +0.0021, CI [+0.0003, +0.0035] |
-| SPI-3 (sensitivity) | +0.0010, CI [−0.0014, +0.0032] | +0.0011, CI [+0.0000, +0.0028] |
-
-The USA improvement is small but consistent across both targets; the India
-interval includes zero; the USA-minus-India difference includes zero for both
-targets. The queue does not beat SSI-3 as a general rule. Numbers are written by
-`R/study.R` to `output/region_summary.csv` and `output/region_difference.csv`
-and quoted in `MANUSCRIPT.Rmd`.
+Filled from `output/p1_confirmatory.csv` and `output/p1_summary.csv` — see
+`STUDY.Rmd` for the full tables with provenance. The retired study's numbers
+remain exactly as published in `output/region_summary.csv` and git history.
 
 ## Data
 
 - **India:** CAMELS-IND, 472 gauges (Mangukiya et al., 2025, *ESSD*,
-  doi:10.5194/essd-17-461-2025).
-- **USA:** Caravan-US, 671 gauges (Kratzert et al., 2023, *Scientific Data*,
-  doi:10.1038/s41597-023-01975-w).
+  doi:10.5194/essd-17-461-2025). Forcings include GLEAM PET (`pet_gleam`) and
+  the attributes include a measured irrigated fraction (`irrigation_frac`).
+- **USA:** Caravan-US (Kratzert et al., 2023, *Scientific Data*,
+  doi:10.1038/s41597-023-01975-w), FAO Penman–Monteith PET shipped.
 
-Both are read from local paths defined in `R/config.R`; no data are copied into
-this repository.
+Both are read from local paths defined in `R/config.R`; no data are copied
+into this repository.

@@ -1,49 +1,65 @@
 # HELP — run the study, find the data, read the outputs
 
-This is the operator's manual. It is intentionally short: one study, three
-commands, one output folder.
+This is the operator's manual for Study P1 (the pivot). It is intentionally
+short: one study, a handful of commands, one output folder. The pivot decision
+and all gate tables live in `PIVOT.md`; the operating rules live in
+`AGENTS.md`.
 
 ---
 
 ## 1. What the study does
 
-It tests whether a **deficit queue** adds drought information beyond SSI-3, using
-the **same method** in India and the USA. The target is the catchment's own
-**SPEI-3** (precipitation minus Hargreaves ET0), not a district product and not a
-reservoir record.
+It tests whether a **recession-calibrated storage-deficit state** improves
+probabilistic forecasts of **hydrological drought** (SSI-3 ≤ −1) and
+**low-flow** (monthly mean below the training-period Q90) events at **1, 3 and
+6-month leads**, beyond persistence, lagged standard indices and an
+antecedent precipitation index. The state is a millimetre-depth storage
+propagated by a fluid water balance whose release law is fitted to each
+catchment's own training-year recessions. There are no queue artefacts, no
+claims and no hectares on this path.
+
+**Gate G2** (`R/study_gate_g2.R`) is the corrected re-run of the retired
+queue design with dataset PET, the measured irrigated fraction, training-only
+thresholds and honest memory baselines; it converts the old null into a
+trustworthy null and its decision is recorded in `STUDY.Rmd`.
 
 ---
 
 ## 2. Requirements
 
 - R 4.5+.
-- Packages: `data.table`, `ggplot2`, `rmarkdown`, `knitr`.
+- Packages: `data.table`, `ggplot2`, `rmarkdown`, `knitr`, `sf`, `patchwork`.
   Install missing packages with:
   ```powershell
-  Rscript -e "install.packages(c('data.table','ggplot2','rmarkdown','knitr'))"
+  Rscript -e "install.packages(c('data.table','ggplot2','rmarkdown','knitr','sf','patchwork'))"
   ```
 
 ---
 
 ## 3. Data locations
 
-All paths are in `R/config.R` and can be overridden with environment variables.
+All paths are in `R/config.R` and can be overridden with environment
+variables (`QDJ_DATA_ROOT`, `QDJ_CAMELS_ROOT`, `QDJ_CARAVAN_ROOT`,
+`QDJ_DIE_ROOT`).
 
 ```text
 D:\Datasets\
   CIMP6_India\data_raw\camels_ind_forcings\
-    catchment_mean_forcings\        # one CSV per gauge: prcp, tmax, tmin, tavg
+    catchment_mean_forcings\        # one CSV per gauge: prcp, tmax/tmin/tavg,
+                                    # pet_gleam (GLEAM PET)  <- dataset PET
     streamflow_timeseries\streamflow_observed.csv
-    attributes_csv\                 # cwc_area, basin, lat/lon
+    attributes_csv\                 # cwc_area, basin, lat/lon, climate,
+                                    # anth (irrigation_frac), land, hydro
   Caravan_2025\
     attributes\camels\              # area, lat/lon
-    timeseries\camels\              # streamflow, prcp, tmax, tmin, tmean
+    timeseries\camels\              # streamflow, prcp, tmax/min/mean,
+                                    # potential_evaporation_sum_FAO_PENMAN_MONTEITH
 ```
 
 The study uses **no district polygon, no soil-moisture product, no US Drought
-Monitor and no reservoir data**. The map in `figures/fig_study_map.pdf` uses
-the Drought Intelligence Explorer outline and state boundaries for India and
-state polygons for the conterminous USA; it is a figure input only.
+Monitor, no reservoir record and no raw CMIP6 output**. The map figure uses
+the Drought Intelligence Explorer outline/state boundaries for India; figure
+input only.
 
 ---
 
@@ -52,95 +68,82 @@ state polygons for the conterminous USA; it is a figure input only.
 From the repository root:
 
 ```powershell
-Rscript R/verify.R      # 15 checks; all must pass
-Rscript R/study.R       # both regions; writes output/*.csv
-Rscript R/figures.R     # writes figures/*.png and *.pdf
-Rscript -e "rmarkdown::render('MANUSCRIPT.Rmd')"   # the paper PDF
+Rscript R/verify.R          # 21/21 checks (gate G1); required before any run
+Rscript R/study_gate_g2.R   # Gate G2 (corrected re-run; writes gateG2_*.csv)
+Rscript R/study_p1.R        # Study P1 (India + US transfer arm; p1_*.csv)
+Rscript R/power_check.R     # power analysis from the G2 variance
+Rscript R/figures_p1.R      # P1 figures
+Rscript R/study.R           # (optional) retired study, kept as the record
+Rscript -e "rmarkdown::render('STUDY.Rmd')"
 ```
 
-`R/study.R` is linear: load -> rates -> screen -> queue -> target -> fit ->
-paired comparison. It prints progress. A per-gauge failure is caught and written
-to the fit meta; a pipeline failure stops the run.
+PET source and the US transfer arm are environment switches:
+
+```powershell
+$env:QDJ_PET_SOURCE   = "shipped"    # or "hargreaves" (sensitivity arm)
+$env:QDJ_TRANSFER_ARM = "on"         # or "off"
+```
 
 ---
 
 ## 5. Outputs
 
-| File | Contents |
-|---|---|
-| `output/india_screen.csv` | every India gauge: rho, zero fraction, gap, coverage, in/out |
-| `output/usa_screen.csv` | same for the USA |
-| `output/india_fit_meta.csv` | India event counts and fit status |
-| `output/usa_fit_meta.csv` | same for the USA |
-| `output/india_paired.csv` | per-gauge paired Brier/AUC deltas, SPEI-3 target |
-| `output/usa_paired.csv` | same for the USA |
-| `output/india_paired_spi3.csv` | same, SPI-3 sensitivity target |
-| `output/usa_paired_spi3.csv` | same for the USA |
-| `output/region_summary.csv` | regional medians, CIs, sign tests (both targets) |
-| `output/region_difference.csv` | USA minus India, bootstrap CI (both targets) |
+Every CSV carries a JSON sidecar (git hash, code hash, shape, R session).
 
-Each CSV carries a `.json` sidecar with the git hash, code hash, row/column
-counts and the R session.
-
-Generated files are **never** hand-edited. Every value in the paper comes from
-these CSVs.
+| File | Written by | Contents |
+|---|---|---|
+| `gateG2_sample_report.csv` | gate | completeness-only probe vs the retired rule |
+| `gateG2_summary.csv` | gate | queue vs each baseline + frozen best-of, medians + CIs |
+| `gateG2_paired.csv` | gate | per-gauge paired deltas (power-analysis input) |
+| `gateG2_bss.csv` | gate | per-gauge BSS vs climatology per family |
+| `gateG2_decision.txt` | gate | the frozen decision rule, applied as written |
+| `p1_sample_report{,_usa}.csv` | P1 | n per screen stage (§4.2) |
+| `p1_storage_params{,_usa}.csv` | P1 | per-gauge `(k, p, a, K_a, b_s, S_cap, BFI)` |
+| `p1_bss{,_usa}.csv` | P1 | per gauge × family × lead × target BSS |
+| `p1_paired{,_usa}.csv` | P1 | per-gauge paired deltas |
+| `p1_summary{,_usa}.csv` | P1 | medians, bootstrap CIs, sign tests |
+| `p1_confirmatory.csv` | P1 | H1/H2 (+H0) decision table |
+| `p1_predictions{,_usa}.csv` | P1 | held-out predictions (diagnostics) |
+| `p1_power.csv` | power | sign-test power curve |
+| `region_{summary,difference}.csv` | retired | the published retired-study numbers |
 
 ---
 
-## 6. Parameters
+## 6. Figures
 
-All in `R/config.R`, one place:
-
-| Parameter | Value | Meaning |
-|---|---:|---|
-| `d_mm` | 20 | claim depth (mm) |
-| `phi` | 0.7 | effective-rain fraction |
-| `Kc` | 0.8 | crop coefficient (both regions) |
-| `f_irr` | 0.10 | irrigated fraction of catchment |
-| `s_firm` | 0.5 | firm share of observed flow |
-| `cap_mm` | 10 | infrastructure cap (mm/day) |
-| `q_days` | 60 | `q* = ceil(60 * lambda_bar)` |
-| `K_days` | 365 | capacity in days of mean demand |
-| `theta_mult` | 1.5 | `theta = ceil(1.5 * q*)` |
-| `alpha` | 1.5 | service boost above theta |
-| `eta` | 1/60 | reneging rate (per day) |
-| `rho_window` | 0.15–1.20 | utilisation screen |
-| train / test | 1981–2010 / 2011–2020 | split |
-| `L2` | 1.0 | ridge penalty |
-| `seed` | 20261125 | all stochastic steps |
+| Figure | Content |
+|---|---|
+| `fig_p1_map` | sample by screen stage across India |
+| `fig_p1_leadtime` | **centrepiece**: median BSS vs lead per family |
+| `fig_p1_basin` | confirmatory family by river basin |
+| `fig_p1_paired` | per-gauge paired deltas by lead |
+| `fig_p1_storage` | recession/storage landscape (k vs S_cap, colour BFI) |
+| `fig_p1_state` | the fluid state S(t) for one example catchment |
+| `fig_p1_reliability` | pooled reliability curves (T1, 3-month lead) |
+| `fig_p1_power` | sign-test power curve |
 
 ---
 
 ## 7. Troubleshooting
 
-| Symptom | Fix |
-|---|---|
-| `package 'data.table' was built under R version ...` | Warning only; ignore. |
-| `cannot open file ...` | Check the data paths in `R/config.R` or set `QDJ_DATA_ROOT`. |
-| A region selects 0 gauges | Check `rho_window` and the zero/gap screen in `*_screen.csv`. |
-| A gauge is skipped | The blocking guard tripped or too few events; it is recorded in the fit meta. |
-| Figure is empty | Run `R/study.R` first; `R/figures.R` reads `output/`. |
+- **`V17`-`V21` fail** — the storage engine changed without its test; fix the
+  engine, not the test.
+- **Blocking-guard errors in the gate** — the measured demand envelope can
+  overload the retired queue for some gauges; those gauges are excluded by
+  the screen as before (`tryCatch` marks them in `gateG2_*_meta.csv`).
+- **A gauge missing from `p1_*` outputs** — it failed a screen stage; the
+  reason is in `p1_sample_report.csv` (`pass_complete`, `pass_events_*`,
+  `pass_recession`, `borrowed_parameters`).
+- **Long runtimes** — `study_p1.R` propagates a daily state and fits ~6
+  families × 3 leads × 2 targets per gauge for several hundred gauges;
+  expect tens of minutes per region on a workstation.
 
 ---
 
-## 8. Reading order
+## 8. Session checklist (from `AGENTS.md` §9)
 
-1. `README.md` — the design in one page.
-2. `HELP.md` — this file.
-3. `MANUSCRIPT.Rmd` / `MANUSCRIPT.pdf` — the paper, in fragment form.
-4. `STUDY.Rmd` — data, methods and results in one technical document.
-5. `R/config.R` — every parameter.
-6. `R/study.R` — the pipeline, top to bottom.
-7. `R/functions/` — the verified engine and evaluation functions.
-8. `AGENTS.md` — operating rules and the frozen novelty sentence.
-9. `P01/literature_audit.md` — the literature evidence.
-
----
-
-## 9. What this study does not do
-
-- No district soil-moisture target.
-- No US Drought Monitor target.
-- No reservoir operations or OpenET.
-- No future-climate scenario; CMIP6 remains out of scope.
-- No claim that the queue beats SPI/SSI; the result is reported as it is.
+1. State the current gate (G2 / P1 / P3) and the single next action.
+2. `Rscript R/verify.R` — report pass/fail (must be 21/21).
+3. State which numbers you trust today and where they live.
+4. End of session: re-run the battery; update the paper trail; report what
+   moved, what is blocked, the exact next action.
