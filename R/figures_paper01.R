@@ -2,7 +2,7 @@
 # R/figures_paper01.R -- publication-grade figures for Paper 01
 # (the P1 study package). Writes ONLY into paper01/figures/, PDF + PNG
 # (300 dpi), from output/*.csv written by the verified study scripts.
-# Nothing is hand-edited. One shared palette; panel tags (a)-(h).
+# Nothing is hand-edited. One shared palette; panel tags (a)-(g).
 #
 # Usage:  Rscript R/figures_paper01.R
 # =====================================================================
@@ -25,11 +25,11 @@ local({
   FIG_DIR <- file.path(PAPER_DIR, "figures")
   ensure_dir(FIG_DIR)
 
-  # ---- shared palette (state-of-the-art, colour-blind-safe ordering) --
+  # ---- shared palette (colour-blind-safe ordering) --------------------
   pal <- list(
     blue = "#2C6FBB", orange = "#D1603D", red = "#B23A48",
     purple = "#8C6BB1", green = "#41AB5D", teal = "#31859C",
-    grey = "#666666", light = "#F2F2F2", dark = "#1A1A1A")
+    grey = "#666666", dark = "#1A1A1A")
   fam_cols <- c(climatology = pal$grey, persistence = pal$purple,
                 lagged_indices = pal$blue, api = pal$green,
                 storage = pal$orange, storage_plus_indices = pal$red)
@@ -63,48 +63,52 @@ local({
     data.table::data.table(x = x, y = y, w = w, h = h, fill = fill)
   }
   steps <- data.table::rbindlist(list(
-    box(0.5,  9.0, 3.6, 1.0, pal$light),   # forcings
-    box(0.5,  7.4, 3.6, 1.0, pal$light),   # recession fits
-    box(0.5,  5.8, 3.6, 1.0, pal$light),   # fluid propagation
-    box(0.5,  4.2, 3.6, 1.0, pal$light),   # monthly features
-    box(4.8,  4.2, 3.6, 1.0, pal$light),   # targets & leads
-    box(4.8,  5.8, 3.6, 1.0, pal$light),   # baselines
-    box(9.1,  4.2, 3.6, 1.0, pal$light),   # fitting
-    box(9.1,  5.8, 3.6, 1.0, pal$light),   # evaluation
-    box(4.8,  9.0, 7.9, 1.0, pal$light)    # leakage discipline banner
+    box(4.9, 9.7, 9.4, 1.0, "#FDF3E7"),
+    box(1.4, 8.0, 2.7, 1.15, "#EFF4FA"),
+    box(1.4, 6.5, 2.7, 1.15, "#EFF4FA"),
+    box(1.4, 5.0, 2.7, 1.15, "#EFF4FA"),
+    box(1.4, 3.5, 2.7, 1.15, "#EFF4FA"),
+    box(4.9, 3.5, 2.7, 1.15, "#F4EFF9"),
+    box(4.9, 5.0, 2.7, 1.15, "#F4EFF9"),
+    box(8.3, 3.5, 2.7, 1.15, "#EFF7EF"),
+    box(8.3, 5.0, 2.7, 1.15, "#EFF7EF")
   ))
-  flow <- ggplot(steps, aes(xmin = x - w / 2, xmax = x + w / 2,
-                            ymin = y - h / 2, ymax = y + h / 2, fill = fill)) +
-    geom_rect(colour = pal$dark, linewidth = 0.25) +
-    geom_text(data = data.table::data.table(
-      x = c(0.5, 0.5, 0.5, 0.5, 4.8, 4.8, 9.1, 9.1, 8.75),
-      y = c(9.0, 7.4, 5.8, 4.2, 4.2, 5.8, 4.2, 5.8, 9.0),
-      lab = c(
-        "Daily forcings\nP, PET, observed Q\n(CAMELS-IND; Caravan-US)",
-        "Recession fits\n(training years only)\nBFI, k, p, a -> K_a, b_s, S_cap",
-        "Fluid state S(t)\nledger-checked daily\nbalance, no Q input",
-        "Monthly features\nS_anom, dS1, dS3,\ndays-since-high-flow",
-        "Targets & leads\nT1: SSI-3 <= -1\nT2: flow < Q90\nleads 1 / 3 / 6 months",
-        "Baselines\npersistence, lagged\nindices, API,\nclimatology",
-        "Ridge logistic\nper-family CV-tuned\npenalty (train only)",
-        "Evaluation\nBSS vs climatology,\npaired deltas,\n2-level bootstrap",
-        "Leakage discipline: every threshold, screen, standardisation and\nfit uses training years (1981-2010) only; test years touched once")),
-      aes(x, y, label = lab), size = 2.7, lineheight = 0.9, inherit.aes = FALSE) +
-    geom_segment(data = data.table::data.table(
-      x = c(2.3, 2.3, 2.3, 2.3, 4.8, 4.8, 6.6, 6.6),
-      xend = c(2.3, 2.3, 2.3, 4.8, 6.6, 9.1, 9.1, 9.1),
-      y = c(8.5, 6.9, 5.3, 3.7, 3.7, 3.7, 4.7, 5.3),
-      yend = c(7.9, 6.3, 4.7, 4.7, 3.7, 3.7, 5.3, 6.3)),
-      aes(x = x, y = y, xend = xend, yend = yend),
-      arrow = arrow(length = unit(2.5, "mm"), type = "closed"),
-      colour = pal$grey, linewidth = 0.3, inherit.aes = FALSE) +
+  labels <- data.table::data.table(
+    x = c(4.9, 1.4, 1.4, 1.4, 1.4, 4.9, 4.9, 8.3, 8.3),
+    y = c(9.7, 8.0, 6.5, 5.0, 3.5, 3.5, 5.0, 3.5, 5.0),
+    lab = c(
+      "LEAKAGE DISCIPLINE\nEvery threshold, screen, standardisation and fit uses the\ntraining years (1981-2010) only; test years are touched once",
+      "Daily forcings\nP, PET, observed Q\n(CAMELS-IND;\nCaravan-US transfer)",
+      "Recession fits\n(training years only)\nBFI, k, p, a\n-> K_a, b_s, S_cap",
+      "Fluid state S(t)\nledger-checked daily\nbalance; Q never\nenters as an input",
+      "Monthly features\nS_anom, dS1, dS3,\ndays-since-high-flow",
+      "Targets and leads\nT1: SSI-3 <= -1\nT2: flow < Q90\nleads 1 / 3 / 6 months",
+      "Baselines\npersistence, lagged\nindices (SPI/SSI-3,6),\nAPI, climatology",
+      "Ridge logistic\nper-family CV-tuned\npenalty (train only)",
+      "Evaluation\nBSS vs climatology;\npaired deltas;\n2-level bootstrap")
+  )
+  arrows <- data.table::data.table(
+    x = c(1.4, 1.4, 1.4, 2.75, 6.25, 6.25, 8.3),
+    y = c(7.42, 5.92, 4.42, 3.5, 4.42, 3.5, 4.07),
+    xend = c(1.4, 1.4, 1.4, 3.55, 6.95, 6.95, 8.3),
+    yend = c(7.07, 5.57, 4.07, 3.5, 3.9, 3.5, 4.43)
+  )
+  flow <- ggplot() +
+    geom_rect(data = steps,
+              aes(xmin = x - w / 2, xmax = x + w / 2,
+                  ymin = y - h / 2, ymax = y + h / 2, fill = fill),
+              colour = pal$dark, linewidth = 0.25) +
+    geom_text(data = labels, aes(x, y, label = lab),
+              size = 2.55, lineheight = 0.95) +
+    geom_segment(data = arrows, aes(x = x, y = y, xend = xend, yend = yend),
+                 arrow = arrow(length = unit(2.5, "mm"), type = "closed"),
+                 colour = pal$grey, linewidth = 0.35) +
     scale_fill_identity() +
-    coord_fixed(ratio = 1.05, xlim = c(-1.4, 11.2), ylim = c(3.4, 10.0)) +
+    coord_fixed(ratio = 1.15, xlim = c(-0.1, 9.7), ylim = c(2.8, 10.4)) +
     theme_void(base_size = 11) +
-    labs(title = "Analysis flow: from daily records to confirmatory contrasts",
+    labs(title = "Analysis flow: from daily records to the frozen confirmatory contrasts",
          subtitle = "Every box is a script stage in R/; every number in the paper is generated by one of them")
-    # no base_theme (void); keep fonts
-  save_fig(flow, "Fig01_methods_flow", 9.2, 4.6)
+  save_fig(flow, "Fig01_methods_flow", 9.2, 4.4)
 
   # =====================================================================
   # Fig02 -- study map (India; screen stages)
@@ -168,8 +172,7 @@ local({
       scale_size_manual(values = c(`FALSE` = 1.8, `TRUE` = 3.2)) +
       facet_wrap(~target, labeller = as_labeller(lab)) +
       scale_colour_manual(values = fam_cols, labels = fam_lab, name = NULL) +
-      scale_x_continuous(breaks = c(1, 3, 6),
-                         labels = c("1", "3", "6")) +
+      scale_x_continuous(breaks = c(1, 3, 6), labels = c("1", "3", "6")) +
       labs(x = "Forecast lead (months)",
            y = "Median Brier skill score vs climatology",
            subtitle = "Per-gauge BSS, median across catchments; issue month t, target month t+h; training-only fitting") +

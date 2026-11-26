@@ -45,8 +45,8 @@ paper01/
 - `tables/` are written by `R/tables_paper01.R` from `results/` (frozen
   copies of the repository's `output/*.csv`, each with a JSON provenance
   sidecar: git hash, code hash, shape, R session).
-- `figures/` are drawn by `R/figures_paper01.rs` sibling script
-  `R/figures_paper01.R` from the same results.
+- `figures/` are drawn by the sibling script `R/figures_paper01.R` from the
+  same results.
 
 ## Reproduce everything
 
