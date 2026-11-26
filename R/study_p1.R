@@ -131,7 +131,7 @@ local({
       ids <- as.character(meta$gauge_id)
       areas <- setNames(meta$area_km2, ids)
       lats <- setNames(meta$cwc_lat, ids)
-      basins <- setNames(meta$river_basin, ids)
+      basins <- setNames(meta$basin, ids)
       get_rates <- function(g) {
         gi <- as.integer(g)
         f <- .read_forcing_one(gi)
