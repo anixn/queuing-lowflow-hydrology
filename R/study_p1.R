@@ -467,6 +467,7 @@ local({
   write_csv_sidecar(ind_pair$paired,
                     file.path(OUTPUT_DIR, "p1_paired.csv"))
   write_csv_sidecar(ind_fit$bss, file.path(OUTPUT_DIR, "p1_bss.csv"))
+  write_csv_sidecar(ind_fit$preds, file.path(OUTPUT_DIR, "p1_predictions.csv"))
   write_csv_sidecar(ind_pair$best_sel,
                     file.path(OUTPUT_DIR, "p1_bestof_selection.csv"))
   write_csv_sidecar(ind_fit$metrics, file.path(OUTPUT_DIR, "p1_metrics.csv"))
@@ -514,6 +515,8 @@ local({
     write_csv_sidecar(us_pair$paired,
                       file.path(OUTPUT_DIR, "p1_paired_usa.csv"))
     write_csv_sidecar(us_fit$bss, file.path(OUTPUT_DIR, "p1_bss_usa.csv"))
+    write_csv_sidecar(us_fit$preds, file.path(OUTPUT_DIR,
+                                              "p1_predictions_usa.csv"))
     write_csv_sidecar(us_pair$best_sel,
                       file.path(OUTPUT_DIR, "p1_bestof_selection_usa.csv"))
     write_csv_sidecar(us_fit$metrics,
