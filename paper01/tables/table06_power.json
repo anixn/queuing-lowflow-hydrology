@@ -1,0 +1,12 @@
+{
+  "file": "table06_power.csv",
+  "git_hash": "2559d9e",
+  "code_hash": "1450a73d7e4ba82c52a5f543f7210a9a",
+  "written": "2026-11-26T23:47:50",
+  "nrow": 20,
+  "ncol": 8,
+  "session": {
+    "R": "R version 4.5.1 (2025-06-13 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  }
+}

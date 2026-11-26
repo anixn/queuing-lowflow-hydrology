@@ -1,0 +1,12 @@
+{
+  "file": "gateG2_summary.csv",
+  "git_hash": "53543e9",
+  "code_hash": "885ea48dce2f30e0bb7d092ef3828356",
+  "written": "2026-11-26T22:14:46",
+  "nrow": 20,
+  "ncol": 12,
+  "session": {
+    "R": "R version 4.5.1 (2025-06-13 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  }
+}
