@@ -13,12 +13,30 @@ git_hash <- function(root = QDJ_ROOT) {
   if (length(h) == 0) NA_character_ else trimws(h[1])
 }
 
+# Fingerprint of the R source tree that produced an output. This is recorded
+# alongside the git hash so a sidecar identifies the code that actually ran,
+# even when the working tree was uncommitted.
+code_hash <- function(root = QDJ_ROOT) {
+  dirs <- c(file.path(root, "R"), file.path(root, "steps"))
+  files <- unlist(lapply(dirs[dir.exists(dirs)], function(d)
+    list.files(d, pattern = "\\.(R|Rmd)$", recursive = TRUE, full.names = TRUE)))
+  files <- sort(files)
+  if (!length(files)) return(NA_character_)
+  md5 <- tools::md5sum(files)
+  tmp <- tempfile()
+  writeLines(paste(basename(files), unname(md5), sep = ":"), tmp)
+  h <- unname(tools::md5sum(tmp))
+  unlink(tmp)
+  h
+}
+
 write_csv_sidecar <- function(df, path, meta = list()) {
   ensure_dir(dirname(path))
   utils::write.csv(df, path, row.names = FALSE, na = "")
   sidecar <- sub("\\.csv$", ".json", path)
   payload <- c(
     list(file = basename(path), git_hash = git_hash(),
+         code_hash = code_hash(),
          written = format(Sys.time(), "%Y-%m-%dT%H:%M:%S"),
          nrow = nrow(df), ncol = ncol(df),
          session = list(R = R.version.string,

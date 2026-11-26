@@ -23,6 +23,7 @@ steps <- c(
   "steps/step_08_usa_target.R",
   "steps/step_09_usa_rates.R",
   "steps/step_10_usa_eval.R",
+  "steps/step_13_common_comparison.R",
   "steps/step_11_manuscript_figures.R",
   "steps/step_12_verify.R"
 )

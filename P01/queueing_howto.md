@@ -227,7 +227,8 @@ Config: $K_q=20$, $c=2$, $\theta=8$, $\alpha=1.5$, $\eta=0.02$ d$^{-1}$.
 **Interpretation for the paper:** averaging a time-varying climate signal can
 understate peak congestion by more than a factor of two and critical-risk
 probability by more than an order of magnitude in this controlled example.
-The documented 44-case grid in `src/P01/box1_sensitivity.py` preserves the direction
+The documented 44-case grid in the v1 Python sensitivity script (branch
+`legacy-python`) preserves the direction
 of the effect in every case: peak-backlog ratios range from 1.20 to 5.33 and
 critical-probability ratios from 2.06 to 92.9, with medians 2.32 and 16.78. The
 largest absolute ledger residual is $1.7\times10^{-6}$ claims. This is a

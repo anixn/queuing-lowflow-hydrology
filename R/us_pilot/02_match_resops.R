@@ -18,11 +18,14 @@ local({
   root <- normalizePath("D:/Research/queuing-lowflow-hydrology")
   out_dir <- file.path(root, "output_us")
   dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+  Sys.setenv(QDJ_ROOT = root)
+  source(file.path(root, "R", "config.R"))
   suppressMessages(library(sf))
   suppressMessages(library(data.table))
 
-  shp <- "D:/Datasets/Caravan_2025/shapefiles/camels/camels_basin_shapes.shp"
-  res_csv <- "D:/Datasets/ResOpsUS/extracted/ResOpsUS/attributes/reservoir_attributes.csv"
+  shp <- file.path(CARAVAN_ROOT, "shapefiles", "camels",
+                   "camels_basin_shapes.shp")
+  res_csv <- file.path(RESOPS_ROOT, "attributes", "reservoir_attributes.csv")
 
   poly <- st_read(shp, quiet = TRUE)
   poly <- st_transform(poly, 4326)

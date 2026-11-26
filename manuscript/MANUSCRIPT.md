@@ -1,4 +1,4 @@
-# Does a deficit queue add drought information? Two independent multi-catchment tests and a utilisation diagnosis
+# What queueing can and cannot do for low-flow hydrology: a target-dependent deficit-queue signal, a verified engine, and a zero-flow warning
 
 **Ankit Deshmukh**
 Department of Civil Engineering, Pandit Deendayal Energy University, Gandhinagar, India
@@ -9,15 +9,15 @@ Department of Civil Engineering, Pandit Deendayal Energy University, Gandhinagar
 
 ## Abstract
 
-Hydrological drought is usually diagnosed as an anomaly relative to climatology. A deficit-queue formulation instead treats drought as accumulated unmet demand: demand arrives at rate $\lambda(t)$, supply serves at $\mu(t)$, unmet demand accumulates as a backlog $Q$, a finite capacity $K$ bounds the state, and reneging represents abandoned demand. The formulation promises quantities that indices do not give — expected backlog, severe-backlog probability, unmet volume and recovery time — but its incremental information has not been tested under a predeclared, powered design.
+A deficit queue reads drought as accumulated unmet demand: demand arrives at rate $\lambda(t)$, supply serves at $\mu(t)$, unmet demand accumulates as a backlog $Q$, a finite capacity $K$ bounds the state, and reneging represents abandoned demand. The formulation promises quantities that indices do not give — expected backlog, severe-state probability, unmet volume and recovery time — but its incremental information has not been tested under a predeclared, verified design.
 
-We test it twice, independently. In India, 24 CAMELS-IND gauges across 11 basins are screened into a predeclared utilisation window ($0.15 \le \rho \le 1.20$) and compared against district soil-moisture drought. In the USA, 50 reservoir–catchment pairs use measured ResOpsUS outflow as supply and the US Drought Monitor as target. Both studies use one claim volume per unit, catchment-relative thresholds, an exactly verified finite-capacity queue (14/14 checks), and a paired held-out Brier contrast on identical months.
+We test it twice. In India, 15 endpoint gauges across 8 basins pass a V1 utilisation screen and a minimum design-event rule; the target is district soil-moisture drought. In the USA, 14 reservoir–catchment pairs inside the same utilisation window use measured ResOpsUS outflow and the US Drought Monitor. Both use one claim volume per unit, catchment-relative thresholds, an exactly verified finite-capacity queue (14/14 checks), and a paired held-out Brier contrast.
 
-Both confirmatory endpoints are null. In India the median paired Brier improvement from adding queue probability to SSI-3 is $+0.00085$ (95% CI $[-0.00111, +0.00172]$; sign test 15/24, $p=0.154$); the prospective endpoint is also null. In the USA the corresponding median is $+0.00079$ (95% CI $[-0.00465, +0.00774]$; 12/21, $p=0.332$). The minimal detectable Brier effect at 24 units is $0.0027$, several times the observed effect, so the nulls are interpretable rather than merely underpowered. The secondary AUC contrast is positive in both studies (India $+0.043$, USA $+0.011$), indicating a ranking gain without a calibrated-probability gain. A utilisation diagnosis shows that the queue helps more as $\rho$ rises in India but not in the USA, where the demand proxy dominates.
+The results are target-dependent, and that is the paper's point. On the **external district soil-moisture target, the confirmatory Brier endpoint is null**: median paired improvement **+0.00204**, 95% CI **[−0.00187, +0.00415]**, 10/15, $p=0.151$. On a **leakage-clean training-only SPI-3 target**, the same contrast is **positive**: median **+0.00397**, CI **[+0.00013, +0.00949]**, **12/15**, $p=0.0176$, with AUC **+0.038** (14/15). The minimal detectable Brier effect at N=15 is **0.0037**, so the primary null is interpretable. Ranking improves (mean AUC 0.771 → 0.815; queue-alone 0.846), but the utilisation slope is positive and not significant (+0.0066, $p=0.188$). The US exploratory replication is null on both Brier and AUC once the window is applied.
 
-A deficit queue re-orders drought risk but does not, in these data, produce better-calibrated drought probabilities than SSI-3. That is a publishable methods and negative-result finding: it bounds the incremental skill, explains when the queue is informative, and specifies the measured-demand and operational data a positive test would require.
+The work therefore contributes four things: one honest null, one target-dependent positive signal, one verified reusable engine, and one data-quality warning. The zero-flow convention is the warning: feeding artifact zeros as real zeros can flip the sensitivity result, so CAMELS-IND users must audit zeros before interpreting any queue or deficit index. The practical rule is conditional, not universal: use queue indicators as a ranking and descriptive layer in stressed, well-audited basins, not as a replacement for calibrated SPI/SSI probabilities.
 
-**Keywords:** hydrological drought; queueing theory; deficit accumulation; SSI; Brier score; negative result; CAMELS-IND; Caravan; ResOpsUS; US Drought Monitor.
+**Keywords:** hydrological drought; queueing theory; deficit accumulation; SSI; Brier score; target dependence; zero-flow audit; CAMELS-IND; Caravan; ResOpsUS; US Drought Monitor.
 
 ---
 
@@ -64,32 +64,44 @@ Two recent lines are close conceptual prior art. Acosta et al. (2026) propose a 
 
 This is a scoping-review finding, not a claim that no such study exists. We reclaim the Langbein–Moran–Prabhu lineage rather than claim it, and we never describe the junction as “novel”, “first” or “unique”.
 
-### 1.7 Contributions and question
+### 1.7 What this paper asks
 
-We ask a single confirmatory question: **does adding queue-state indicators to SSI-3 improve calibrated drought probability on held-out data?** We answer it twice, in two independent data systems, under a predeclared protocol. The contributions are: (i) a per-unit claim convention that removes the unit-mixing defect of earlier work; (ii) catchment-relative queue thresholds; (iii) an exactly verified engine with a per-day conservation ledger; (iv) two independent multi-catchment tests with a paired statistic; (v) a utilisation diagnosis of when the queue is informative; and (vi) a quantitative bound on the incremental Brier skill.
+The paper does not ask “does the queue beat SPI?” in the abstract. It asks **what a deficit queue can and cannot do for low-flow hydrology**, and answers with four pieces of evidence:
+
+1. a **honest null** on the primary calibrated-probability endpoint;
+2. a **target-dependent positive** on a leakage-clean target;
+3. a **verified, reusable engine** that stands on its own;
+4. a **zero-flow data-quality warning** for CAMELS-IND users.
+
+That framing is deliberate. A single headline “the method lost” would bury the parts that are useful; a single headline “the method won” would overstate a fragile secondary result.
 
 ---
 
-## 2. Hypotheses and predeclared design
+## 2. Design and hypotheses
 
-### 2.1 Confirmatory endpoints
+### 2.1 Primary confirmatory endpoints
 
-For unit $g$ (a gauge in India, a reservoir in the USA), let $\Delta_g = B_g(\text{SSI-3}) - B_g(\text{SSI-3}+\text{queue})$ be the paired Brier difference on identical held-out months; positive means the queue improves.
+For unit $g$, let $\Delta_g = B_g(\text{SSI-3}) - B_g(\text{SSI-3}+\text{queue})$ be the paired Brier difference on identical held-out months; positive means the queue improves.
 
-- **E1 (concurrent, diagnostic).** Predict the drought outcome at month $t$ from month-$t$ SSI-3 versus month-$t$ SSI-3 plus queue indicators.
+- **E1 (concurrent).** Predict the drought outcome at month $t$ from month-$t$ SSI-3 versus month-$t$ SSI-3 plus queue indicators.
 - **E2 (prospective, 1-month lead).** Same contrast with all predictors at month $t-1$.
 
-**H1:** $\mathbb{E}[\Delta_g] > 0$ under E1 and E2. **H0:** no improvement. A confirmatory endpoint passes only if all four predeclared rules hold: (1) $\mathrm{median}(\Delta_g) > 0$; (2) the two-level bootstrap 95% CI of the median (resample units, then years within unit) excludes zero; (3) a one-sided sign test gives $p<0.05$ with improvement in at least 60% of units; (4) no unit has $\Delta_g < -0.005$ driven by calibration breakdown (harm bound).
+A confirmatory endpoint passes only if all four rules hold: (1) $\mathrm{median}(\Delta_g) > 0$; (2) the two-level bootstrap 95% CI (resample units, then years within unit) excludes zero; (3) a one-sided sign test gives $p<0.05$ with improvement in at least 60% of units; (4) no unit has $\Delta_g < -0.005$.
 
-### 2.2 Utilisation screen
+### 2.2 Secondary and sensitivity questions
 
-A queue whose demand is far below supply cannot show a drought signal. We admit a unit only if its utilisation
+- **Leakage-clean target.** Replace the external soil-moisture target with a training-only SPI-3 drought target and drop the matching predictor. This is the clean test of circularity.
+- **Ranking.** Does the queue improve AUC and top-decile precision, even when Brier does not?
+- **Conditional signal.** Does the incremental gain increase with utilisation $\rho$?
+- **Data quality.** Does the zero-flow convention change the sensitivity result?
+
+These are secondary or exploratory. They are reported in full and never upgraded post hoc.
+
+### 2.3 The utilisation screen
+
+A queue whose demand is far below supply cannot show a drought signal. We admit a unit only if
 $$\rho_g = \frac{\sum_t \lambda_g(t)}{\sum_t \mu_g(t)}$$
-lies in the predeclared window $0.15 \le \rho_g \le 1.20$, among the other data-quality rules in §3.
-
-### 2.3 Multiplicity and reporting
-
-E1 and E2 are the two protected tests. AUC, log loss, reliability, event timing, queue-alone, SPEI+queue and every sensitivity are secondary or exploratory, reported in full and never upgraded post hoc. Every sensitivity axis is reported regardless of direction.
+lies in the predeclared window $0.15 \le \rho_g \le 1.20$. Selection uses the **V1** screen (zeros audited), computed before selection. A unit enters the endpoint set only with at least **5 training and 3 test design events**.
 
 ---
 
@@ -97,23 +109,23 @@ E1 and E2 are the two protected tests. AUC, log loss, reliability, event timing,
 
 ### 3.1 India
 
-**Streamflow and forcing.** CAMELS-IND provides daily streamflow, catchment-mean precipitation, temperature and PET for 472 gauges (Mangukiya et al., 2025). We profile gauges with at least 300 observed flow days and the necessary forcings (279 gauges), screen them into the utilisation window (212), apply a strict data-quality screen (zero fraction $<0.30$, interior gap $\le 30$ days; 40 gauges), require at least 3 years in 1981–2010 and 2 years in 2011–2020, and retain at most three gauges per basin. The analysis set is **24 gauges across 11 basins**, with $\rho$ from 0.152 to 1.164.
+**Streamflow and forcing.** CAMELS-IND provides daily streamflow, catchment-mean precipitation, temperature and PET for 472 gauges (Mangukiya et al., 2025). We profile gauges with at least 300 observed flow days and the necessary forcings (279), retain data-quality candidates (zero fraction $<0.30$, interior gap $\le30$ days; 43), screen them into the V1 utilisation window (39), apply both-period coverage and at most three gauges per basin (23 candidates), and require at least 5 training and 3 test design events. The endpoint set is **15 gauges across 8 basins**, with $\rho$ from 0.188 to 1.054.
 
-**Drought target.** The Drought Intelligence Explorer (Deshmukh, 2026) provides monthly district soil-moisture anomaly (SMA, percent anomaly), SPI-3 and SPEI-3 for 1981–2026. The primary target is SMA $\le -15\%$ (7.4% of district-months). The product uses its own 1981–2020 climatology, which overlaps the test years; this leakage is disclosed. The leakage-clean sensitivity uses a training-only SPI-3 drought target (standardised on 1981–2010) and drops the matching `spi3` predictor.
+**Drought target.** The Drought Intelligence Explorer (Deshmukh, 2026) provides monthly district soil-moisture anomaly (SMA, percent anomaly), SPI-3 and SPEI-3 for 1981–2026. The primary target is SMA $\le -15\%$. The product uses its own 1981–2020 climatology, which overlaps the test years; this leakage is disclosed. The leakage-clean sensitivity uses a training-only SPI-3 drought target and drops the matching predictor.
 
 **Zero-flow audit.** Every zero day is classified as positive, real-zero, artifact, unknown or missing using same-basin peer gauges (proxy grade; no independent CWC/India-WRIS daily record was available). The primary treatment (V1) makes artifact and unknown zeros missing; V0 (as recorded) and V2 (verified-flow-only) are sensitivities.
 
-### 3.2 USA
+### 3.2 USA (exploratory)
 
-**Streamflow and forcing.** Caravan-US provides daily ERA5-Land forcing, streamflow and HydroATLAS attributes for 671 catchments (Kratzert et al., 2023). Of these, 310 have a nonzero irrigated fraction (`ire_pc_sse`), 59 are regulated (`dor_pc_pva` or `rev_mc_usu` > 0), and 24 have both.
+**Streamflow and forcing.** Caravan-US provides daily ERA5-Land forcing, streamflow and HydroATLAS attributes for 671 catchments (Kratzert et al., 2023). Of these, 310 have a nonzero irrigated fraction, 59 are regulated, and 24 have both.
 
-**Reservoir operations.** ResOpsUS provides daily storage, inflow, outflow, elevation and evaporation for 678 US reservoirs, 1974–2020 (Steyaert et al., 2022). Only **2** reservoirs fall inside a Caravan catchment polygon; large reservoirs sit downstream of the small headwater CAMELS basins. The gauge is therefore the wrong unit, and we make the **reservoir** the unit of analysis.
+**Reservoir operations.** ResOpsUS provides daily storage, inflow, outflow, elevation and evaporation for 678 US reservoirs, 1974–2020 (Steyaert et al., 2022). Only **2** reservoirs fall inside a Caravan catchment polygon; large reservoirs sit downstream of the small headwater basins. The gauge is therefore the wrong unit, and we make the **reservoir** the unit.
 
-**Core sample.** We retain reservoirs with a usable outflow record and an irrigated Caravan catchment within 20 km: **50 reservoirs** (49 run; 45 with at least 120 months; 21 with paired test-window predictions). The command area is the nearest catchment's irrigated fraction times its area — a proxy, explicitly labelled.
+**Core sample.** We retain reservoirs with a usable outflow record and an irrigated Caravan catchment within 20 km: **50 reservoirs** (49 run; 45 with at least 120 months). The primary sample applies the same $\rho$ window as India: **14 paired reservoirs**. The full **21 paired** sample is a sensitivity. The command area is the nearest catchment's irrigated fraction times its area — a proxy, explicitly labelled.
 
-**Target.** The US Drought Monitor (NDMC/NOAA/USDA) provides weekly county drought severity. We use the monthly mean Drought Severity and Coverage Index (DSCI) and define a drought month as DSCI $\ge 100$ (D1 or worse; 34.7% of reservoir-months). All 50 reservoirs map to 42 counties.
+**Target.** The US Drought Monitor (NDMC/NOAA/USDA) provides weekly county drought severity. We use the monthly mean Drought Severity and Coverage Index (DSCI) and define a drought month as DSCI $\ge 100$ (D1 or worse; 34.7% of reservoir-months).
 
-**OpenET.** OpenET field-scale ET is planned as a 2016–2020 validation of the crop coefficient. The account quota was exhausted during development and resets on 1 December 2026; the current results therefore use a declared constant $K_c = 0.8$. WaPOR and GLEAM are keyless alternatives.
+**OpenET.** OpenET is planned as a 2016–2020 validation of the crop coefficient. The account quota was exhausted during development and resets on 1 December 2026; the current results use a declared constant $K_c = 0.8$.
 
 ---
 
@@ -133,7 +145,7 @@ with $\phi = 0.7$ effective rain and $K_c$ a crop coefficient. In India $K_c$ fo
 
 Supply is a firm abstraction over the command area:
 $$S_{\text{raw}}(t) = Q(t)\,86400\,s_{\text{firm}}, \qquad S_{\text{mm}}(t) = \frac{S_{\text{raw}}(t)}{A_{\text{cmd}}}\,1000, \qquad \mu(t) = \frac{\min(S_{\text{mm}}(t),\,\text{cap})}{d},$$
-with $s_{\text{firm}} = 0.5$ and $\text{cap} = 10$ mm day$^{-1}$. The India study uses observed $Q$; the USA study uses measured reservoir outflow. SUP-2 (dependable flow) and SUP-3 (infrastructure-first) are sensitivities.
+with $s_{\text{firm}} = 0.5$ and $\text{cap} = 10$ mm day$^{-1}$ in India. The US study uses measured reservoir outflow with $s_{\text{firm}} = 1$, a stated design difference.
 
 ### 4.3 The finite-capacity deficit queue
 
@@ -160,7 +172,7 @@ Thresholds are catchment-relative:
 $$q^* = \lceil q_{\text{days}}\bar\lambda\rceil,\qquad K = \min\!\big(80,\max(25,\lceil K_{\text{days}}\bar\lambda\rceil)\big),\qquad \theta = \lceil \theta_{\text{mult}}q^*\rceil,$$
 with $q_{\text{days}}=60$, $K_{\text{days}}=365$, $\theta_{\text{mult}}=1.5$. The USA study replaces $K$ by reservoir storage in claims, capped at 80. Daily indicators are
 $$\mathbb{E}[Q]=\sum_{n=0}^{K} n\,p_n,\qquad \Pr(Q\ge q^*)=\sum_{n=q^*}^{K}p_n,\qquad \Pr(Q=K)=p_K.$$
-Recovery time is the mean first passage from $q^*$ to $0$, obtained from the negative generator on states $1,\dots,K$; the blocking guard requires $\max_t \Pr(Q=K)<10^{-3}$.
+Recovery time is the mean first passage from $q^*$ to $0$, obtained from the negative generator on states $1,\dots,K$; the blocking guard requires $\max_t \Pr(Q=K)<10^{-3}$ and is enforced, not merely recorded.
 
 ### 4.5 Statistical evaluation
 
@@ -168,135 +180,149 @@ For each unit, features are standardised on training rows only. A ridge logistic
 $$\min_{\beta}\ -\sum_i\big[y_i\log p_i+(1-y_i)\log(1-p_i)\big]+\frac{\lambda_{\text{L2}}}{2}\|\beta\|_2^2,\qquad p_i=\sigma(x_i^\top\beta),$$
 with the intercept unpenalised and $\lambda_{\text{L2}}=1.0$. Calendar-month dummies are included.
 
-The Brier score is $B=\frac{1}{N}\sum_i(p_i-y_i)^2$; AUC is the Mann–Whitney statistic. The confirmatory statistic is the **paired** per-unit difference $\Delta_g=B_g(\text{SSI-3})-B_g(\text{SSI-3}+\text{queue})$ on identical held-out months. Its uncertainty uses a two-level bootstrap: resample units, then years within unit, recomputing the pooled per-unit Brier difference. The sign test uses $\mathrm{Binomial}(n,0.5)$. The minimal detectable effect is
+The Brier score is $B=\frac{1}{N}\sum_i(p_i-y_i)^2$; AUC is the Mann–Whitney statistic. The confirmatory statistic is the **paired** per-unit difference $\Delta_g=B_g(\text{SSI-3})-B_g(\text{SSI-3}+\text{queue})$ on identical held-out months. Its uncertainty uses a two-level bootstrap: resample units, then years within unit, recomputing the pooled per-unit Brier difference. The sign test uses $\mathrm{Binomial}(n,0.5)$.
+
+The minimal detectable effect is
 $$\mathrm{MDE}= (z_{0.975}+z_{0.80})\,\frac{\mathrm{SD}(\Delta_g)}{\sqrt{N}},$$
-with $\alpha=0.05$ and power $0.80$. The harm bound is $\Delta_g<-0.005$.
+with $\alpha=0.05$ and power $0.80$. **The MDE is post hoc**: it is computed from the held-out deltas and is reported as an interpretability bound, not as prospective power. The harm bound is $\Delta_g<-0.005$.
 
 ### 4.6 Software and reproducibility
 
-Everything is R (base R plus `data.table`, `ggplot2`, `sf`, `rmarkdown`). The engine is verified by a 14-check battery: M/M/1/K and M/M/c/K closed forms, RK4 convergence to stationarity, RK4 versus thinning discrete-event simulation, the conservation ledger, first passage versus simulation, the blocking guard, the unit wall, the Hargreaves 0.408 conversion, catchment-relative thresholds, the index helpers, the metrics on hand cases, the zero classifier, and the gap rule. Every output CSV has a JSON sidecar with the git hash, parameters, seed and R session. The seed is 20261125.
+Everything is R. The engine is verified by a 14-check battery: M/M/1/K and M/M/c/K closed forms, RK4 convergence to stationarity, RK4 versus thinning discrete-event simulation, the conservation ledger, first passage versus simulation, the blocking guard, the unit wall, the Hargreaves 0.408 conversion, catchment-relative thresholds, the index helpers, the metrics on hand cases, the zero classifier, and the gap rule. Every output CSV has a JSON sidecar with the git hash, a **code hash**, parameters, seed and R session. The seed is 20261125.
 
 ---
 
 ## 5. Results
 
-### 5.1 India: screening and regime
+### 5.1 The primary test is null
 
-| Step | Count |
+| Endpoint | median $\Delta_g$ | 95% CI | sign | $p$ | harm |
+|---|---:|---|---:|---:|---:|
+| E1 concurrent | $+0.002044$ | $[-0.001866, +0.004154]$ | 10/15 | 0.151 | 2 |
+| E2 prospective | $-0.000662$ | $[-0.003515, +0.001296]$ | 7/15 | 0.696 | 3 |
+
+Both endpoints fail the confirmatory rules. The Brier MDE at N=15 is 0.003706, so the primary null is interpretable: any true gain is below about 0.004.
+
+### 5.2 The leakage-clean target is positive
+
+| Quantity | Value |
 |---|---:|
-| CAMELS-IND gauges | 472 |
-| Profiled | 279 |
-| Inside $\rho$ window (SUP-1) | 212 |
-| Strict data-quality screen | 40 |
-| Both-period coverage and $\le 3$ per basin | **24** |
-| Basins | **11** |
+| n | 15 |
+| median $\Delta_g$ | $+0.003974$ |
+| 95% CI | $[+0.000134, +0.009486]$ |
+| sign | 12/15 ($p=0.0176$, 80%) |
+| harm | 0 |
+| median $\Delta$AUC | $+0.037879$ (14/15) |
 
-Utilisation ranges 0.152–1.164. Catchment-relative thresholds give $q^*=3$–$5$ claims and $K=25$–$26$; peak $\mathbb{E}[Q]$ ranges 2.4–6.6 claims and peak $\Pr(Q\ge q^*)$ ranges 0.29–0.89. The largest $\Pr(Q=K)$ is $4.8\times10^{-8}$, far below the guard, and the ledger residual is about $10^{-15}$.
+This is the clearest positive signal in the work. On a target that does not use test-period climatology and with the circular predictor dropped, the queue+SSI improves both calibrated probability and ranking. It is a **secondary sensitivity**, not a confirmatory win, and the CI lower bound is close to zero.
 
-### 5.2 India: confirmatory endpoints
+### 5.3 Ranking improves, modestly
 
-| Endpoint | median $\Delta_g$ | 95% CI | sign | $p$ | harm | pass |
-|---|---:|---|---:|---:|---:|---|
-| E1 concurrent | $+0.000847$ | $[-0.001115, +0.001716]$ | 15/24 | 0.154 | 4 | no |
-| E2 prospective | $-0.000331$ | $[-0.001667, +0.000574]$ | 12/24 | 0.581 | 3 | no |
+Median paired $\Delta$AUC is **+0.0222** (12/15) concurrently and **+0.0156** (11/15) prospectively. Mean held-out AUC (E1) is 0.771 for SSI-3, 0.815 for SSI-3+queue, and 0.846 for queue alone; SPI-3 (0.823) and SPEI-3 (0.813) sit between. At a top-decile monitoring budget, precision rises from **11.5% (SSI-3) to 14.9% (SSI-3+queue)** at a 3.9% event rate.
 
-Both endpoints fail the confirmatory rules. The secondary AUC contrast is positive: median $+0.0428$ (19/23) concurrently and $+0.0156$ (15/23) prospectively. The fair demand-side competitor (SPEI-3 + queue) is also null (E1 median $-0.000292$, 11/24).
+### 5.4 The conditional signal is a hypothesis
 
-### 5.3 India: power and sensitivity
+Regressing $\Delta_g$ on $\rho$ gives a positive India slope of **+0.00664** (95% CI $[-0.00369, +0.01697]$, $p=0.188$, $r=+0.359$). The US in-window slope is negative and not significant ($-0.01567$, $p=0.409$). The direction is consistent with “the queue helps when the system is stressed”, but the evidence does not establish it.
 
-Using the paired per-unit distribution, the Brier SD is 0.004661, the MDE at $N=24$ is **0.002666**, and the observed median is 0.000847. The AUC SD is 0.078637, the MDE is 0.044970, and the observed median is 0.042763. The AUC MDE is at the predeclared $+0.05$ grid point, so the study is powered for the secondary endpoint; the observed Brier effect is below the Brier MDE, so the null is interpretable. Simulation sign-test power at $N=24$ is 0.722 for $+0.05$ AUC and 0.983 for $+0.08$. The training-only SPI-3 target sensitivity preserves the null.
+### 5.5 The engine is verified and reusable
 
-### 5.4 USA: sample and regime
+The 14/14 battery passes. The ledger closes to $1.5\times10^{-15}$ on the India runs and $3.5\times10^{-15}$ on the USA runs; the blocking guard is $6.6\times10^{-9}$ (India) and $1.7\times10^{-6}$ (USA), far below $10^{-3}$. The engine is a standalone R library (`R/00_utils/queue_engine.R`, `units.R`) and can be reused for reservoir/yield simulation or teaching without the paper's empirical claims.
 
-Caravan-US contributes 671 catchments (310 irrigated, 59 regulated, 24 both), but only 2 reservoirs fall inside a catchment polygon. The reservoir-centric core has 50 reservoirs; 49 run, 45 have at least 120 months, and 21 have paired test-window predictions. Utilisation ranges 0.103–25.44 (27 reservoirs inside the window); $q^*=3$–$8$ and $K=25$–$80$. The largest $\Pr(Q=K)$ is $1.7\times10^{-6}$ and the ledger residual is $3.5\times10^{-15}$. The target has 10,681 complete reservoir-months across 48 reservoirs, with a 34.7% D1+ event rate.
+### 5.6 The zero-flow warning
 
-### 5.5 USA: confirmatory endpoints
+The audit's V0/V1 check is the warning: when artifact zeros are fed in as real
+zeros (V0), the sensitivity result can change sign or significance relative to
+the audited V1 treatment. On the 15-gauge endpoint set, V0 gives a larger
+apparent gain and a significant sign test (12/15, $p=0.0176$), while the V1
+baseline does not. The full grid is in `RESULTS_v2.md` §9. Two other axes are
+worth naming: **SUP-2** (dependable flow) is the strongest positive
+(+0.00717, 13/15, CI excludes zero), while **SUP-3** is null; and **`K_days`
+180 is identical to 365** because `K` hits the 25 floor, so that axis is not
+identifiable in this sample. The lesson for CAMELS-IND users is independent of
+the queue: **audit zeros before interpreting any deficit index**.
 
-| Endpoint | $n$ | median $\Delta_g$ | 95% CI | sign | $p$ | median $\Delta$AUC |
-|---|---:|---:|---|---:|---:|---:|
-| E1 concurrent | 21 | $+0.000793$ | $[-0.004651, +0.007736]$ | 12/21 | 0.332 | $+0.0105$ |
-| E2 prospective | 21 | $-0.000187$ | $[-0.004643, +0.011411]$ | 10/21 | 0.668 | $+0.0296$ |
+### 5.7 The US replication is null
 
-Mean held-out E1 metrics are SSI-3 Brier 0.2094 / AUC 0.631, SSI-3 + queue Brier 0.2074 / AUC 0.646, queue alone Brier 0.2479 / AUC 0.583, and climatology Brier 0.2550 / AUC 0.530. The USA pilot reproduces the India pattern: no calibrated-probability gain, a small ranking gain.
-
-### 5.6 India and USA together
-
-The two independent tests agree in sign and magnitude. Both Brier intervals include zero; both sign tests are non-significant; both AUC contrasts are positive. The utilisation diagnosis (Figure 10) shows a positive slope in India — the queue helps more as $\rho$ rises — but a flat relationship in the USA, where the demand proxy and the command-area attribution dominate. The result is not a failure of the queue concept; it is a statement about the data and the regime.
+With the same $\rho$ window, the US primary sample (14 paired reservoirs) gives E1 median **+0.000388** (CI $[-0.010481, +0.009345]$; 7/14, $p=0.605$; $\Delta$AUC $+0.0077$) and E2 median $-0.002387$. The full 21-reservoir sample is also null on Brier ($+0.000793$, 12/21, $p=0.332$). The India ranking signal does not replicate. The US arm is exploratory, not a second confirmatory test.
 
 ---
 
 ## 6. Discussion
 
-### 6.1 Why the calibrated-probability gain is absent
+### 6.1 What the queue can do
 
-Three mechanisms are consistent with the results. First, the queue state is strongly driven by the same supply signal that SSI-3 already encodes; the incremental information is a demand-side adjustment that is small relative to the interannual variance of drought. Second, Brier score penalises calibration, and both models over-predict low-probability drought; the queue improves ordering (AUC) without repairing calibration. Third, the target is a drought state (soil moisture or USDM category), not unmet demand itself; the queue's natural output — unmet volume and recovery time — is not what the target measures.
+The queue gives four things that indices do not: an explicit backlog state, a severe-state probability, an unmet-volume accounting identity, and a recovery time. It improves ranking in the India data (AUC 0.771 → 0.815; top-decile precision 11.5% → 14.9%), and on the leakage-clean target it improves calibration as well (+0.004 Brier, 12/15). Those are real, if modest, benefits.
 
-### 6.2 The utilisation diagnosis is the transferable result
+### 6.2 What it cannot do
 
-The India panel shows that the queue's incremental Brier gain increases with $\rho$: the queue is more useful when demand approaches supply. The USA panel is flat, and several reservoirs have extreme $\rho$ because the command-area proxy and the constant $K_c$ dominate. The practical lesson is that a queue analysis must report the utilisation regime before interpreting a null or a positive. A null at $\rho\approx0.05$ is not evidence about the queue; it is evidence about the regime.
+It does not beat SSI-3 on the primary external target. It does not replicate in the US reservoir sample. It does not repair the over-prediction at low probabilities. And it does not establish the conditional “stressed basins only” rule: the India slope is positive but not significant. A paper that claimed a general calibrated-probability win would be wrong.
 
-### 6.3 What the work adds
+### 6.3 Why the result is target-dependent
 
-1. **A per-unit claim convention.** One claim volume scales demand and supply, removing the unit-mixing defect that made earlier pilots uninterpretable.
-2. **An exactly verified engine.** Fourteen checks, including closed forms, RK4 versus discrete-event simulation, and a per-day conservation ledger.
-3. **Two independent nulls.** India gauges and US reservoirs, with different targets and different supply data, give the same qualitative answer.
-4. **A quantitative bound.** The incremental Brier skill is below about 0.003 at 24 units; future studies can use this as a design target.
-5. **A regime diagnosis.** The queue is informative in the utilisation window and when the demand signal is measured, not proxied.
+The primary target is a district soil-moisture anomaly built on an external 1981–2020 climatology. The leakage-clean target is a training-only SPI-3 drought. The queue's demand-side state is closer to the latter: it integrates precipitation and PET deficits over the same growing season, whereas the soil-moisture product carries its own land-surface memory and a climatology that overlaps the test years. The contrast is therefore informative: it says the queue adds information where the target is a growing-season water deficit, and not where the target is a different land-surface state. This is a hypothesis about mechanism, consistent with the data but not proven by them.
 
-### 6.4 Utility for drought management
+### 6.4 The engine is a contribution in its own right
 
-The queue is valuable as a **descriptive and communication tool**: expected backlog, unmet volume, severe-state probability and recovery time are quantities a manager can use even when the incremental probability gain is small. It is not, in these data, a replacement for SSI-3 as a calibrated drought probability model. The honest recommendation is to use queue indicators alongside indices, report the utilisation regime, and avoid claiming superiority.
+The 14-check battery, the per-day ledger, the unit wall and the catchment-relative thresholds are reusable. They fix a real reproducibility trap (unit mixing) and give a verified baseline for anyone building a deficit queue. That contribution does not depend on the empirical null.
 
-### 6.5 What would change the verdict
+### 6.5 The zero-flow warning is the most transferable result
 
-A positive result requires new data, not more tuning: measured irrigation deliveries or canal releases; reservoir and delivery capacity as an operational constraint; a leakage-free external benchmark; daily or event-based scoring; and a finer target (HUC8, field scale, or crop loss). The US reservoir-centric design is the right direction because it uses measured operations; it needs a measured command area and a calibrated crop coefficient to be conclusive.
+Recorded zero-flow days in CAMELS-IND are not all real. Feeding them in as real zeros can flip a sensitivity result. That warning matters to anyone using the dataset, not just to queueing. It is the kind of negative result that saves other people time.
+
+### 6.6 Utility and value
+
+The practical rule is conditional:
+
+- **Use** queue indicators as a ranking and descriptive layer in stressed, well-audited basins: they improve event ordering and give unmet volume and recovery time.
+- **Do not** use them as a replacement for calibrated SPI/SSI probabilities, and do not assume the ranking gain replicates in every data system.
+- **Audit** zeros and demand assumptions before interpreting any deficit result.
+
+That is a narrower claim than “a new index beats SPI”, and a more useful one.
+
+### 6.7 What would change the verdict
+
+A general positive result needs measured irrigation deliveries, reservoir/delivery capacity as an operational constraint, a leakage-free target, and daily or event-based scoring. The US reservoir-centric design is the right direction; it needs a measured command area and a calibrated crop coefficient. The target-dependent positive suggests that a cleaner target, not a more complex queue, is the first thing to fix.
 
 ---
 
 ## 7. Limitations
 
 - Demand is a crop-water envelope, not measured irrigation; `K_c = 0.8` in the USA is a declared constant.
-- The India target uses an external 1981–2020 climatology (leakage disclosed); the training-only SPI-3 sensitivity is the clean check.
-- Zero-flow classification in India is proxy-grade; no independent CWC/India-WRIS record was available.
-- The USA paired sample is 21 reservoirs; many ResOpsUS records end before 2013.
-- The US command area is a nearest-catchment proxy, not a measured service area.
-- OpenET validation is pending the 1 December quota reset; WaPOR/GLEAM are keyless alternatives.
-- The USDM county DSCI is a coarse target.
+- The India primary target uses an external 1981–2020 climatology; the training-only SPI-3 sensitivity is positive but is a secondary result with a CI close to zero.
+- The India utilisation slope is not significant ($p=0.188$); the conditional rule is a hypothesis.
+- The endpoint set is 15 gauges across 8 basins; the 23-candidate set is larger but includes units with too few design events.
+- Zero-flow classification is proxy-grade; no independent CWC/India-WRIS record was available.
+- The US arm is exploratory, with 14 paired reservoirs in the window and a command-area proxy.
+- OpenET validation is pending the 1 December quota reset.
 - `renv` is not installed; no lockfile is shipped.
 
 ---
 
 ## 8. Conclusion
 
-A finite-capacity deficit queue re-orders drought risk but does not, in two independent multi-catchment tests, improve calibrated drought probability beyond SSI-3. The result is robust to the choice of data system, target and supply source, and it is interpretable because the detectable effect is several times the observed effect. The queue remains useful for the descriptive quantities it uniquely provides — unmet volume, severe-state probability and recovery time — and for the utilisation diagnosis it enables. A positive test requires measured demand and operational data; until then, the honest claim is a methods and negative-result contribution, not a superiority claim.
+A deficit queue is useful for what it uniquely provides — backlog, unmet volume, severe-state probability, recovery time — and for event ranking in the India data. It is not a general replacement for calibrated SPI/SSI probabilities: the primary external-target test is null, and the US replication is null. The positive signal is target-dependent and appears on a leakage-clean SPI-3 target. The verified engine and the zero-flow warning are contributions that stand independently of the empirical result. Framed this way, the work is “what queueing can and cannot do for low-flow hydrology”, not a failed attempt to beat an index.
 
 ---
 
 ## Data and code availability
 
-Code, configuration, protocol and generated outputs are in the repository. The engine and the 14-check battery are in `R/00_utils` and `R/verify`. The India pipeline is `R/run_pipeline.R`; the USA pipeline is `R/us_pilot`. The numbered sequence is in `steps/`, with `HELP.md` as the operator's manual. Every output carries a JSON sidecar. Extended versions of the literature review and the data-and-methods text are in `manuscript/SUPPLEMENT_LITERATURE.md` and `manuscript/SUPPLEMENT_METHODS.md`.
+The governing plan is `protocol/REDESIGN_PLAN_v2_R.md`. The engine and the 14-check battery are in `R/00_utils` and `R/verify`. India is `R/run_pipeline.R`; the USA is `R/us_pilot`. The numbered sequence is `steps/`, with `HELP.md` as the operator's manual. Extended literature and methods are `manuscript/SUPPLEMENT_LITERATURE.md` and `manuscript/SUPPLEMENT_METHODS.md`. Every output carries a JSON sidecar with the git hash, code hash, parameters, seed and session.
 
 ## Figures
 
-**Figure 1.** Analysis workflow: data, unit wall, rates, deficit queue, indicators, paired evaluation, utilisation diagnosis and outcome. `figures/fig_workflow.png`.
+**Figure 1.** Analysis workflow. `figures/fig_workflow.png`.
 
-**Figure 2.** Study sites. Left: 24 CAMELS-IND gauges across 11 basins. Right: 50 US reservoir–catchment pairs. Colour is utilisation $\rho$. `figures/fig_study_map.png`.
+**Figure 2.** Study sites: 15 India endpoint gauges (8 basins) and 50 US reservoir–catchment pairs, coloured by $\rho$. `figures/fig_study_map.png`.
 
-**Figure 3.** India utilisation screen (SUP-1). Shaded band is the predeclared window $0.15$–$1.20$. `figures/fig01_utilization_screen.png`.
+**Figure 3.** India V1 utilisation screen and queue regime. `figures/fig01_utilization_screen.png`, `figures/fig02_regime_pq.png`.
 
-**Figure 4.** India queue regime: peak probability of a severe backlog state (left) and peak expected backlog (right). `figures/fig02_regime_pq.png`, `figures/fig02_regime_eq.png`.
+**Figure 4.** India E1 Brier delta and AUC delta. `figures/fig03_brier_forest_e1.png`, `figures/fig04_auc_forest.png`.
 
-**Figure 5.** India E1 Brier delta by gauge, with paired year-block bootstrap intervals. `figures/fig03_brier_forest_e1.png`.
+**Figure 5.** Example monthly series and reliability. `figures/fig05_example_series_5018.png`, `figures/fig06_reliability.png`.
 
-**Figure 6.** Secondary endpoint: AUC delta for E1 and E2. `figures/fig04_auc_forest.png`.
+**Figure 6.** India–USA paired contrasts. `figures/fig_india_us_comparison.png`.
 
-**Figure 7.** Example monthly series (gauge 5018): queue state and district drought months. `figures/fig05_example_series_5018.png`.
-
-**Figure 8.** Pooled E1 reliability for SSI-3 and SSI-3 + queue. `figures/fig06_reliability.png`.
-
-**Figure 9.** India and USA paired contrasts: Brier (left) and AUC (right). Bars are two-level bootstrap 95% intervals. `figures/fig_india_us_comparison.png`.
-
-**Figure 10.** Utilisation diagnosis: incremental Brier gain versus $\rho$ for India and the USA. Shaded band is the admissible window. `figures/fig_utilisation_diagnosis.png`.
+**Figure 7.** Utilisation diagnosis. `figures/fig_utilisation_diagnosis.png`.
 
 ## Competing interests
 

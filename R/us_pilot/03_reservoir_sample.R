@@ -17,10 +17,12 @@
 local({
   root <- normalizePath("D:/Research/queuing-lowflow-hydrology")
   out_dir <- file.path(root, "output_us")
+  Sys.setenv(QDJ_ROOT = root)
+  source(file.path(root, "R", "config.R"))
   suppressMessages(library(data.table))
 
   m <- fread(file.path(out_dir, "resops_caravan_match.csv"))
-  inv <- fread("D:/Datasets/ResOpsUS/extracted/ResOpsUS/attributes/time_series_inventory.csv")
+  inv <- fread(file.path(RESOPS_ROOT, "attributes", "time_series_inventory.csv"))
   x <- merge(m, inv[, .(DAM_ID, OUTFLOW, OUTFLOW_START, OUTFLOW_END)],
              by = "DAM_ID", all.x = TRUE)
 
@@ -29,7 +31,7 @@ local({
   core[, A_cmd_m2 := (ire_pc_sse / 100) * area * 1e6]
   core[, V_claim_m3 := (20 / 1000) * A_cmd_m2]
 
-  ts_dir <- "D:/Datasets/ResOpsUS/extracted/ResOpsUS/time_series_all"
+  ts_dir <- file.path(RESOPS_ROOT, "time_series_all")
   core[, max_storage_MCM := NA_real_]
   core[, n_storage := NA_integer_]
   for (i in seq_len(nrow(core))) {

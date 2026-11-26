@@ -1,9 +1,10 @@
 {
   "file": "power_grid.csv",
-  "git_hash": "a029c56",
-  "written": "2026-11-26T10:54:33",
-  "nrow": 3,
-  "ncol": 2,
+  "git_hash": "f1949a7",
+  "code_hash": "5e8e7fb0604980866d8d8e67edc711f4",
+  "written": "2026-11-26T14:11:28",
+  "nrow": 6,
+  "ncol": 3,
   "session": {
     "R": "R version 4.5.1 (2025-06-13 ucrt)",
     "platform": "x86_64-w64-mingw32"

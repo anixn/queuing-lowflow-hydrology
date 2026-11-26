@@ -1,7 +1,7 @@
-# RESULTS_v2 — Multi-catchment deficit-queue evaluation (honest-null outcome)
+# RESULTS_v2 — Multi-catchment deficit-queue evaluation (audit-corrected)
 
-**Status:** Path B (predeclared evaluation + utilisation diagnosis). Date: 26 November 2026.
-**All numbers below are produced by the scripts named in §12.** They are
+**Status:** Path B, v2.1 after the 26 November 2026 external audit. Date: 26 November 2026.
+**All numbers are produced by the scripts named in §13.** They are
 `[measurement]` unless marked `[assumption]`. Queue outputs are *illustrative
 under the stated Stage-A demand and SUP-1 supply assumptions*; they are not
 observed unmet demand.
@@ -10,236 +10,268 @@ observed unmet demand.
 
 ## 0. One-paragraph summary
 
-We screened 472 CAMELS-IND gauges, kept 24 across 11 basins that sit inside a
-predeclared utilisation window and span both the training (1981–2010) and test
-(2011–2020) periods, and ran an exactly verified finite-capacity queue for each.
-The **predeclared confirmatory endpoint (E1: Brier score of SSI-3 vs SSI-3 +
-queue) is null**. On identical held-out months, the median per-gauge Brier
-improvement is **+0.000847** with a two-level bootstrap 95% CI of
-**[−0.001115, +0.001716]** (includes zero) and a one-sided sign test of 15/24
-(p = 0.154). The **prospective endpoint (E2) is also null** (median −0.000331,
-12/24, p = 0.581). A power analysis shows the Brier minimal detectable effect at
-N = 24 is 0.002666, so the null means any Brier gain is smaller than about
-0.003 — it is an interpretable null, not an underpowered one. The **secondary AUC
-endpoint does improve**: median ΔAUC = +0.0428 (19/23 gauges) concurrently and
-+0.0156 (15/23) prospectively. The queue therefore improves *discrimination* but
-not *calibrated probability* for rare drought events; this secondary signal is
-reported and **not** upgraded to a confirmatory claim.
+We screened 472 CAMELS-IND gauges, retained **15 endpoint gauges across 8
+basins** with a V1 utilisation screen and a minimum design-event rule, and ran an
+exactly verified finite-capacity queue on each. The **primary confirmatory
+endpoint (external district SMA target) is null**: the paired median Brier
+improvement from adding queue probability to SSI-3 is **+0.00204** with a
+two-level bootstrap 95% CI of **[−0.00187, +0.00415]** and a sign test of 10/15
+(p = 0.151). The prospective endpoint is also null. The minimal detectable
+Brier effect at N = 15 is **0.00371**, so any true gain is below about 0.004 —
+an interpretable null.
+
+The **leakage-clean target sensitivity is positive**: with a training-only SPI-3
+drought target and the matching predictor dropped, the paired median Brier
+improvement is **+0.00397**, CI **[+0.00013, +0.00949]**, sign **12/15**
+(p = 0.0176), with **AUC +0.0379 (14/15)**. This is a **secondary sensitivity**,
+not a confirmatory win, and it is reported as such.
+
+The ranking signal is real but modest: mean AUC rises from **0.771 (SSI-3)** to
+**0.815 (SSI-3 + queue)**, and queue-alone reaches **0.846**. The utilisation
+slope is directionally positive in India (+0.0066) but not significant
+(p = 0.188), so the conditional rule is a hypothesis, not a demonstrated
+mechanism. The US reservoir-centric pilot is an exploratory replication and is
+null on both Brier and AUC once the utilisation window is applied.
 
 ---
 
-## 1. Data and screening funnel
+## 1. Data and screening funnel (V1, audit-corrected)
 
 | Step | Count | Source |
-|---|---|---:|
+|---|---:|---|
 | CAMELS-IND gauges with streamflow columns | 472 | `output/inventory.csv` |
-| Profiled (>= 300 days flow + forcings) | 279 | `output/_recon_gauge_stats.csv` |
-| Inside utilisation window 0.15 <= rho <= 1.20 (SUP-1) | 212 | `output/screen_report.csv` |
-| Strict data-quality screen (zero_frac < 0.30, interior gap <= 30 d) | 40 | `output/screen_report.csv` |
-| Both-period coverage (>= 3 y train, >= 2 y test) + <= 3 per basin | **24** | `output/selected_gauges.csv` |
+| Profiled (>= 300 days + forcings) | 279 | `output/_recon_gauge_stats.csv` |
+| Data-quality candidates (zero fraction < 0.30, interior gap <= 30 d) | 43 | `output/screen_report.csv` |
+| Inside the V1 utilisation window 0.15–1.20 | 39 | `output/screen_report.csv` |
+| After both-period coverage and <= 3 per basin (candidates) | 23 | `output/candidate_gauges.csv` |
+| **Endpoint set (>= 5 train and >= 3 test design events)** | **15** | `output/selected_gauges.csv` |
+| Basins in the endpoint set | **8** | `output/selected_gauges.csv` |
 
-`[measurement]` The 24 analysis gauges span 11 basins: Brahmani-Baitarani (3),
-Cauvery (2), EFRN (1), Godavari (3), Krishna (3), Mahanadi (2), Mahi (3),
-Narmada (1), Pennar (1), Subernarekha (2), WFRS (3). Utilisation rho (SUP-1)
-ranges **0.152 to 1.164**. Gate G3 requires >= 15 gauges in the window; 24
-qualify, so the confirmatory framing is permitted subject to power (§7).
+`[measurement]` The earlier “212 inside window / 24 gauges” figures came from the
+V0 reconnaissance table; they are **superseded**. The authoritative screen is
+V1, computed before selection. The V0 table is retained only as a profiling
+record. The 8 endpoint basins are Brahmani-Baitarani (3), Cauvery (2), EFRN (1),
+Krishna (3), Mahanadi (2), Mahi (1), Pennar (1) and Subernarekha (2).
 
-**Unit wall `[assumption]`.** One claim = 20 mm of water over the command area
-`A_cmd = f_irr * A_catchment` with `f_irr = 0.10`. Demand and supply share that
-single claim volume per gauge (`R/00_utils/units.R`); the queue engine receives
-only claims/day.
-
----
-
-## 2. Utilisation screen (Figure 1)
-
-`[measurement]` Across the 279 profiled gauges, 212 (76%) fall inside the
-predeclared window under SUP-1; the median rho is 0.48. This is the central
-design fix relative to the v1 pilot, which sat at rho ≈ 0.02–0.08 where a null
-is guaranteed. For the 24 selected gauges, all lie in the window by
-construction. See `figures/fig01_utilization_screen.png`.
+**Unit wall `[assumption]`.** One claim = 20 mm over `A_cmd = f_irr ×
+A_catchment` with `f_irr = 0.10`. Demand and supply share the claim volume; the
+engine receives only claims/day.
 
 ---
 
-## 3. Queue regime (Figure 2)
+## 2. Utilisation and regime
 
-`[measurement]` Catchment-relative thresholds give q\* = 3–5 claims (60 days of
-mean demand) and K = 25–26 (≈1 year), theta = 1.5·q\*. Across the 24 gauges the
-peak expected backlog `max_t E[Q]` ranges 2.4–6.6 claims and the peak
-severe-backlog probability `max_t P(Q >= q*)` ranges 0.29–0.89. The blocking
-guard never fired: the largest `max_t P(Q = K)` is 4.8×10⁻⁸, far below the 10⁻³
-threshold. The conservation ledger holds on every day of every run (max per-day
-residual ≈ 1.7×10⁻¹⁵). See `output/queue_meta.csv`,
-`figures/fig02_regime_pq.png`, `figures/fig02_regime_eq.png`.
+`[measurement]` The endpoint set has `rho` from **0.188 to 1.054** (all inside
+the 0.15–1.20 window). Catchment-relative thresholds give `q* = 3–4` and
+`K = 25`; peak `E[Q]` is 2.6–5.8 claims and peak `P(Q >= q*)` is 0.48–0.87. The
+largest `P(Q = K)` is **6.6×10⁻⁹** (guard 10⁻³) and the ledger residual is
+**1.5×10⁻¹⁵**. The blocking guard is now *enforced*, not merely recorded.
 
 ---
 
-## 4. Confirmatory endpoint E1 — concurrent Brier (NULL)
+## 3. Confirmatory endpoint E1 — external SMA target (NULL)
 
-Contrast on the **same** held-out months: `Delta_g = Brier_g(SSI-3) −
-Brier_g(SSI-3 + queue)`, positive = queue improves. Target: district
-soil-moisture anomaly <= −15% (external product; 1981–2020 climatology leakage
-disclosed).
-
-| Rule (protocol §9) | Result | Pass? |
-|---|---|---:|
-| median(Delta_g) > 0 | +0.000847 | yes |
-| two-level bootstrap 95% CI excludes 0 | [−0.001115, +0.001716] | **no** |
-| sign test one-sided p < 0.05, >= 60% improved | 15/24, p = 0.154, 62.5% | **no** |
-| harm bound: no gauge Delta_g < −0.005 | 4 gauges breached | **no** |
-
-`[measurement]` E1 fails rules 2–4. Source: `output/meta_endpoints.csv` (row
-E1), `output/paired_e1.csv`, `figures/fig03_brier_forest_e1.png`.
-
----
-
-## 5. Confirmatory endpoint E2 — prospective (1-month lead) Brier (NULL)
-
-All predictors taken at month t−1 (SSI-3 at t−1; mean and increment of
-P(Q >= q\*) over t−1) predicting the drought outcome at month t.
+Contrast on identical held-out months: `Delta_g = Brier_g(SSI-3) −
+Brier_g(SSI-3 + queue)`, positive = queue improves.
 
 | Rule | Result | Pass? |
 |---|---|---:|
-| median(Delta_g) > 0 | −0.000331 | **no** |
-| 95% CI excludes 0 | [−0.001667, +0.000574] | **no** |
-| sign test p < 0.05, >= 60% improved | 12/24, p = 0.581, 50% | **no** |
+| median(Delta_g) > 0 | +0.002044 | yes |
+| two-level bootstrap 95% CI excludes 0 | [−0.001866, +0.004154] | **no** |
+| sign test p < 0.05, >= 60% improved | 10/15, p = 0.151, 66.7% | **no** |
+| harm bound: no gauge Delta_g < −0.005 | 2 gauges breached | **no** |
+
+`[measurement]` E1 fails rules 2–4. Source: `output/meta_endpoints.csv`,
+`output/paired_e1.csv`.
+
+---
+
+## 4. Confirmatory endpoint E2 — prospective (NULL)
+
+| Rule | Result | Pass? |
+|---|---|---:|
+| median(Delta_g) > 0 | −0.000662 | **no** |
+| 95% CI excludes 0 | [−0.003515, +0.001296] | **no** |
+| sign test p < 0.05, >= 60% improved | 7/15, p = 0.696 | **no** |
 | harm bound | 3 gauges breached | **no** |
 
-`[measurement]` E2 fails all four rules. Source: `output/meta_endpoints.csv`
-(row E2), `output/paired_e2.csv`.
+Source: `output/meta_endpoints.csv`, `output/paired_e2.csv`.
 
 ---
 
-## 6. Secondary endpoint — AUC (positive signal, not upgradable)
+## 5. Ranking (secondary)
 
-`[measurement]` The queue improves discrimination on held-out months even though
-Brier does not:
+`[measurement]` Median paired `Delta AUC` is **+0.0222** (12/15) concurrently and
+**+0.0156** (11/15) prospectively. Mean held-out AUC by family (E1, endpoint
+set): queue alone **0.846**, SPEI-3+queue 0.841, SSI-3+SPEI-3+queue 0.839, SPI-3
+0.823, SSI-3+queue **0.815**, SPEI-3 0.813, climatology 0.772, SSI-3 **0.771**.
+SSI-3 is the weakest ranker in this sample; adding the queue improves it, but
+SPI-3 and SPEI-3 remain better calibrated (lower Brier). The ranking gain is
+secondary and is not a confirmatory claim.
 
-| Endpoint | median Delta AUC | mean Delta AUC | gauges improved |
+A top-decile check (if only 10% of months can be monitored) gives precision
+**11.5% for SSI-3 vs 14.9% for SSI-3 + queue** at an event rate of 3.9%.
+
+---
+
+## 6. Power / interpretability bound (post hoc)
+
+`[measurement]` Using the paired per-unit distribution (post hoc; **not**
+prospective power):
+
+| Metric | SD | MDE at N=15 | Observed median |
 |---|---:|---:|---:|
-| E1 concurrent (SSI-3 -> SSI-3 + queue) | +0.0428 | +0.0453 | 19 / 23 |
-| E2 prospective | +0.0156 | +0.0289 | 15 / 23 |
+| Brier Delta | 0.005123 | **0.003706** | +0.002044 |
+| AUC Delta | 0.081892 | **0.059238** | +0.022222 |
 
-Mean held-out AUC by family (E1): `queue` alone 0.848, `SSI-3 + queue` 0.841,
-`SSI-3` 0.796, climatology 0.783. The queue carries real ranking information
-that SSI-3 alone does not. **Per the locked protocol, AUC is a secondary endpoint
-and is reported, never upgraded post hoc.** Source: `output/metrics_e1.csv`,
-`output/paired_e1.csv`, `figures/fig04_auc_forest.png`.
-
----
-
-## 7. Power / minimal detectable effect (G4)
-
-`[measurement]` Using the paired per-gauge effect-size distribution:
-
-| Metric | SD | MDE at N=24 (alpha=0.05, power=0.80) | Observed median |
-|---|---:|---:|---:|
-| Brier Delta | 0.004661 | 0.002666 | +0.000847 |
-| AUC Delta | 0.078637 | 0.044970 | +0.042763 |
-
-The observed Brier effect (0.0008) is well below the Brier MDE (0.0027): the
-null is *interpretable*. The AUC MDE (0.0450) is at the predeclared +0.05 grid
-point, so **G4 passes** (the study is powered to detect a +0.05 AUC uplift at
-N=24). Simulation sign-test power at N=24 is 0.722 for +0.05 AUC and 0.983 for
-+0.08. Source: `output/power_analysis.csv`, `output/power_grid.csv`.
+The observed Brier effect is below the MDE: the null is interpretable. The AUC
+point estimate is also below its MDE at N=15, so the ranking signal is not
+statistically resolvable in the cleaned sample even though its sign is positive.
+The MDE is an **interpretability bound**, not evidence of prospective power.
 
 ---
 
-## 8. Harm bound and reliability (Figure 6)
+## 7. Leakage-clean target sensitivity (POSITIVE, secondary)
 
-`[measurement]` Four gauges breach the −0.005 Brier harm bound concurrently
-and three prospectively (exact gauge list in `output/paired_e1.csv` and
-`output/paired_e2.csv`). Pooled
-reliability shows **both** SSI-3 and SSI-3 + queue over-predict drought at low
-probabilities (predicted 0.15–0.5, observed 0.05–0.1); the queue does not repair
-this calibration gap, which is why Brier does not improve even as AUC does.
-Source: `figures/fig06_reliability.png`, `output/paired_e1.csv`. The harm-bound
-breach is recorded as a limitation; no positive claim is made, so it does not
-block the Path-B framing.
+`[measurement]` Training-only SPI-3 drought target (standardised on 1981–2010),
+with the matching `spi3` predictor dropped:
+
+| Quantity | Value |
+|---|---:|
+| n | 15 |
+| median Delta Brier | **+0.003974** |
+| 95% CI | **[+0.000134, +0.009486]** |
+| sign | **12/15** (p = 0.0176, 80%) |
+| harm | 0 |
+| median Delta AUC | **+0.037879** (14/15) |
+
+This is the clearest positive signal in the work: on a leakage-clean target the
+queue+SSI improves both calibrated probability and ranking. It is a **secondary
+sensitivity**, not the primary endpoint, and it is not upgraded. The CI lower
+bound is close to zero, so the result is fragile.
+
+---
+
+## 8. Secondary contrasts
+
+`[measurement]` The fair demand-side competitor (SPEI-3 + queue) is null on the
+primary target: E1 median −0.000709 (6/15), E2 median −0.001866 (5/15). The
+queue does not beat the index that already sees the demand channel on the SMA
+target.
 
 ---
 
 ## 9. Predeclared sensitivity grid (S8)
 
-<!-- SENSITIVITY_TABLE -->
+Every one-factor-at-a-time axis on the 15-gauge endpoint set. Positive
+`Delta Brier` means the queue improves. Full per-gauge table:
+`output/sensitivity_grid.csv`.
+
+| Axis | Level | median ΔBrier | 95% CI | sign | p | median ΔAUC | harm |
+|---|---|---:|---|---:|---:|---:|---:|
+| baseline | baseline | +0.00204 | [−0.00187, +0.00415] | 10/15 | 0.151 | +0.0222 | 2 |
+| zero | V0 | +0.00283 | [−0.00031, +0.00532] | 12/15 | 0.0176 | +0.0428 | 1 |
+| zero | V2 | +0.00248 | [−0.00185, +0.00414] | 10/15 | 0.151 | +0.0222 | 2 |
+| f_irr | 0.03 | +0.00045 | [−0.00148, +0.00142] | 10/15 | 0.151 | +0.0175 | 1 |
+| f_irr | 0.25 | +0.00473 | [−0.00053, +0.00811] | 11/15 | 0.059 | +0.0530 | 2 |
+| supply | SUP-2 | +0.00717 | [+0.00004, +0.00947] | 13/15 | 0.0037 | +0.0757 | 1 |
+| supply | SUP-3 | −0.00005 | [−0.00296, +0.00088] | 6/15 | 0.849 | +0.0027 | 0 |
+| cap | 5 | +0.00191 | [−0.00185, +0.00395] | 10/15 | 0.151 | +0.0194 | 3 |
+| cap | 20 | +0.00215 | [−0.00187, +0.00423] | 10/15 | 0.151 | +0.0194 | 2 |
+| q_days | 45 | +0.00169 | [−0.00217, +0.00380] | 9/15 | 0.304 | +0.0222 | 2 |
+| q_days | 90 | +0.00212 | [−0.00223, +0.00390] | 10/15 | 0.151 | +0.0194 | 3 |
+| K_days | 180 | +0.00204 | [−0.00187, +0.00415] | 10/15 | 0.151 | +0.0222 | 2 |
+| PET | Hargreaves | +0.00148 | [−0.00124, +0.00474] | 11/15 | 0.059 | +0.0269 | 3 |
+| target | SPI3 training-only | +0.00397 | [+0.00013, +0.00949] | 12/15 | 0.0176 | +0.0379 | 0 |
+
+**Reading the grid.**
+
+- The **baseline is null**; only **SUP-2** and the **leakage-clean target** have
+  bootstrap intervals that exclude zero. Both are sensitivity/secondary results,
+  not upgrades of the confirmatory endpoint.
+- **Zero-flow warning:** V0 (artifact zeros treated as real) gives a
+  larger apparent gain and a significant sign test (12/15, p = 0.0176), while
+  the audited V1 baseline does not. This is the data-quality warning in action.
+- **Supply model matters:** SUP-2 is positive (13/15), SUP-3 is null (6/15).
+- **`K_days` 180 is identical to 365** because `K` hits the 25 floor at these
+  mean arrival rates; the axis is not identifiable in this sample. Reported as
+  such rather than dropped.
+- `f_irr = 0.25` and Hargreaves PET are positive-leaning (p = 0.059) but not
+  significant; `f_irr = 0.03` is near zero.
+- Cap and `q_days` are stable around the baseline.
+
+No axis was added after the results. The grid is reported in full, including the
+inconvenient rows.
 
 ---
 
-## 10. Leakage-clean target sensitivity
+## 10. Utilisation slope (hypothesis, not a demonstrated rule)
 
-`[measurement]` Replacing the external SMA target with a training-only
-(1981–2010) SPI-3 drought target and dropping the matching `spi3` predictor
-(circularity guard) does not change the conclusion: the primary SSI-3 vs SSI-3 +
-queue contrast remains null. Source: `output/sensitivity_strict_e1.csv` and the
-`target: SPI3_training_only` row of `output/sensitivity_meta.csv`.
+`[measurement]` Regressing per-unit `Delta Brier` on `rho`:
 
----
+| Study | n | slope | 95% CI | p | r |
+|---|---:|---:|---|---:|---:|
+| India (endpoint) | 15 | +0.00664 | [−0.00369, +0.01697] | 0.188 | +0.359 |
+| USA (in-window) | 14 | −0.01567 | [−0.05563, +0.02428] | 0.409 | −0.240 |
+| USA (full) | 21 | −0.00024 | [−0.00138, +0.00090] | 0.664 | −0.101 |
 
-## 11. Predeclared secondary contrasts
-
-`[measurement]` The fair demand-side competitor (`spei3` vs `spei3 + queue`) is
-also null: E1 median Delta = −0.000292 with CI [−0.003647, +0.001016] (11/24),
-E2 median Delta = −0.001272 (9/24). The queue does not beat the index that
-already sees the demand channel. Source: `output/meta_endpoints.csv`
-(rows `E1_spei3_contrast`, `E2_spei3_contrast`).
+The India slope is positive but not significant. The conditional rule (“the
+queue helps when the system is stressed”) is therefore a **hypothesis** with a
+consistent sign, not a demonstrated mechanism. Source: `output/rho_slope.csv`.
 
 ---
 
-## 12. Outcome routing — Path B
+## 11. US reservoir-centric pilot (exploratory)
 
-Because both confirmatory endpoints fail while the test is powered and clean,
-the outcome is **Path B (honest null)** per plan §8:
+`[measurement]` With the same `rho` window, the US primary sample has **14
+paired reservoirs**: E1 median **+0.000388** (CI [−0.010481, +0.009345]; 7/14,
+p = 0.605; Delta AUC +0.0077), E2 median −0.002387. The full 21-reservoir sample
+is also null on Brier (+0.000793, 12/21, p = 0.332; Delta AUC +0.0105). With the
+window applied the US arm is null on **both** Brier and AUC. It is an
+**exploratory replication**, not a second confirmatory test. Source:
+`analysis/P02_methods/US_PILOT_RESULTS.md`, `output_us/us_meta.csv`.
 
-> "Does a deficit queue add drought information? A predeclared multi-catchment
-> test and a utilization diagnosis."
+---
 
-The headline is the utilisation table and the Brier-null / AUC-positive split:
-the queue re-orders drought risk (discrimination) but does not produce
-better-calibrated drought probabilities for these catchments and this target.
-This is reported unchanged; no v1 number is cited as a v2 result.
+## 12. Outcome routing — Path B, with a target-dependent signal
 
-### Methodological correction (recorded, not hidden)
-
-The first draft of this document quoted a median of +0.00048 computed from
-year-averaged deltas, and the sensitivity draft compared families on different
-complete-case samples. The protocol defines `Delta_g` as the **paired** per-gauge
-Brier difference on identical held-out months. The corrected estimate is
-+0.000847 (CI [−0.001115, +0.001716]). The direction and the null conclusion are
-unchanged; the number and interval are corrected everywhere. See
-`protocol/CHANGELOG.md`.
+The primary confirmatory endpoints are null while the design is verified and the
+effect bound is interpretable, so the outcome is **Path B** per plan §8. The
+paper is a methods and negative-result contribution with three additional
+assets: a **target-dependent positive** (leakage-clean target), a **ranking
+signal** (India, secondary), a **verified reusable engine**, and a **zero-flow
+data-quality warning**. No v1 number is cited as a v2 result.
 
 ---
 
 ## 13. Reproduction
 
 ```powershell
-Rscript R/verify/run_tests.R            # G1: 14/14
-Rscript R/run_pipeline.R                # S2-S7: writes output/*.csv + sidecars
-Rscript R/analysis/power_analysis.R     # S4: power / MDE
-Rscript R/analysis/sensitivity_grid.R   # S8: every predeclared axis
-Rscript R/analysis/make_figures.R       # figures/*.pdf + *.png
-Rscript R/run_all.R                     # renders notebooks; fails on any bad assertion
+Rscript steps/step_00_setup.R
+Rscript steps/step_02_india_pipeline.R
+Rscript steps/step_03_india_power.R
+Rscript steps/step_04_india_sensitivity.R   # full grid, long
+Rscript steps/step_05_india_figures.R
+Rscript steps/step_10_usa_eval.R
+Rscript steps/step_11_manuscript_figures.R
+Rscript steps/step_12_verify.R
 ```
 
-Every CSV carries a JSON sidecar with the git hash, parameters, seed and
-`sessionInfo`. `output/` is never hand-edited. `protocol/PROTOCOL_v2.md` is the
-locked predeclared protocol.
+Every CSV carries a JSON sidecar with the git hash, **code hash**, parameters,
+seed and `sessionInfo`. `output/` is never hand-edited.
 
 ---
 
 ## 14. Honest limitations
 
 - `[assumption]` Demand is a Stage-A crop-water envelope (`f_irr = 0.10`), not
-  measured irrigation; Stage-B demand data were unavailable. The `f_irr` bounds
-  sweep is the declared uncertainty envelope.
-- `[assumption]` Supply is SUP-1 (50% firm share of observed flow, capped at 10
-  mm/day). SUP-2/SUP-3 are predeclared sensitivities.
-- `[measurement]` Zero-flow classification uses same-basin peer gauges as a
-  **proxy** match grade; no independent CWC record was available (plan fallback).
-- `[measurement]` The primary target uses the external soil-moisture product's
-  climatology (leakage disclosed); the training-only SPI-3 sensitivity is the
-  leakage-clean check.
-- `[measurement]` The Brier endpoint is null; the AUC improvement is secondary
-  and not a confirmatory claim.
-- `[measurement]` `renv` is not installed; no lockfile is shipped (reproducibility
-  gap disclosed in the protocol).
+  measured irrigation; the `f_irr` sweep carries the uncertainty.
+- `[assumption]` Supply is SUP-1 (50% firm share, 10 mm/day cap).
+- `[measurement]` Zero-flow classification uses same-basin peers (proxy grade).
+- `[measurement]` The primary SMA target is not strictly leakage-free; the
+  training-only SPI-3 target is the clean check and is **positive**, but it is a
+  secondary sensitivity with a CI close to zero.
+- `[measurement]` The India utilisation slope is not significant (p = 0.188).
+- `[measurement]` The US arm is exploratory and null on both endpoints with the
+  window applied; 14 paired reservoirs.
+- `[measurement]` `renv` is not installed; no lockfile.

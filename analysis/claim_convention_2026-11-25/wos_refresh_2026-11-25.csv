@@ -1,5 +1,0 @@
-query_id,exact_query,previous_hits_2026_11_21,current_hits_2026_11_25,new_records,decision,evidence
-S1,(queue* OR "queuing theory" OR "queueing theory" OR "mass service") AND (drought OR "low flow" OR "water storage" OR "unmet demand" OR "water deficit"),25,25,0,NO_CHANGE,analysis/P01_literature/exports/wos_s1_refresh_2026-11-25.xls
-ExtraA,drought AND (queue* OR queu*),8,8,0,NO_CHANGE,WoS result title and prior screen
-S5,("unmet demand" OR "deficit accumulation" OR "demand backlog") AND (drought OR irrigation OR "water supply"),66,66,0,NO_CHANGE,WoS result title and prior screen
-S4,(("non-stationary" OR nonstationary OR "time-varying") AND queue* AND (hydrolog* OR drought OR water OR irrigation)),6,7,1,DROP_NEW_IRRELEVANT,analysis/P01_literature/exports/wos_s4_refresh_2026-11-25.xls

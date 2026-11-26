@@ -1,3 +1,0 @@
-gauge_id,target,q_star,comparison,metric,delta,ci_lower,ci_upper,bootstrap_fraction_improving,n_test_years,n_replicates,seed,provenance
-4026,sma,6,ssi3_plus_queue_minus_ssi3,brier,0.0002708268162,-0.001340644427,0.002186497104,0.4025,9,2000,20265151,src/P02/real_data_comparison.py; analysis/P02_methods/REAL_DATA_COMPARISON_PROTOCOL.md; 2026-11-25
-4064,sma,6,ssi3_plus_queue_minus_ssi3,brier,0.0005900862121,8.574215669e-05,0.001090636918,0.0095,9,2000,20265189,src/P02/real_data_comparison.py; analysis/P02_methods/REAL_DATA_COMPARISON_PROTOCOL.md; 2026-11-25

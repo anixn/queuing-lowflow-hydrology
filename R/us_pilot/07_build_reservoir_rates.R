@@ -35,9 +35,9 @@ local({
   meta <- list(); monthly_all <- list(); daily_all <- list()
   for (i in seq_len(nrow(core))) {
     r <- core[i]
-    cf <- file.path("D:/Datasets/Caravan_2025/timeseries/camels",
+    cf <- file.path(CARAVAN_ROOT, "timeseries", "camels",
                     paste0(r$matched_gauge, ".csv"))
-    rf <- file.path("D:/Datasets/ResOpsUS/extracted/ResOpsUS/time_series_all",
+    rf <- file.path(RESOPS_ROOT, "time_series_all",
                     sprintf("ResOpsUS_%d.csv", r$DAM_ID))
     if (!file.exists(cf) || !file.exists(rf)) next
     f <- fread(cf, select = c("date", "total_precipitation_sum",

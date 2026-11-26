@@ -19,8 +19,8 @@ the files on disk and the CAMELS-IND data-description PDF.
 ## 1. Claim convention — v2 per-gauge unit system (current)
 
 Updated 26 November 2026 for the R/v2 rebuild. The v1 district proxies
-(45,000 ha Sangli; 72,252 ha Yadgir) are **superseded** and retained only as
-provenance in `../analysis/claim_convention_2026-11-25/`. The current convention
+(45,000 ha Sangli; 72,252 ha Yadgir) are **superseded** and are not part of the
+current analysis. The current convention
 lives in exactly one place in code — `R/config.R` (`P$d_mm`, `P$f_irr`,
 `P$s_firm`, `P$cap_mm`) applied through `R/00_utils/units.R` — and is documented
 in `protocol/PROTOCOL_v2.md` §2.
@@ -45,59 +45,42 @@ would replace the envelope but was unavailable.
 
 Source: `R/config.R`, `R/00_utils/units.R`, `protocol/PROTOCOL_v2.md`.
 
-## 2. Pilot regions — revised
+## 2. Study data (v2)
 
-The original plan proposed Punjab and Maharashtra. **CAMELS-IND does not
-cover the Indus/Punjab**, so that pair is not possible with these files.
-Available high-coverage gauges (from `camels_ind_name.csv`):
+| Study | Data | Target |
+|---|---|---|
+| India | CAMELS-IND, 472 gauges; Drought Intelligence Explorer | district SMA <= -15% (primary); training-only SPI-3 (sensitivity) |
+| USA | Caravan-US, 671 gauges; ResOpsUS, 678 reservoirs; USDM county DSCI | USDM DSCI >= 100 (reservoir pilot); training-only SPI-3 (common protocol) |
 
-| Gauge | Name | Basin | Coverage | Basin area |
-|---|---|---|---|---|
-| 12035 | Mandleshwar | Narmada | 96.13% | — |
-| 4026 | Kurundwad | Krishna | 95.54% | 15,190 km² |
-| 4064 | Yadgir | Krishna | 95.48% | 69,863 km² |
+The India endpoint set is **15 gauges across 8 basins** (V1 screen; at least 5
+training and 3 test design events). The US reservoir pilot is exploratory (14
+paired in-window). The common-protocol comparison uses Caravan-US gauges (270
+strict-pass) and a training-only SPI-3 target.
 
-**Pilot chosen: gauge 4026 (Kurundwad, Krishna, Maharashtra).** It is in the
-target state and has the best coverage. Alternative 4064 can be used by
-changing one line in `P02/R/01_build_rates.R`.
+## 3. Data-quality findings (v2)
 
-## 3. Data-quality findings
+- Zero-flow semantics in CAMELS-IND are unresolved. The five-class proxy audit
+  is in `output/zero_audit_summary.csv`. Feeding artifact zeros as real zeros
+  (V0) changes the sensitivity result; V1 is primary.
+- The Drought Intelligence Explorer SMA/SPI/SPEI use an external 1981-2020
+  climatology. The primary target is therefore not strictly leakage-free; the
+  training-only SPI-3 target is the clean sensitivity.
+- Stage-B crop-area and canal-command records are unavailable. Demand is a
+  Stage-A envelope with `f_irr` swept. The USA uses a declared `Kc = 0.8`.
+- OpenET validation is pending the 1 December 2026 quota reset; WaPOR/GLEAM are
+  keyless alternatives.
 
-- Gauge 4026 has 9,710 zero entries among 14,308 non-missing days (67.9%);
-  gauge 4064 has 4,596 among 14,299 (32.1%). The CAMELS-IND PDF defines a
-  `q_zero` attribute but does not state whether literal zeros are measured
-  no-flow days or a coding convention. Treat zero semantics as unresolved.
-- Missing streamflow totals 668 days for 4026 and 677 for 4064. The PDF does
-  not define the CSV missing-value token; blank fields are observed locally,
-  but the official convention remains unknown.
-- Gauge 4026 has a 611-day interior gap beginning 1 March 2019; 4064 has a
-  661-day trailing gap after 11 March 2019. The new comparison interpolates
-  only gaps of seven days or less and flags every filled day. Longer gaps end
-  the usable record; both gauges therefore end on 28 February 2019.
-- The nominal 2011–2020 test window yields 98 complete months per gauge
-  (2011–2018 plus January–February 2019). No trailing flow is extrapolated.
-- Drought Intelligence Explorer supplies SMA, SPI and SPEI standardized with an
-  external 1981–2020 reference period. That period overlaps the nominal test
-  years, so the SMA target and SPI/SPEI benchmarks are not strictly held-out.
-  Raw inputs needed to rebuild a 1981–2010 target climatology are not local.
-- No crop-area or canal-command records were found. Crop water requirement in
-  the R script therefore uses a **district-level proxy** of 45,000 ha and a generic Kc curve;
-  it is a pipeline demonstration, not a calibrated irrigation demand.
-
-## 4. What has been built against these files
+## 4. What has been built (v2)
 
 | Script | Purpose |
 |---|---|
-| `P02/R/01_build_rates.R` | Read forcing CSV + observed streamflow for one gauge, build daily `lambda`, `mu`, write `P02/data/generated/rates_4026.csv`. |
-| `P02/R/02_run_queue.R` | Read that CSV and RK4-solve the finite-capacity CTMC. The legacy indicator summary was removed pending unit/server-accounting correction. |
-| `src/P02/real_data_comparison.py` | Two-gauge daily queue, monthly predictors, held-out logistic comparison, bootstrap and sensitivities |
-| `src/P02/make_comparison_figure.py` | Render the saved Brier-skill and reliability outputs |
+| `R/run_pipeline.R` | India S2-S7 backbone |
+| `R/us_pilot/` | USA reservoir-centric data assembly and evaluation |
+| `R/compare/` | Like-for-like India-US common-protocol comparison |
+| `R/00_utils/` | Engine, unit wall, indices, metrics, IO, audit |
+| `R/verify/` | 14-check verification battery |
+| `steps/` | Numbered executable sequence |
 
-`01_build_rates.R` has been run successfully on gauge 4026. The generated rate
-file is retained as a pipeline artifact. The new Python comparison has a
-corrected output contract and a complete negative result in
-`../analysis/P02_methods/REAL_DATA_COMPARISON_RESULTS.md`; no legacy R indicator
-summary is trusted.
 
 ## 5. Still missing / next actions
 
@@ -131,6 +114,6 @@ GRACE extract    : date, twsa_cm
 Crop/calendar    : year, district, crop, area_ha, sowing_doy, harvest_doy
 ```
 
-`src/P01/data_pipeline.py` still specifies `load_imd`, `load_cwc`,
-`load_cmip6`, `load_grace` as unimplemented. The R scripts bypass them for the
-CAMELS-IND pilot; the Python loaders remain for the future CMIP6 stage.
+The R loaders in `R/00_utils/io.R` cover the CAMELS-IND pilot. The future CMIP6
+stage will add its own loader under `R/50_future/`; no Python loader is part of
+the current analysis.

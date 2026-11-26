@@ -159,7 +159,7 @@ local({
   ind_d[, study := "India"]
 
   us_q <- fread(file.path(root, "output_us", "reservoir_queue_meta.csv"))
-  us_p <- fread(file.path(root, "output_us", "us_paired_e1.csv"))
+  us_p <- fread(file.path(root, "output_us", "us_paired_in_window_e1.csv"))
   us_d <- merge(us_q[, .(id = DAM_ID, rho)],
                 us_p[, .(id = gauge_id, dBrier = delta_brier, dAUC = delta_auc)],
                 by = "id")
@@ -183,6 +183,44 @@ local({
     base_theme
   save_fig(p4, "fig_utilisation_diagnosis", 9, 4.5)
 
+  # ---- 5. Common-protocol India-US comparison (if available) ---------
+  cdir <- file.path(root, "output_compare")
+  if (file.exists(file.path(cdir, "common_paired_india.csv")) &&
+      file.exists(file.path(cdir, "common_paired_usa.csv"))) {
+    pi <- fread(file.path(cdir, "common_paired_india.csv"))
+    pu <- fread(file.path(cdir, "common_paired_usa.csv"))
+    boot_med <- function(x, B = 2000) {
+      set.seed(P$seed)
+      d <- replicate(B, median(sample(x, length(x), replace = TRUE), na.rm = TRUE))
+      unname(quantile(d, c(0.025, 0.975), na.rm = TRUE))
+    }
+    cmp <- data.table(
+      region = c("India", "USA"),
+      n = c(nrow(pi), nrow(pu)),
+      dBrier = c(median(pi$delta_brier, na.rm = TRUE),
+                 median(pu$delta_brier, na.rm = TRUE)),
+      b_lo = c(boot_med(pi$delta_brier)[1], boot_med(pu$delta_brier)[1]),
+      b_hi = c(boot_med(pi$delta_brier)[2], boot_med(pu$delta_brier)[2]),
+      dAUC = c(median(pi$delta_auc, na.rm = TRUE),
+               median(pu$delta_auc, na.rm = TRUE))
+    )
+    long <- rbind(
+      cmp[, .(region, metric = "Delta Brier", value = dBrier, lo = b_lo, hi = b_hi)],
+      cmp[, .(region, metric = "Delta AUC", value = dAUC, lo = NA_real_, hi = NA_real_)]
+    )
+    p5 <- ggplot(long, aes(value, region, colour = region)) +
+      geom_vline(xintercept = 0, linetype = "dashed", colour = grey) +
+      geom_errorbarh(aes(xmin = lo, xmax = hi), height = 0.18, na.rm = TRUE) +
+      geom_point(size = 3) +
+      facet_wrap(~metric, scales = "free_x") +
+      scale_colour_manual(values = c(India = blue, USA = orange), guide = "none") +
+      labs(x = NULL, y = NULL,
+           title = "Common-protocol comparison: same queue, same target",
+           subtitle = "Training-only SPI-3 target; paired unit bootstrap 95% intervals") +
+      base_theme
+    save_fig(p5, "fig_common_comparison", 9, 4.2)
+  }
+
   cat("manuscript figures written to", FIG_DIR, "\n")
-  print(list.files(FIG_DIR, pattern = "^fig_(workflow|study_map|india_us|utilisation)"))
+  print(list.files(FIG_DIR, pattern = "^fig_(workflow|study_map|india_us|utilisation|common)"))
 })

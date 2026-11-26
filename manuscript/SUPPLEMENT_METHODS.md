@@ -1,5 +1,13 @@
 # Data and methods
 
+> **Note (audit-corrected, 26 November 2026).** The main text
+> (`manuscript/MANUSCRIPT.md`) is authoritative. The final India endpoint set is
+> **15 gauges across 8 basins** (V1 screen; at least 5 training and 3 test
+> design events), not 24; the power analysis is **post hoc** and is reported as
+> an interpretability bound, not as a G4 pass; and the strict-target sensitivity
+> is **positive** on the paired statistic. Where this draft differs, the main
+> text and `analysis/P02_methods/RESULTS_v2.md` take precedence.
+
 We read agricultural water shortage as a queue: irrigation demand arrives as
 customers, river or reservoir supply serves them, unmet demand accumulates as a
 backlog $Q$ in *claims*, capacity $K$ bounds the backlog, and long-waiting demand

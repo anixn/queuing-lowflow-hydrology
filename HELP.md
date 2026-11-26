@@ -98,6 +98,7 @@ Individual steps are listed in §5.
 | 08 | `steps/step_08_usa_target.R` | County FIPS + USDM target (OpenET optional) | `output_us/usdm_monthly.csv` |
 | 09 | `steps/step_09_usa_rates.R` | Reservoir λ, μ, K; queue run | `output_us/reservoir_*.csv` |
 | 10 | `steps/step_10_usa_eval.R` | Paired SSI-3 vs SSI-3+queue | `output_us/us_*.csv` |
+| 13 | `steps/step_13_common_comparison.R` | Like-for-like India–US common protocol | `output_compare/common_*.csv` |
 | 11 | `steps/step_11_manuscript_figures.R` | Workflow, map, comparison, diagnosis | `figures/fig_*.png/pdf` |
 | 12 | `steps/step_12_verify.R` | 14-check engine battery (G1) | console report |
 
@@ -129,15 +130,18 @@ Every step stops the run on failure.
 
 | Path | Contents |
 |---|---|
-| `output/` | India result CSVs + JSON sidecars; `output/notebooks/` rendered docs |
-| `output_us/` | USA result CSVs (+ logs) |
+| `output/` | India result CSVs + JSON sidecars |
+| `output_us/` | USA reservoir-pilot result CSVs |
+| `output_compare/` | Common-protocol India–US result CSVs |
 | `figures/` | All publication figures (PDF + 300-dpi PNG) |
-| `manuscript/` | Manuscript draft, literature review, methods, tables |
-| `protocol/` | Locked protocol and changelog |
+| `manuscript/` | Manuscript draft, extended literature and methods |
+| `protocol/` | Protocol, changelog, governing plan, common protocol |
 | `analysis/P02_methods/` | Assembled results (India and USA) |
+| `analysis/P01_literature/` | Frozen-sentence evidence: exports, screening, citation trace |
+| `analysis/novelty_2026-11-25/` | Supplementary novelty evidence (frozen sentence; not current analysis) |
 
 Generated files must **never** be hand-edited. Every CSV carries a JSON sidecar
-with the git hash, parameters, seed and R session.
+with the git hash, code hash, parameters, seed and R session.
 
 ---
 
@@ -184,21 +188,46 @@ committed; `.gitignore` excludes `.env` and local credentials.
 
 - `Rscript steps/step_12_verify.R` runs the 14-check battery; all must pass.
 - Seeds: `P$seed = 20261125` for every stochastic step.
-- Every output has a `.json` sidecar (git hash, parameters, seed, session).
+- Every output has a `.json` sidecar (git hash, **code hash**, parameters, seed,
+  session).
 - The India sensitivity grid is one-factor-at-a-time; interactions are not swept.
 - The confirmatory statistic is **paired** on identical held-out months; per-family
   metrics on different samples are descriptive only.
+
+### Provenance and pre-registration (audit-corrected)
+
+- The governing plan is committed at `protocol/REDESIGN_PLAN_v2_R.md`, so the
+  endpoints and rules can be checked against a dated document.
+- The protocol document was finalised **after** the first execution. It is a
+  retrospective documentation of a pre-specified design, not proof of
+  prospective registration; the timing is disclosed at the top of
+  `protocol/PROTOCOL_v2.md` and every amendment is in `protocol/CHANGELOG.md`.
+- Selection uses the **V1** screen, not the V0 reconnaissance table. The
+  endpoint set requires **≥5 training and ≥3 test DESIGN events**; zero- and
+  one-event units cannot enter the confirmatory set.
+- The US arm is an **exploratory replication**, not a second predeclared test.
+  Its primary sample applies the same `rho` window as India; the full sample is
+  reported as a sensitivity.
+- The blocking guard is enforced, the PET substitution is flagged, the SUP-2
+  quantile is training-only, and negative discharge is treated as missing.
 
 ---
 
 ## 12. Reading order
 
 1. `START_HERE.md` — plain-language orientation.
-2. `README.md` — rebuild summary.
-3. `manuscript/MANUSCRIPT.md` — the paper draft.
-4. `protocol/PROTOCOL_v2.md` — the locked predeclared protocol.
-5. `analysis/P02_methods/RESULTS_v2.md` and `US_PILOT_RESULTS.md` — results with sources.
-6. `docs/project/SESSION_LOG_v2.md` — gate reports.
+2. `README.md` — rebuild summary and folder map.
+3. `HELP.md` — this operator's manual.
+4. `PLAN_SUMMARY.md` — one-page plan and result.
+5. `manuscript/MANUSCRIPT.md` — the HESS draft.
+6. `protocol/PROTOCOL_v2.md` and `protocol/COMMON_PROTOCOL.md` — the
+   pre-specified design and the like-for-like comparison rules.
+7. `analysis/P02_methods/RESULTS_v2.md` and `US_PILOT_RESULTS.md` — results
+   with sources.
+8. `P01/literature_audit.md`, `P01/search_protocol.md`, `analysis/P01_literature/`
+   — the frozen-sentence evidence trail.
+9. `docs/project/MERGED_PAPER_PLAN.md` and `docs/project/SESSION_LOG_v2.md` —
+   paper plan and gate reports.
 
 ---
 

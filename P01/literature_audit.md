@@ -154,7 +154,7 @@ both screens are complete.
 | **Yang, Gaiqiang; Guo, Ping; Li, Ruihuan; Li, Mo (2016)**, "Optimal allocation model of surface water and groundwater based on queuing theory in irrigation district", *Nongye Gongcheng Xuebao / Transactions of the Chinese Society of Agricultural Engineering* 32(6), DOI 10.11975/j.issn.1002-6819.2016.06.016 | Scopus Cited-by trace of Batabyal 1996, 21 Nov 2026 (11 citing records screened, `../analysis/P01_literature/citation_trace_2026-11-21.md`) | Conjunctive surface-water/groundwater allocation of an irrigation district formulated as a queueing model | **New (found by citation tracing, not keyword search).** Extends the irrigation-queueing line to conjunctive-use allocation. Operational optimisation; no drought deficit state, indicators or learned rates. |
 | **Jones, Owen D.; Lane, Patrick N. J.; Sheridan, Garry J. (2016)**, "The stochastic runoff-runon process: Extending its analysis to a finite hillslope", *Journal of Hydrology*, DOI 10.1016/j.jhydrol.2016.06.056 | WoS Times-Cited trace of Harel & Mouche 2013, 21 Nov 2026 (3 citing records screened, `../analysis/P01_literature/citation_trace_2026-11-21.md`) | Extends the Harel–Mouche queue-based stochastic runoff-runon theory to finite hillslopes (asymptotics + Monte Carlo) | **New (found by citation tracing, not keyword search).** The runoff-runon queue lineage is still active mathematically (see also Jones 2019, *J. Applied Probability* 56(4):1065–1085, "Runoff on rooted trees"). Still runoff generation, not drought deficit accounting. |
 
-Full bibliographic detail for all resolved records is in `P01_draft_v2.md` References.
+Full bibliographic detail for all resolved records is in `manuscript/MANUSCRIPT.md` References.
 
 ## Supplementary targeted novelty search — 25 November 2026
 
@@ -222,12 +222,13 @@ search UI returned no documents even for the exact known title “Queuing Theory
 and Water Storage” and displayed an intermittent-service notice. No new Scopus
 screen is claimed; the last complete Scopus screen remains the 295-record
 screen of 21 November 2026. Exact queries and counts are in
-`../analysis/claim_convention_2026-11-25/wos_refresh_2026-11-25.csv`.
+`../analysis/P01_literature/exports/wos_s1_refresh_2026-11-25.xls` and
+`wos_s4_refresh_2026-11-25.xls`.
 
-The frozen sentence is unchanged. The numerical claim convention was revised
-separately using official Sangli irrigation-area evidence; that revision is an
-implementation-scale change, not a literature-gap change. See
-`../analysis/claim_convention_2026-11-25/README.md`.
+The frozen sentence is unchanged. The v2 claim convention is per-gauge: one
+claim = 20 mm over `f_irr * A_catchment`, applied through `R/00_utils/units.R`
+and documented in `protocol/PROTOCOL_v2.md` §2. The v1 district proxies are
+superseded and are not part of the current analysis.
 
 ## WoS record-level screen — 21 November 2026
 
@@ -273,7 +274,7 @@ accumulated unmet-demand backlog with a finite-capacity state; (2) queue-state
 indicators reported as drought quantities; (3) non-stationary rates estimated
 from hydroclimatic covariates; (4) validation against exact reference
 solutions and pre-specified drought tests." Canonical copies: `../AGENTS.md`
-§2, `../START_HERE.md` §5, `P01_draft_v2.md` §6.
+§2, `../START_HERE.md` §5, `manuscript/MANUSCRIPT.md` §1.6.
 
 ## WoS/Scopus forward-citation trace — 21 November 2026
 

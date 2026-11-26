@@ -1,8 +1,9 @@
 {
   "file": "paired_e2.csv",
-  "git_hash": "a029c56",
-  "written": "2026-11-26T10:58:32",
-  "nrow": 24,
+  "git_hash": "f1949a7",
+  "code_hash": "405e2d5a11a3f49bb93ffb472cf16a7a",
+  "written": "2026-11-26T14:04:25",
+  "nrow": 15,
   "ncol": 8,
   "session": {
     "R": "R version 4.5.1 (2025-06-13 ucrt)",

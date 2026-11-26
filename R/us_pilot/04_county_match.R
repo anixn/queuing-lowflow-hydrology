@@ -11,11 +11,13 @@
 local({
   root <- normalizePath("D:/Research/queuing-lowflow-hydrology")
   out_dir <- file.path(root, "output_us")
+  Sys.setenv(QDJ_ROOT = root)
+  source(file.path(root, "R", "config.R"))
   suppressMessages(library(sf))
   suppressMessages(library(data.table))
 
-  zip <- "D:/Datasets/US_boundaries/cb_2020_us_county_500k.zip"
-  exdir <- "D:/Datasets/US_boundaries/county"
+  zip <- US_COUNTY_ZIP
+  exdir <- file.path(DATA_ROOT, "US_boundaries", "county")
   if (!dir.exists(exdir)) unzip(zip, exdir = exdir)
   shp <- list.files(exdir, pattern = "\\.shp$", full.names = TRUE)[1]
   county <- st_read(shp, quiet = TRUE)

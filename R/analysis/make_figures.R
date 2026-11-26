@@ -31,8 +31,17 @@ local({
 
   screen <- fread(file.path(OUTPUT_DIR, "screen_report.csv"))
   qm <- fread(file.path(OUTPUT_DIR, "queue_meta.csv"))
+  sel_tab <- fread(file.path(OUTPUT_DIR, "selected_gauges.csv"))
+  if ("in_endpoint" %in% names(sel_tab)) {
+    qm <- qm[gauge_id %in% sel_tab[in_endpoint == TRUE, gauge_id]]
+  }
   m1 <- fread(file.path(OUTPUT_DIR, "metrics_e1.csv"))
   m2 <- fread(file.path(OUTPUT_DIR, "metrics_e2.csv"))
+  if ("in_endpoint" %in% names(sel_tab)) {
+    keep <- sel_tab[in_endpoint == TRUE, gauge_id]
+    m1 <- m1[gauge_id %in% keep]
+    m2 <- m2[gauge_id %in% keep]
+  }
   d1 <- fread(file.path(OUTPUT_DIR, "delta_e1.csv"))
 
   # ---- Fig 1: utilization screen (SUP-1) -----------------------------

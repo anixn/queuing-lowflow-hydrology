@@ -64,19 +64,24 @@ We do not claim that no such study exists anywhere.
 ## 4. What the v2 data showed
 
 Use **paired** per-gauge deltas on identical held-out months; lower Brier is
-better. Exact values are produced only by `R/run_pipeline.R` and recorded in
+better. The endpoint set is **15 gauges across 8 basins**. Exact values are
+produced only by `R/run_pipeline.R` and recorded in
 `analysis/P02_methods/RESULTS_v2.md`.
 
-- **E1 (concurrent Brier, confirmatory):** median improvement about `+0.0008`
-  with a two-level bootstrap interval that **includes zero**; the sign test does
-  not reach significance. **Null.**
-- **E2 (1-month prospective Brier, confirmatory):** also **null**.
-- **Secondary AUC:** positive (the queue improves ranking), reported as
-  secondary and not upgraded.
-- **Power:** the Brier minimal detectable effect at N = 24 is several times the
-  observed effect, so the null is interpretable rather than underpowered.
-- **Harm bound:** a few gauges show a small negative Brier delta; this is
-  investigated (calibration breakdown) and disclosed.
+- **E1 (external district SMA target, confirmatory):** median improvement
+  **+0.00204**, 95% CI **[−0.00187, +0.00415]**, 10/15, p = 0.151. **Null.**
+- **E2 (1-month prospective):** median −0.00066. **Null.**
+- **Leakage-clean SPI-3 target (secondary):** median **+0.00397**, CI
+  **[+0.00013, +0.00949]**, **12/15**, p = 0.0176, AUC **+0.038** (14/15).
+  **Positive secondary signal**, not a confirmatory win.
+- **Ranking:** mean AUC rises from **0.771 (SSI-3)** to **0.815 (SSI-3 +
+  queue)**; queue alone reaches 0.846. Top-decile precision 11.5% → 14.9%.
+- **Interpretability bound:** the post-hoc Brier MDE at N=15 is **0.0037**, so
+  the primary null means any true gain is below about 0.004.
+- **Conditional signal:** India slope +0.0066 but p = 0.188 — a hypothesis, not
+  a demonstrated rule.
+- **USA (exploratory):** with the same ρ window, 14 paired reservoirs; null on
+  both Brier and AUC. The ranking signal does not replicate.
 
 `[assumption]` Queue outputs are illustrative under the Stage-A demand envelope
 and SUP-1 supply; they are not observed unmet demand.

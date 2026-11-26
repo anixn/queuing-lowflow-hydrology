@@ -172,7 +172,8 @@ stage3_catchment <- function(gauge_ids, meta, districts, f_irr = P$f_irr) {
 #                     class, flag_pause, flag_excluded_month).
 stage3_rates <- function(gauge_id, flow, catchment_row, supply_variant = "SUP-1",
                          zero_variant = "V1", pet_source = "GLEAM",
-                         class_daily = NULL, cap_mm = P$cap_mm) {
+                         class_daily = NULL, cap_mm = P$cap_mm,
+                         Kc_override = NULL) {
   f <- .read_forcing_one(gauge_id)
   if (is.null(f)) return(NULL)
   grid <- data.table::data.table(
@@ -194,6 +195,15 @@ stage3_rates <- function(gauge_id, flow, catchment_row, supply_variant = "SUP-1"
     m[, class := NA_character_]
   }
   q <- m$q
+  # Negative discharge is a data error, not a physical flow. Treat it as
+  # missing explicitly (the message records the count; nothing is repaired
+  # silently).
+  neg <- !is.na(q) & q < 0
+  if (any(neg)) {
+    message(sprintf("gauge %d: %d negative flow days treated as missing",
+                    gauge_id, sum(neg)))
+    q[neg] <- NA_real_
+  }
   if (zero_variant == "V1") {
     # zeros-as-missing: artifact and unknown zeros become missing days
     q[m$class %in% c("artifact", "unknown")] <- NA_real_
@@ -217,18 +227,22 @@ stage3_rates <- function(gauge_id, flow, catchment_row, supply_variant = "SUP-1"
                                      as.integer(format(m$date, "%j")))
     hargreaves_et0(m$tmax_c, m$tmin_c, m$tavg_c, ra)
   }
-  # If GLEAM PET has holes, fall back to Hargreaves on those days only.
+  # If GLEAM PET has holes, fall back to Hargreaves on those days only, and
+  # record the substitution explicitly (no silent repair).
+  pet_used <- rep(pet_source, length(pet))
   if (pet_source == "GLEAM" && anyNA(pet)) {
     ra <- extraterrestrial_radiation(catchment_row$lat %||% 20,
                                      as.integer(format(m$date, "%j")))
     hg <- hargreaves_et0(m$tmax_c, m$tmin_c, m$tavg_c, ra)
-    pet[is.na(pet)] <- hg[is.na(pet)]
+    idx <- is.na(pet)
+    pet[idx] <- hg[idx]
+    pet_used[idx] <- "Hargreaves_fallback"
   }
 
   # Demand (claims/day). Computed only where PET and rain exist; NA stays NA
   # (never silently filled) and becomes a missing day below.
   doy <- as.integer(format(m$date, "%j"))
-  kc <- kc_curve(doy)
+  kc <- if (is.null(Kc_override)) kc_curve(doy) else rep(Kc_override, length(doy))
   need <- rep(NA_real_, length(pet))
   ok_need <- !is.na(pet) & !is.na(m$prcp_mm)
   need[ok_need] <- crop_need_mm(kc[ok_need] * pet[ok_need], m$prcp_mm[ok_need], P$phi)
@@ -242,8 +256,22 @@ stage3_rates <- function(gauge_id, flow, catchment_row, supply_variant = "SUP-1"
   if (supply_variant == "SUP-1") {
     s_mm[ok_q] <- supply_mm_day(q[ok_q], area_m2, P$s_firm, cap_mm)
   } else if (supply_variant == "SUP-2") {
-    q_dep <- stats::quantile(q, 0.05, na.rm = TRUE)
-    s_mm[ok_q] <- pmin(q_m3s_to_mm_day(pmin(q[ok_q], q_dep), area_m2), cap_mm)
+    # Dependable flow: the 5th percentile is estimated on TRAINING years only
+    # so the sensitivity does not look ahead into the test period. If a gauge
+    # has no training-period flow, fall back to the full record; if that is
+    # also empty, supply is missing rather than an invalid number.
+    yr <- as.integer(format(m$date, "%Y"))
+    q_train <- q[yr %in% P$train_years]
+    q_dep <- if (any(is.finite(q_train))) {
+      stats::quantile(q_train, 0.05, na.rm = TRUE)
+    } else {
+      stats::quantile(q, 0.05, na.rm = TRUE)
+    }
+    if (!is.finite(q_dep)) {
+      s_mm[ok_q] <- NA_real_
+    } else {
+      s_mm[ok_q] <- pmin(q_m3s_to_mm_day(pmin(q[ok_q], q_dep), area_m2), cap_mm)
+    }
   } else { # SUP-3 infrastructure-first
     q_eco <- P$eco_frac * mean(q, na.rm = TRUE)
     s_mm[ok_q] <- ifelse(q[ok_q] >= q_eco, cap_mm,
@@ -254,12 +282,14 @@ stage3_rates <- function(gauge_id, flow, catchment_row, supply_variant = "SUP-1"
   missing_day <- is.na(q) | is.na(lambda) | is.na(mu)
   out <- data.table::data.table(
     gauge_id = gauge_id, date = m$date, q_used = q,
-    prcp_mm = m$prcp_mm, pet_mm = pet, need_mm = need,
-    lambda = lambda, mu = mu, missing_day = missing_day,
+    prcp_mm = m$prcp_mm, pet_mm = pet, pet_source_used = pet_used,
+    need_mm = need, lambda = lambda, mu = mu, missing_day = missing_day,
     class = m$class
   )
-  # Gap rule: pause on any missing day; the month is excluded from
-  # aggregation if it contains any missing day (complete-month rule).
+  # Gap rule (implemented): every missing day pauses the state; any month
+  # containing a missing day is excluded. This is stricter than the plan's
+  # 7-day pause / 30-day month-exclusion rule; the divergence is recorded in
+  # protocol/CHANGELOG.md rather than hidden.
   out[, ym := format(date, "%Y-%m")]
   out[, month_complete := !any(missing_day), by = ym]
   out[, flag_pause := missing_day]
@@ -305,6 +335,13 @@ stage5_queue <- function(rates, q_days = P$q_days, K_days = P$K_days) {
   daily[, `:=`(gauge_id = rates$gauge_id[1],
                missing_day = rates$missing_day,
                flag_excluded_month = rates$flag_excluded_month)]
+  # Enforce the blocking guard rather than merely recording it.
+  max_block <- max(daily$p_eq_K, na.rm = TRUE)
+  if (is.finite(max_block) && max_block >= P$block_guard) {
+    stop(sprintf("Blocking guard: max P(Q=K)=%.3e >= %.0e for gauge %d",
+                 max_block, P$block_guard, rates$gauge_id[1]),
+         call. = FALSE)
+  }
   daily[, ym := format(date, "%Y-%m")]
   # Monthly aggregation over complete months only.
   monthly <- daily[, {

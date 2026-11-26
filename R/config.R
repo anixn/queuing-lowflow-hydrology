@@ -57,6 +57,18 @@ CAMELS_PROJ_ROOT <- Sys.getenv(
   "QDJ_CAMELS_PROJ_ROOT",
   unset = file.path(DATA_ROOT, "CAMELS_IND_Proj")
 )
+CARAVAN_ROOT <- Sys.getenv(
+  "QDJ_CARAVAN_ROOT",
+  unset = file.path(DATA_ROOT, "Caravan_2025")
+)
+RESOPS_ROOT <- Sys.getenv(
+  "QDJ_RESOPS_ROOT",
+  unset = file.path(DATA_ROOT, "ResOpsUS", "extracted", "ResOpsUS")
+)
+US_COUNTY_ZIP <- Sys.getenv(
+  "QDJ_US_COUNTY_ZIP",
+  unset = file.path(DATA_ROOT, "US_boundaries", "cb_2020_us_county_500k.zip")
+)
 
 # --- Derived input files ----------------------------------------------
 CAMELS_FORCING_DIR <- file.path(CAMELS_ROOT, "catchment_mean_forcings")
@@ -118,10 +130,16 @@ P <- list(
   # Screening
   rho_window        = c(0.15, 1.20),
   zero_unresolved_max = 0.30,      # >30% unresolved zeros -> V2 only
+  # Minimum events per unit in the confirmatory set. Applied to the DESIGN
+  # event counts (complete months), not to raw district months, so a unit with
+  # too few usable drought outcomes cannot enter the endpoint as noise.
+  min_test_events   = 3L,
+  min_train_events  = 5L,
   # Reproducibility
-  seed              = 20261125L,
-  warmup_start      = "1979-01-01",
-  warmup_discard    = 1980L
+  seed              = 20261125L
+  # Note: the transient starts empty at ANALYSIS_START (1981-01-01). The plan's
+  # 1980 warm-up is not implemented; the early-month bias is negligible at the
+  # service rates used here and is disclosed in protocol/CHANGELOG.md.
 )
 
 # Convenience: the analysis calendar

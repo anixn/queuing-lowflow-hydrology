@@ -1,8 +1,9 @@
 {
   "file": "catchment_table.csv",
-  "git_hash": "a029c56",
-  "written": "2026-11-26T10:53:07",
-  "nrow": 24,
+  "git_hash": "f1949a7",
+  "code_hash": "5dd1f1b1ab49908cba7f4d16945980f2",
+  "written": "2026-11-26T13:59:42",
+  "nrow": 23,
   "ncol": 13,
   "session": {
     "R": "R version 4.5.1 (2025-06-13 ucrt)",

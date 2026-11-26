@@ -8,26 +8,31 @@ an exact verification battery, and every predeclared sensitivity reported.
 
 ## Outcome
 
-The predeclared confirmatory Brier endpoints (E1 concurrent, E2 prospective) are
-**null**. The secondary AUC contrast is positive but is not upgradable. This
-routes to **Path B** in `REDESIGN_PLAN_v2_R.md` §8:
+The **primary** predeclared confirmatory Brier endpoint (external district SMA
+target) is **null**: median +0.00204, 95% CI [−0.00187, +0.00415], 10/15,
+p = 0.151. The **leakage-clean** training-only SPI-3 target is **positive**:
+median +0.00397, CI [+0.00013, +0.00949], 12/15, p = 0.0176, AUC +0.038
+(14/15). The ranking signal is secondary (mean AUC 0.771 → 0.815); the
+utilisation slope is positive but not significant (p = 0.188). The US
+exploratory replication is null on both Brier and AUC once the window is
+applied.
 
-> *Path B — honest null: the paper is the predeclared evaluation + utilization
-> diagnosis: rho distribution across basins, the regime table, what demand/supply
-> regimes would put the queue in its informative window, and the new descriptive
-> quantities (unmet volume, recovery times) the queue formulation provides.*
+This is **Path B with a target-dependent positive**, not a superiority claim.
+The paper's contribution is fourfold: one honest null, one target-dependent
+positive, one verified reusable engine, and one zero-flow data-quality warning.
 
 ## Working title
 
-**Does a deficit queue add drought information? A predeclared multi-catchment
-test and a utilization diagnosis**
+**What queueing can and cannot do for low-flow hydrology: a target-dependent
+deficit-queue signal, a verified engine, and a zero-flow warning**
 
 ## Central claim
 
 A finite-capacity unmet-demand queue produces interpretable drought-state
-indicators, but in this multi-catchment test it does **not** improve calibrated
-drought probability beyond SSI-3. The utilization diagnosis explains when the
-queue is informative and what data a stronger test requires.
+indicators and improves event ranking and (on a leakage-clean target) calibrated
+probability, but it does **not** beat SSI-3 on the primary external target and
+does not replicate in the US reservoir sample. The value is conditional and
+descriptive, not a general replacement for indices.
 
 ## Why one merged paper
 
@@ -38,17 +43,25 @@ queue is informative and what data a stronger test requires.
 
 ## Structure
 
-1. Introduction: anomaly indices versus accumulated unmet demand; the question.
-2. Related work: storage/queue lineage and the frozen scoped gap.
-3. Model and unit system: per-gauge claim volume and conservation ledger.
-4. Verification: exact stationary, RK4 vs discrete-event, first passage, ledger.
-5. Data and screening: CAMELS-IND, zero audit, utilization window, 24 gauges.
-6. Predeclared comparison: E1/E2, harm bound, power, target decision.
-7. Results: null confirmatory Brier, secondary AUC, regime table, sensitivities.
-8. Utilization diagnosis: why v1 failed and which regimes are informative.
-9. Discussion: identifiability, proxy demand, zero flows, regulation, scale.
-10. Conclusion: no demonstrated calibrated-probability skill; requirements for a
-    stronger test; data/code availability.
+1. Introduction: anomaly indices versus accumulated unmet demand; what queueing
+   can and cannot do; the scoped gap.
+2. Related work: the queueing lineage, hydrological queue applications,
+   non-stationary queues, coupled state-space drought work, ML-for-queues.
+3. Design: primary E1/E2, the leakage-clean secondary, the ranking and
+   conditional questions, the utilisation screen and the minimum-events rule.
+4. Data: CAMELS-IND and the Drought Intelligence Explorer; Caravan-US, ResOpsUS
+   and the US Drought Monitor; the zero-flow audit.
+5. Methods: unit wall, demand/supply, the finite-capacity CTMC, RK4 and ledger,
+   indicators, paired Brier/AUC, bootstrap and the post-hoc interpretability
+   bound.
+6. Results: primary null; target-dependent positive on the leakage-clean
+   target; modest ranking gain; non-significant utilisation slope; the verified
+   engine; the zero-flow warning; the US exploratory null.
+7. Discussion: four contributions (honest null, target-dependent positive,
+   verified engine, zero-flow warning), the conditional use rule, and what data
+   would change the verdict.
+8. Limitations and conclusion: a conditional, descriptive role for queue
+   indicators, not a replacement for calibrated indices.
 
 ## Minimum evidence (all present in v2)
 
@@ -65,8 +78,8 @@ queue is informative and what data a stronger test requires.
 ## What happens to existing material
 
 - Keep the literature audit and the frozen gap sentence verbatim.
-- Retire the v1 Python code and its generated CSVs to `legacy-python` /
-  `analysis/P02_methods/data_v1_superseded/` (provenance only).
+- The v1 Python code and its generated CSVs are on branch `legacy-python`
+  (tag `v1-audited`); they are not part of `main`.
 - Compress the long perspective narrative.
 - Retain the mapping, conservation ledger and exact benchmarks, now in R.
 - Do not imply the synthetic 2.3x averaging result is an empirical finding.

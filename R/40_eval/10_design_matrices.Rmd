@@ -39,8 +39,11 @@ nb_assert(all(p1$p >= 0 & p1$p <= 1), "predicted probability outside [0,1]")
 nb_assert(all(p1$year %in% P$test_years), "E1 contains a non-test year")
 nb_assert(setequal(unique(p1$family), fams), "not every family was fitted")
 
+sel <- nb_require("selected_gauges.csv", "S3")
+endpoint_ids <- sel[in_endpoint == TRUE, gauge_id]
 da <- nb_require("design_audit.csv", "S6")
-nb_assert(all(da$n_queue_finite > 0), "a gauge has no queue feature months")
+da_ep <- da[gauge_id %in% endpoint_ids]
+nb_assert(all(da_ep$n_queue_finite > 0), "an endpoint gauge has no queue feature months")
 cat(sprintf("E1 prediction rows: %d across %d gauges and %d families\n",
             nrow(p1), data.table::uniqueN(p1$gauge_id),
             data.table::uniqueN(p1$family)))

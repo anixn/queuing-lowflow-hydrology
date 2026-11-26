@@ -1,13 +1,16 @@
 # =====================================================================
-# R/analysis/power_analysis.R -- predeclared power / MDE analysis (S4).
+# R/analysis/power_analysis.R -- POST HOC interpretability bound (not
+# prospective power).
 #
-# Uses the OBSERVED per-gauge effect-size distribution (held-out deltas)
-# to estimate the minimal detectable effect (MDE) at the achievable gauge
-# count. This tells us whether the Brier null is interpretable (effect
-# smaller than detectable) or merely underpowered.
+# Uses the OBSERVED per-gauge effect-size distribution (held-out deltas) to
+# estimate the minimal detectable effect (MDE). This is circular as a power
+# calculation: it tells us the size of effect the realised design could have
+# resolved, not the probability of detecting an effect fixed in advance.
+# It is reported as an interpretability bound ("any true Brier gain is below
+# about X"), with the post-hoc nature disclosed.
 #
 # MDE = (z_{0.975} + z_{0.80}) * SD / sqrt(N),  two-sided alpha=0.05.
-# A simulation-based sign-test power is also reported.
+# A simulation-based sign-test power is also reported, for the same purpose.
 # =====================================================================
 local({
   args <- commandArgs(trailingOnly = FALSE)
@@ -44,7 +47,8 @@ local({
       rows[[length(rows) + 1]] <- data.table::data.table(
         metric = nm, N = N, sd = sdv, mde = mde,
         observed_median = stats::median(x), observed_mean = mean(x),
-        detectable = abs(stats::median(x)) >= mde
+        detectable = abs(stats::median(x)) >= mde,
+        post_hoc = TRUE
       )
     }
   }
@@ -61,11 +65,17 @@ local({
     mean(k)
   }
   auc_sd <- stats::sd(per_gauge_auc[is.finite(per_gauge_auc)])
-  grid <- data.table::data.table(
-    assumed_uplift = c(0.02, 0.05, 0.08),
-    power_N24 = vapply(c(0.02, 0.05, 0.08),
-                       function(e) sim_power(e, auc_sd, 24), numeric(1))
-  )
+  brier_sd <- stats::sd(per_gauge_brier[is.finite(per_gauge_brier)])
+  grid <- data.table::rbindlist(list(
+    data.table::data.table(
+      metric = "auc", assumed_uplift = c(0.02, 0.05, 0.08),
+      power_N15 = vapply(c(0.02, 0.05, 0.08),
+                         function(e) sim_power(e, auc_sd, 15), numeric(1))),
+    data.table::data.table(
+      metric = "brier", assumed_uplift = c(0.001, 0.002, 0.003),
+      power_N15 = vapply(c(0.001, 0.002, 0.003),
+                         function(e) sim_power(e, brier_sd, 15), numeric(1)))
+  ))
 
   write_csv_sidecar(power, file.path(OUTPUT_DIR, "power_analysis.csv"),
                     list(stage = "S4", seed = P$seed))
@@ -73,6 +83,6 @@ local({
                     list(stage = "S4", seed = P$seed))
   cat("=== Minimal detectable effect (alpha=0.05, power=0.80) ===\n")
   print(power)
-  cat("\n=== Sign-test power at N=24 for assumed AUC uplift ===\n")
+  cat("\n=== Sign-test power at N=15 ===\n")
   print(grid)
 })

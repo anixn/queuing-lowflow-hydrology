@@ -13,3 +13,9 @@ output/notebooks_steps/
 __pycache__/
 *.pyc
 
+
+# generated logs
+output/_*log.txt
+output_us/_*log.txt
+output_compare/_*.txt
+

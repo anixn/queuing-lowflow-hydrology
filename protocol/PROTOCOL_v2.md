@@ -1,7 +1,13 @@
 # PROTOCOL_v2 — predeclared protocol for the multi-catchment deficit-queue test
 
 **Status:** LOCKED. Tag `protocol-v2-locked`. Date: 26 November 2026.
-**Governing plan:** `REDESIGN_PLAN_v2_R.md` §§3.1–3.12, Appendix A.
+
+> **Timing disclosure.** The endpoints and rules were fixed by the governing
+> plan, now committed at `protocol/REDESIGN_PLAN_v2_R.md`. The protocol document
+> itself was finalised after the first execution. It is a retrospective
+> documentation of a pre-specified design, not proof of prospective
+> registration. All amendments are recorded in `protocol/CHANGELOG.md`.
+**Governing plan:** `protocol/REDESIGN_PLAN_v2_R.md` §§3.1–3.12, Appendix A.
 
 This protocol fixes the endpoints, contrasts, targets, variants, sensitivities,
 exclusion rules, event definition, harm bound and power before any final result
@@ -47,6 +53,10 @@ supply share the same `V_claim`; no other claim volume exists anywhere.
 
 ## 3. Gauge inclusion and exclusion
 
+**As amended (26 November 2026).** Selection uses the V1 screen, not the V0
+reconnaissance table, and the endpoint set is restricted to units with at least
+5 training and 3 test DESIGN events. See `protocol/CHANGELOG.md`.
+
 A gauge enters the analysis set only if **all** hold:
 
 1. Profiled: >= 300 observed flow days and necessary forcings present.
@@ -73,9 +83,11 @@ CWC/India-WRIS daily record was available).
 
 ## 5. Gap rules
 
-Short gaps (<= 7 days) pause the queue state: no arrival, no service, the state
-is carried forward and flagged. Months containing a longer gap are excluded from
-monthly aggregation and model fitting. Nothing is interpolated silently.
+**Implemented rule (amended 26 November 2026).** Every missing day pauses the
+queue state, and any month containing a missing day is excluded from monthly
+aggregation and model fitting. This is stricter than the original 7-day / 30-day
+plan; the divergence is recorded in `protocol/CHANGELOG.md`. Nothing is
+interpolated silently.
 
 ## 6. Supply variants
 
@@ -146,31 +158,35 @@ claim. A breached bound is reported; it is not a licence to change the endpoint.
 
 ## 11. Power (gate G4)
 
+> **Post hoc.** The MDE below is computed from the held-out per-unit deltas. It
+> is an **interpretability bound**, not prospective power, and the observed
+> columns were added after execution.
+
 Using the paired per-gauge effect-size distribution (from held-out deltas),
 `alpha = 0.05`, power `= 0.80`, `MDE = (z_0.975 + z_0.80) * SD / sqrt(N)`:
 
-| Metric | SD | MDE at N=24 | Observed median |
+| Metric | SD | MDE at N=15 | Observed median |
 |---|---:|---:|---:|
-| Brier Delta | 0.004661 | **0.002666** | +0.000847 |
-| AUC Delta | 0.078637 | **0.044970** | +0.042763 |
+| Brier Delta | 0.005123 | **0.003706** | +0.002044 |
+| AUC Delta | 0.081892 | **0.059238** | +0.022222 |
 
-Simulation sign-test power at N=24:
+Simulation sign-test power at N=15 (2,000 reps):
 
-| Assumed AUC uplift | Power |
-|---:|---:|
-| +0.02 | 0.196 |
-| +0.05 | **0.722** |
-| +0.08 | 0.983 |
+| Metric | Assumed uplift | Power |
+|---|---:|---:|
+| AUC | +0.02 | 0.090 |
+| AUC | +0.05 | 0.394 |
+| AUC | +0.08 | 0.759 |
+| Brier | +0.001 | 0.063 |
+| Brier | +0.002 | 0.165 |
+| Brier | +0.003 | 0.352 |
 
-| Assumed Brier uplift | Power |
-|---:|---:|
-| +0.001 | 0.151 |
-| +0.002 | 0.432 |
-| +0.003 | 0.728 |
-
-**G4 passes:** the AUC MDE (0.04497) is at or below the predeclared +0.05 grid
-point. The observed Brier effect (+0.0008) is below the Brier MDE (0.0027), so a
-Brier null is interpretable rather than merely underpowered.
+**Interpretation (not a G4 pass).** The primary Brier null is interpretable:
+the observed +0.0020 is below the MDE of 0.0037. But the study is **not well
+powered** for the AUC secondary at N=15 (power 0.394 for a +0.05 uplift), so the
+ranking signal is secondary and hypothesis-generating, not a powered
+confirmatory result. The strict-target positive is a sensitivity, not a powered
+win.
 
 ## 12. Predeclared sensitivity axes (one factor at a time)
 
@@ -199,6 +215,9 @@ All live in `R/config.R`. Key values: `d_mm=20`, `phi=0.7`, `sowing_doy=200`,
 `seed=20261125`.
 
 ## 14. Outcome routing (fixed in advance)
+
+> **Recorded after execution.** The route below is the outcome observed on
+> 26 November 2026; it is not a pre-registered prediction.
 
 - **Path A:** both E1 and E2 pass -> positive multi-catchment evaluation.
 - **Path B:** rules fail, test powered and clean -> predeclared evaluation +

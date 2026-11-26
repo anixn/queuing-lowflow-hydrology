@@ -17,15 +17,12 @@ The executable code that produces every number is in `../R/` and `../steps/`.
 | # | Caption | File |
 |---|---|---|
 | 1 | Analysis workflow | `../figures/fig_workflow.png` |
-| 2 | Study sites (India + USA) | `../figures/fig_study_map.png` |
-| 3 | India utilisation screen | `../figures/fig01_utilization_screen.png` |
-| 4 | India queue regime | `../figures/fig02_regime_pq.png`, `fig02_regime_eq.png` |
-| 5 | India E1 Brier forest | `../figures/fig03_brier_forest_e1.png` |
-| 6 | India AUC forest | `../figures/fig04_auc_forest.png` |
-| 7 | Example monthly series | `../figures/fig05_example_series_5018.png` |
-| 8 | India reliability | `../figures/fig06_reliability.png` |
-| 9 | India–USA comparison | `../figures/fig_india_us_comparison.png` |
-| 10 | Utilisation diagnosis | `../figures/fig_utilisation_diagnosis.png` |
+| 2 | Study sites (15 India gauges + 50 US pairs) | `../figures/fig_study_map.png` |
+| 3 | India V1 utilisation screen and queue regime | `../figures/fig01_utilization_screen.png`, `fig02_regime_pq.png` |
+| 4 | India E1 Brier and AUC forests | `../figures/fig03_brier_forest_e1.png`, `fig04_auc_forest.png` |
+| 5 | Example series and reliability | `../figures/fig05_example_series_5018.png`, `fig06_reliability.png` |
+| 6 | India–USA paired contrasts | `../figures/fig_india_us_comparison.png` |
+| 7 | Utilisation diagnosis | `../figures/fig_utilisation_diagnosis.png` |
 
 ## Where the numbers come from
 
@@ -33,9 +30,12 @@ The executable code that produces every number is in `../R/` and `../steps/`.
 |---|---|
 | India selection and regime | `../output/selected_gauges.csv`, `../output/queue_meta.csv` |
 | India E1/E2 and AUC | `../output/meta_endpoints.csv`, `../output/paired_e1.csv`, `../output/paired_e2.csv` |
+| India strict-target positive | `../output/paired_strict_e1.csv`, `meta_endpoints.csv` row `E1_strict_spi3_target` |
 | India power / MDE | `../output/power_analysis.csv`, `../output/power_grid.csv` |
+| India utilisation slope | `../output/rho_slope.csv` |
 | USA sample and regime | `../output_us/reservoir_core.csv`, `../output_us/reservoir_queue_meta.csv` |
-| USA E1/E2 and AUC | `../output_us/us_meta.csv`, `../output_us/us_paired_e1.csv`, `../output_us/us_paired_e2.csv` |
+| USA E1/E2 and AUC (in-window primary) | `../output_us/us_meta.csv`, `../output_us/us_paired_in_window_e1.csv` |
+| USA full-sample sensitivity | `../output_us/us_meta_full.csv`, `../output_us/us_paired_full_e1.csv` |
 | USA target | `../output_us/usdm_monthly.csv` |
 
 Every CSV has a `.json` sidecar with the git hash, parameters, seed and R

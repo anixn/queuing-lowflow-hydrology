@@ -15,9 +15,11 @@ local({
   root <- normalizePath("D:/Research/queuing-lowflow-hydrology")
   out_dir <- file.path(root, "output_us")
   dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+  Sys.setenv(QDJ_ROOT = root)
+  source(file.path(root, "R", "config.R"))
   suppressMessages(library(data.table))
 
-  base <- "D:/Datasets/Caravan_2025"
+  base <- CARAVAN_ROOT
   ha <- fread(file.path(base, "attributes", "camels",
                         "attributes_hydroatlas_camels.csv"))
   ot <- fread(file.path(base, "attributes", "camels",

@@ -33,10 +33,13 @@ exact verification battery, and every sensitivity axis reported.
 The predeclared confirmatory Brier endpoint is **null**: the paired per-gauge
 improvement from adding queue probability to SSI-3 has a median of about
 `+0.0008` with a two-level bootstrap 95% interval that includes zero. The
-secondary AUC contrast is positive and is reported as **secondary only**.
-The outcome is therefore **Path B (honest null)**: a predeclared multi-catchment
-evaluation plus a utilisation diagnosis. The exact numbers live in
-`analysis/P02_methods/RESULTS_v2.md` and are produced only by the scripts below.
+secondary AUC contrast is positive in India and is reported as **secondary
+only**. A reservoir-centric US pilot is an **exploratory replication**: with the
+same utilisation window it is null on both Brier and AUC, so the ranking signal
+is India-specific, not universal. The outcome is **Path B (honest null)**: a
+predeclared multi-catchment evaluation plus a utilisation diagnosis. The exact
+numbers live in `analysis/P02_methods/RESULTS_v2.md` and
+`analysis/P02_methods/US_PILOT_RESULTS.md`.
 
 ## Run it (from the repository root)
 
@@ -75,13 +78,22 @@ a JSON sidecar with the git hash, parameters, seed and R session.
 | `R/00_utils/` | Unit wall, queue engine, indices, metrics, IO, audit, pipeline |
 | `R/verify/` | 14-test verification battery (gate G1) |
 | `R/run_pipeline.R` | Single compute backbone for stages S2–S7 |
-| `R/analysis/` | Power, sensitivity grid, publication figures |
+| `R/analysis/` | Power, sensitivity grid, publication figures, slope statistics |
+| `R/us_pilot/` | USA reservoir-centric data assembly and evaluation |
+| `R/compare/` | Like-for-like India–US common-protocol comparison |
 | `R/10_data/ … R/50_future/` | R Markdown notebooks (documentation + assertions) |
-| `protocol/PROTOCOL_v2.md` | Locked predeclared protocol (tag `protocol-v2-locked`) |
+| `HELP.md` | Operator's manual: data, steps, outputs, troubleshooting |
+| `steps/` | Numbered executable sequence (India then USA) |
+| `steps/rmd/` | Step-level R Markdown documents |
+| `manuscript/` | HESS draft, extended literature/methods, figure index |
+| `protocol/PROTOCOL_v2.md` | Locked protocol with timing disclosure |
+| `protocol/COMMON_PROTOCOL.md` | Common rules for the like-for-like India–US comparison |
+| `protocol/REDESIGN_PLAN_v2_R.md` | Governing plan (committed for external verification) |
+| `protocol/CHANGELOG.md` | Dated amendments, including the audit response |
 | `output/` | Generated CSVs + `.json` sidecars (regenerable) |
 | `figures/` | Generated PDF + 300-dpi PNG figures |
 | `analysis/P02_methods/RESULTS_v2.md` | Assembled v2 results (numbers referenced, not retyped) |
-| `analysis/P02_methods/data_v1_superseded/` | Audited-defective v1 outputs, provenance only |
+| `analysis/P02_methods/US_PILOT_RESULTS.md` | Exploratory US reservoir pilot results |
 | `P01/`, `analysis/P01_literature/` | Literature audit, frozen gap sentence, search trail |
 | `docs/project/` | Plan, protocol history, session log |
 
@@ -89,10 +101,12 @@ a JSON sidecar with the git hash, parameters, seed and R session.
 
 1. `START_HERE.md` — plain-language orientation and current phase.
 2. `PLAN_SUMMARY.md` — one-page plan, result and next actions.
-3. `protocol/PROTOCOL_v2.md` — what was fixed before the data were unblinded.
-4. `AGENTS.md` — operating rules, frozen novelty sentence, verification protocol.
-5. `analysis/P02_methods/RESULTS_v2.md` — the results with sources.
-6. `docs/project/MERGED_PAPER_PLAN.md` — outcome-contingent paper framing.
+3. `HELP.md` — how to run the numbered sequence.
+4. `manuscript/MANUSCRIPT.md` — the reframed HESS draft.
+5. `protocol/PROTOCOL_v2.md` — the pre-specified design, with timing disclosure.
+6. `AGENTS.md` — operating rules, frozen novelty sentence, verification protocol.
+7. `analysis/P02_methods/RESULTS_v2.md` and `US_PILOT_RESULTS.md` — results with sources.
+8. `docs/project/MERGED_PAPER_PLAN.md` — outcome-contingent paper framing.
 
 ## The frozen novelty sentence
 

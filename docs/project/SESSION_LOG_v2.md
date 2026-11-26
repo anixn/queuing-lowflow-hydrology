@@ -195,6 +195,52 @@ studies:
 
 The verification battery still passes **14/14** after the reorganization.
 
+## 7d. Audit response and reframing (26 November 2026)
+
+The external audit (`REPO_AUDIT_v2_2026-11-26.md`) found the engine and endpoint
+arithmetic sound, but the pre-registration packaging overstated. We accepted the
+audit and implemented Route A.
+
+**Integrity fixes.**
+
+- Committed the governing plan at `protocol/REDESIGN_PLAN_v2_R.md`; added a
+  timing disclosure to `PROTOCOL_v2.md`; added a `code_hash` to every sidecar.
+- Replaced the V0 reconnaissance selection with the **V1** screen computed
+  before selection.
+- Added a **design-event rule** (at least 5 training and 3 test events): 23
+  candidates reduce to **15 endpoint gauges across 8 basins**.
+- Reran the strict-target sensitivity **paired**. It is **positive**: median
+  +0.00397, 95% CI [+0.00013, +0.00949], 12/15, p = 0.0176, AUC +0.038
+  (14/15). This is the buried positive the audit said was contradicted.
+- Primary E1 remains **null**: +0.00204, CI [−0.00187, +0.00415], 10/15,
+  p = 0.151; E2 null.
+
+**Honest tempering.**
+
+- Power at N=15: Brier MDE 0.0037, so the primary null is interpretable; but
+  sign-test power for a +0.05 AUC uplift is only **0.394**, so the ranking
+  signal is secondary and hypothesis-generating, not powered.
+- India ρ slope +0.0066, p = 0.188: the “stressed basins only” rule is a
+  hypothesis, not a demonstrated mechanism.
+- US arm relabelled **exploratory**; with the ρ window the primary sample is 14
+  paired reservoirs and is null on **both** Brier and AUC. The India ranking
+  signal does not replicate.
+
+**Protocol–code alignment.** The blocking guard is enforced; PET substitution is
+flagged; SUP-2 uses training-only quantiles; negative discharge is treated as
+missing; the unused warm-up config is removed; the implemented gap rule is
+recorded in the changelog.
+
+**Reframing.** The paper is now “What queueing can and cannot do for low-flow
+hydrology”, with four contributions: (1) one honest null; (2) one
+target-dependent positive; (3) one verified reusable engine; (4) one zero-flow
+data-quality warning.
+
+The full 14-config sensitivity grid is running on the 15-gauge endpoint set. The
+V0 row already shows a larger apparent Brier gain than V1 (+0.00283 vs +0.00206),
+which is the zero-flow warning in action; `RESULTS_v2.md` §9 will be filled when
+the grid completes.
+
 ## 8. Blocked / disclosed
 
 - `renv` not installed; no lockfile. Documented gap.

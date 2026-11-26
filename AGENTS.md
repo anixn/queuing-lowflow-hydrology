@@ -139,11 +139,12 @@ An agent must never:
 | `output/*.csv` + `.json` | Generated results + provenance | Regenerable; never hand-edit |
 | `figures/*.pdf`, `*.png` | Generated figures | Regenerable |
 | `analysis/P02_methods/RESULTS_v2.md` | Assembled v2 results (numbers referenced) | Active |
-| `analysis/P02_methods/data_v1_superseded/` | Audited-defective v1 outputs | Provenance only |
+| `analysis/P02_methods/US_PILOT_RESULTS.md` | Exploratory US reservoir pilot | Active |
 | `analysis/P01_literature/` | Completed WoS/Scopus audit, citation trace | Evidence record |
-| `P01/` | Manuscript, literature audit, search protocol, Gate B checklist | Active |
-| `P02/` | Legacy P02 package (see `legacy-python` for code) | Superseded |
-| `docs/project/` | Plan, merged-paper plan, session logs | Active |
+| `P01/` | Literature audit, search protocol, data spec, technical note | Active |
+| `R/compare/` | Like-for-like India–US common-protocol comparison | Active |
+| `output_compare/` | Common-protocol results | Regenerable |
+| `docs/project/` | Merged-paper plan and v2 session log | Active |
 
 Treat `R/` as the only writable code. Generated `output/` files must always be
 reproducible by the scripts that wrote them.

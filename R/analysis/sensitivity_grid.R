@@ -44,9 +44,12 @@ local({
   flow <- load_flow()
   meta <- gauge_meta()
   recon <- fread(file.path(OUTPUT_DIR, "_recon_gauge_stats.csv"))
-  strict <- recon[in_window == TRUE & zero_frac < 0.3 & interior_gap <= 30]
+  strict <- recon[zero_frac < 0.3 & interior_gap <= 30]
   zero_audit <- stage2_zero_audit(flow, meta, strict$gauge_id)
   selected <- fread(file.path(OUTPUT_DIR, "selected_gauges.csv"))
+  if ("in_endpoint" %in% names(selected)) {
+    selected <- selected[in_endpoint == TRUE]
+  }
   gids <- selected$gauge_id
   districts <- map_gauges_to_districts(meta[meta$gauge_id %in% gids])
   catchment_all <- stage3_catchment(gids, meta, districts)
