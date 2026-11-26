@@ -190,6 +190,22 @@ old and new results reported side by side in `STUDY.Rmd`):**
   `AGENTS.md` §3.4), submit/retire the current manuscript as a negative-result
   methods note if the owner chooses, and start P1.
 
+> **RESOLVED 26 November 2026 (same day as freezing — the gate ran within the
+> pivot session).** The gate ran after all seven changes were implemented and
+> the battery was green. Result (`output/gateG2_summary.csv`): median paired
+> ΔBrier of `ssi3_plus_queue` over the frozen best-of baseline — India n = 5:
+> −0.0250 [−0.0947, +0.0308], sign 1/5; USA n = 58: −0.0059 [−0.0187, +0.0026],
+> sign 25/60 (SPI-3 sens.: −0.0077 [−0.0216, +0.0016]). **NULL RECORDED**: the
+> queue does not clear the bar — it is *worse* than the honest memory
+> baselines once the ridge penalty is tuned and API/persistence exist. The
+> null is final for the concurrent design; the retired manuscript is retired
+> as a negative-result methods note; **Study P1 starts**. The frozen best-of
+> selection chose `api` for 64/65 gauges (`output/gateG2_bestof_cv.csv`) —
+> the antecedent index is the honest concurrent-lead memory baseline. The
+> sign-test power at the G2 effect size is near zero for all n ≤ 300
+> (`output/p1_power.csv`), confirming FS2: no screen size could have
+> resolved the concurrent design.
+
 **Outputs:** `output/gateG2_summary.csv` (+ sidecar), a decision paragraph
 appended to `STUDY.Rmd`, gate variance table for §4.2.
 
