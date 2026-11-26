@@ -1,0 +1,6 @@
+"gauge_id","region","events_train_spei","events_test_spei","events_train_spi","events_test_spi","lam_bar_train","q_star","K","pet_source","status"
+7005,"India",32,8,40,9,0.0809082295850067,5,30,"shipped_gleam","ok"
+15003,"India",43,4,62,6,0.125305393812175,8,46,"shipped_gleam","ok"
+15009,"India",34,16,39,19,0.0846377990558953,6,31,"shipped_gleam","ok"
+15021,"India",50,11,59,9,0.0787936661494935,5,29,"shipped_gleam","ok"
+12020,"India",34,6,46,7,0.0872074492408999,6,32,"shipped_gleam","ok"

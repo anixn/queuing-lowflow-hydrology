@@ -1,0 +1,12 @@
+{
+  "file": "gateG2_india_meta.csv",
+  "git_hash": "228d53f",
+  "code_hash": "f2e70080626a9f2b631ae4fa012db7f6",
+  "written": "2026-11-26T20:39:01",
+  "nrow": 5,
+  "ncol": 11,
+  "session": {
+    "R": "R version 4.5.1 (2025-06-13 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  }
+}

@@ -127,7 +127,10 @@ stage6_indices <- function(rates) {
   mon[, spei3 := spei3(prcp, pet, date, train)]
   mon[, ssi3 := ssi3(flow, date, train)]
   mon[, ssi6 := ssi6(flow, date, train)]
-  mon[, c("ym", "flow") := NULL]
+  # The monthly mean flow column is KEPT: Study P1's T2 target (monthly
+  # mean flow below the training Q90) reads it. The retired path ignores
+  # it; no name collision exists downstream.
+  mon[, c("ym") := NULL]
   mon
 }
 
@@ -411,29 +414,43 @@ stage7_meta <- function(delta_by_year) {
 # be used for a confirmatory claim.
 stage7_paired_stats <- function(all_preds, a_fam = "ssi3",
                                 b_fam = "ssi3_plus_queue") {
-  a <- all_preds[family == a_fam, .(gauge_id, date, year, y, p_a = p)]
-  b <- all_preds[family == b_fam, .(gauge_id, date, p_b = p)]
-  m <- merge(a, b, by = c("gauge_id", "date"))
+  # Join keys include every design column present (target, lead) so that
+  # different endpoints are never mixed or multiplied in the pairing.
+  keycols <- intersect(c("gauge_id", "target", "lead"), names(all_preds))
+  a <- all_preds[family == a_fam]
+  a <- a[, .SD, .SDcols = c(keycols, "date", "year", "y", "p")]
+  setnames(a, "p", "p_a")
+  b <- all_preds[family == b_fam]
+  b <- b[, .SD, .SDcols = c(keycols, "date", "p")]
+  setnames(b, "p", "p_b")
+  m <- merge(a, b, by = c(keycols, "date"))
   m[, `:=`(brier_a = (p_a - y)^2, brier_b = (p_b - y)^2)]
   out <- m[, .(
     n_months = .N,
     brier_a = mean(brier_a), brier_b = mean(brier_b),
     delta_brier = mean(brier_a) - mean(brier_b),
     auc_a = auc_score(y, p_a), auc_b = auc_score(y, p_b)
-  ), by = gauge_id]
+  ), by = c(keycols)]
+  if ("target" %in% keycols) out[, target := NULL]  # carried by caller
   out[, delta_auc := auc_b - auc_a]
   out
 }
 
 # Paired two-level bootstrap for the confirmatory median Delta_g. Resamples
 # gauges, then years within gauge, recomputing the pooled per-gauge Brier
-# difference from row-level (monthly) paired deltas.
+# difference from row-level (monthly) paired deltas. Key columns handled
+# exactly as in stage7_paired_stats.
 stage7_paired_bootstrap <- function(all_preds, a_fam = "ssi3",
                                     b_fam = "ssi3_plus_queue",
                                     B = 2000L, seed = P$seed) {
-  a <- all_preds[family == a_fam, .(gauge_id, date, year, y, p_a = p)]
-  b <- all_preds[family == b_fam, .(gauge_id, date, p_b = p)]
-  m <- merge(a, b, by = c("gauge_id", "date"))
+  keycols <- intersect(c("gauge_id", "target", "lead"), names(all_preds))
+  a <- all_preds[family == a_fam]
+  a <- a[, .SD, .SDcols = c(keycols, "date", "year", "y", "p")]
+  setnames(a, "p", "p_a")
+  b <- all_preds[family == b_fam]
+  b <- b[, .SD, .SDcols = c(keycols, "date", "p")]
+  setnames(b, "p", "p_b")
+  m <- merge(a, b, by = c(keycols, "date"))
   m[, delta := (p_a - y)^2 - (p_b - y)^2]
   two_level_bootstrap(m$gauge_id, m$year, m$delta, stat = mean,
                       B = B, seed = seed)

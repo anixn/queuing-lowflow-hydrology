@@ -114,6 +114,10 @@ P1_LEADS <- c(1L, 3L, 6L)
 G2_FAMILIES <- c("climatology", "ssi3", "queue", "ssi3_plus_queue",
                  "persistence", "ssi6", "api")
 
+# P1 debug switch: limit the number of gauges per region (0 = all).
+P1_LIMIT <- suppressWarnings(as.integer(Sys.getenv("QDJ_P1_LIMIT", unset = "0")))
+if (is.na(P1_LIMIT)) P1_LIMIT <- 0L
+
 # P1 screen and fit criteria (PIVOT.md §4.2, §4.4, §4.7), frozen before
 # any P1 scoring run:
 P1_MIN_SEGMENTS <- 20L        # recession-quality screen (>=20 segments)

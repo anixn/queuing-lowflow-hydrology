@@ -233,7 +233,9 @@ local({
   NEW_BASELINES <- c("persistence", "ssi6", "api")
   paired_rows <- list()
   paired_one <- function(p, ids, region, target, base_fam) {
-    p <- p[gauge_id %in% ids]
+    # Filter to the requested target so the pairing never mixes endpoints.
+    tgt <- target
+    p <- p[gauge_id %in% ids & target == tgt]
     if (!nrow(p)) return(NULL)
     ps <- stage7_paired_stats(p, base_fam, "ssi3_plus_queue")
     boot <- stage7_paired_bootstrap(p, base_fam, "ssi3_plus_queue")
@@ -332,11 +334,9 @@ local({
       }
       # Frozen best-of contrast (per gauge, selected on training CV).
       if (!is.null(cv) && nrow(cv)) {
+        pbo <- copy(p)[target == tgt]
         bg <- cv[, .(gauge_id, family)][, .(best_family = family[
           which.min(cv_brier)]), by = gauge_id]
-        # Build a synthetic best-of prediction column: for each gauge take
-        # the chosen family's predictions (paired on identical months).
-        pbo <- copy(p)
         pbo <- merge(pbo, bg, by = "gauge_id", all.x = TRUE)
         pbo_keep <- pbo[family == best_family |
                           family == "ssi3_plus_queue"]

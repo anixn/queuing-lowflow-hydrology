@@ -49,6 +49,7 @@ local({
     yr <- as.integer(format(dates, "%Y"))
     # FQ4 discipline: all recession fits on TRAINING years only.
     mask_train <- yr %in% P$train_years & is.finite(q_mm)
+    if (sum(mask_train) < 365) return(NULL)  # unusable training record
     zero_frac <- mean(q_mm == 0, na.rm = TRUE)
     rec <- fit_storage_scale(q_mm, prcp_mm, mask = mask_train,
                              min_len = P1_MIN_SEG_DAYS,
@@ -64,8 +65,13 @@ local({
       n_segments = rec$n_segments, BFI = bfi,
       q10 = stats::quantile(q_mm[mask_train], 0.10, na.rm = TRUE,
                             names = FALSE),
-      q90 = stats::quantile(q_mm[mask_train], 0.90, na.rm = TRUE,
-                            names = FALSE),
+      # q90_m3s: the T2 threshold in the SAME units as the monthly mean
+      # flow that it is compared against (m^3/s daily flow-duration Q90,
+      # training years). q90_mm kept only as a reference column.
+      q90_m3s = stats::quantile(q_obs[mask_train], 0.90, na.rm = TRUE,
+                                names = FALSE),
+      q90_mm = stats::quantile(q_mm[mask_train], 0.90, na.rm = TRUE,
+                               names = FALSE),
       zero_frac = zero_frac, borrowed_parameters = borrowed)
   }
 
@@ -98,18 +104,20 @@ local({
     m[, year := as.integer(format(date, "%Y"))]
     # Storage anomaly vs month-of-year climatology, TRAINING feature
     # years only (1982-2010; warm-up 1980-1981 excluded) [assumption].
-    fy <- year >= P1_FEATURE_START_YEAR & year %in% P$train_years
+    # NOTE: the column is read as m$year -- bare `year` would hit
+    # data.table's exported year() function.
+    fy <- m$year >= P1_FEATURE_START_YEAR & m$year %in% P$train_years
     clim <- m[fy & is.finite(S_m), .(S_bar = mean(S_m), S_sd = stats::sd(S_m)),
               by = month]
     m <- merge(m, clim, by = "month", all.x = TRUE)
-    m[order(date)]
+    m <- m[order(date)]
     m[, S_anom := (S_m - S_bar) / pmax(S_sd, 1e-6)]
     m[, dS1 := S_m - data.table::shift(S_m, 1)]
     m[, dS3 := S_m - data.table::shift(S_m, 3)]
     # Targets (PIVOT.md §4.5). T1: SSI-3 <= -1; T2: monthly mean flow
     # below the TRAINING-period daily Q90 threshold.
     m[, t1 := as.integer(!is.na(ssi3) & ssi3 <= -1)]
-    m[, t2 := as.integer(is.finite(flow) & flow < prm$q90)]
+    m[, t2 := as.integer(is.finite(flow) & flow < prm$q90_m3s)]
     m[, q90_flag := t2]
     # Time-invariant fitted attributes carried as feature columns
     # (they identify nothing within a gauge; they matter for the pooled
@@ -214,23 +222,35 @@ local({
   run_region_p1 <- function(region) {
     cat(sprintf("=== P1 region %s ===\n", region))
     drv <- make_region_driver(region)
+    cat("driver built; ids:", length(drv$ids), "\n")
+    ids <- drv$ids
+    if (P1_LIMIT > 0) ids <- head(ids, P1_LIMIT)
     params <- list()
-    for (g in drv$ids) {
-      r <- drv$get_rates(g)
+    err_msgs <- character(0)
+    for (g in ids) {
+      r <- tryCatch(drv$get_rates(g), error = function(e) {
+        err_msgs <<- c(err_msgs, sprintf("get_rates %s: %s",
+          g, conditionMessage(e)))
+        NULL
+      })
       if (is.null(r)) next
       prm <- tryCatch(
         prepare_gauge(g, r$date, r$q_used, r$prcp_mm, drv$areas[[g]],
                       drv$basins[[g]], region),
-        error = function(e) NULL)
+        error = function(e) {
+          err_msgs <<- c(err_msgs, sprintf("prepare %s: %s",
+            g, conditionMessage(e)))
+          NULL })
       if (is.null(prm)) next
       params[[g]] <- prm
-      if (!(which(drv$ids == g) %% 50)) cat(sprintf("  fits %d/%d\n",
-        which(drv$ids == g), length(drv$ids)))
+      if (!(which(ids == g) %% 50)) cat(sprintf("  fits %d/%d\n",
+        which(ids == g), length(ids)))
     }
     params <- rbindlist(params, fill = TRUE)
     # Borrowing (PIVOT.md §4.4): gauges failing the recession-quality
     # screen borrow the basin-median (k_days, b_s, K_a, S_cap).
     params <- apply_borrowing(params)
+    if (P1_LIMIT > 0) params <- head(params, P1_LIMIT)
     monthly <- list(); screens <- list()
     for (g in params$gauge_id) {
       r <- drv$get_rates(g)
@@ -244,7 +264,10 @@ local({
         sc[, region := region]
         sc[, gauge_id := g]
         list(mm = mm, sc = sc)
-      }, error = function(e) NULL)
+      }, error = function(e) {
+        err_msgs <<- c(err_msgs,
+        sprintf("propagate %s: %s", g, conditionMessage(e)))
+        NULL })
       if (is.null(out)) next
       monthly[[g]] <- out$mm
       screens[[g]] <- out$sc
@@ -252,6 +275,14 @@ local({
         cat(sprintf("  propagated %d/%d\n", which(params$gauge_id == g),
                     nrow(params)))
     }
+    if (length(err_msgs)) {
+      cat("ERROR MESSAGES (first 10):\n")
+      cat(paste(head(err_msgs, 10), collapse = "\n"), "\n")
+      writeLines(err_msgs, file.path(OUTPUT_DIR, "p1_errors.txt"))
+    }
+    cat(sprintf("run_region_p1 done: params=%d rows, monthly=%d, screens=%d\n",
+                nrow(params), length(monthly),
+                nrow(rbindlist(screens, fill = TRUE))))
     list(monthly = monthly, params = params,
          screens = rbindlist(screens, fill = TRUE))
   }
@@ -265,8 +296,10 @@ local({
   screen_table <- function(rg) {
     p <- rg$params
     s <- rg$screens
-    d <- merge(s, p[, .(gauge_id, n_segments, zero_frac, BFI, k_days,
-                        S_cap_mm, borrowed_parameters)],
+    # s (common_screen) already carries zero_frac and n_segments; the
+    # params side adds only the fitted columns, so no duplicate names.
+    d <- merge(s, p[, .(gauge_id, BFI, k_days, S_cap_mm,
+                        borrowed_parameters)],
                by = "gauge_id")
     # Event counts and month-completeness from the monthly tables. A
     # month is complete when every day is present (month_complete rule);
@@ -295,7 +328,11 @@ local({
     d[, pass_recession := !is.na(n_segments) & n_segments >= P1_MIN_SEGMENTS]
     d[]
   }
-  ind_scr2 <- screen_table(ind)
+  ind_scr2 <- tryCatch(screen_table(ind), error = function(e) {
+    cat("FAIL in screen_table\n")
+    cat(utils::capture.output(traceback()), sep = "\n")
+    stop(e)
+  })
   write_csv_sidecar(ind_scr2, file.path(OUTPUT_DIR, "p1_sample_report.csv"))
   write_csv_sidecar(ind$params, file.path(OUTPUT_DIR, "p1_storage_params.csv"))
 
@@ -449,19 +486,28 @@ local({
     }
   }
   p1_summ <- rbindlist(summ_rows, fill = TRUE)
+  if (!nrow(p1_summ)) {
+    cat("India scored no gauges; check p1_errors.txt / p1_sample_report.csv.\n")
+    write_csv_sidecar(data.table(gauge_id = character(),
+                                 n_segments = integer()),
+                      file.path(OUTPUT_DIR, "p1_storage_params.csv"))
+    quit(status = 1, save = "no")
+  }
 
   # Confirmatory decision table (frozen §4.10 criteria applied as written).
   conf <- p1_summ[target == "t1" & baseline == "bestof"]
-  conf[, hypothesis := fifelse(lead == 3, "H1 (confirmatory)",
-                        fifelse(lead == 6, "H2 (confirmatory)",
-                                "H0 (descriptive: parity expected)"))]
-  conf[, criterion_median_pos := median_delta > 0]
-  conf[, criterion_ci_excl0 := boot_lo > 0]
-  conf[, criterion_sign60 := sign_share >= 0.60]
-  conf[, verdict := fifelse(
-    lead == 1, "descriptive (H0): report as predicted parity/null",
-    fifelse(criterion_median_pos & criterion_ci_excl0 & criterion_sign60,
-            "PASS", "FAIL"))]
+  if (nrow(conf)) {
+    conf[, hypothesis := fifelse(lead == 3, "H1 (confirmatory)",
+                          fifelse(lead == 6, "H2 (confirmatory)",
+                                  "H0 (descriptive: parity expected)"))]
+    conf[, criterion_median_pos := !is.na(median_delta) & median_delta > 0]
+    conf[, criterion_ci_excl0 := !is.na(boot_lo) & boot_lo > 0]
+    conf[, criterion_sign60 := !is.na(sign_share) & sign_share >= 0.60]
+    conf[, verdict := fifelse(
+      lead == 1, "descriptive (H0): report as predicted parity/null",
+      fifelse(criterion_median_pos & criterion_ci_excl0 & criterion_sign60,
+              "PASS", "FAIL"))]
+  }
   write_csv_sidecar(p1_summ, file.path(OUTPUT_DIR, "p1_summary.csv"))
   write_csv_sidecar(conf, file.path(OUTPUT_DIR, "p1_confirmatory.csv"))
   write_csv_sidecar(ind_pair$paired,
@@ -511,18 +557,22 @@ local({
       }
     }
     us_summ <- rbindlist(us_rows, fill = TRUE)
-    write_csv_sidecar(us_summ, file.path(OUTPUT_DIR, "p1_summary_usa.csv"))
-    write_csv_sidecar(us_pair$paired,
-                      file.path(OUTPUT_DIR, "p1_paired_usa.csv"))
-    write_csv_sidecar(us_fit$bss, file.path(OUTPUT_DIR, "p1_bss_usa.csv"))
-    write_csv_sidecar(us_fit$preds, file.path(OUTPUT_DIR,
-                                              "p1_predictions_usa.csv"))
-    write_csv_sidecar(us_pair$best_sel,
-                      file.path(OUTPUT_DIR, "p1_bestof_selection_usa.csv"))
-    write_csv_sidecar(us_fit$metrics,
-                      file.path(OUTPUT_DIR, "p1_metrics_usa.csv"))
-    cat("\n=== USA transfer check (descriptive) ===\n")
-    print(us_summ[target == "t1" & baseline == "bestof"])
+    if (!nrow(us_summ)) {
+      cat("USA transfer arm scored no gauges; skipping its outputs.\n")
+    } else {
+      write_csv_sidecar(us_summ, file.path(OUTPUT_DIR, "p1_summary_usa.csv"))
+      write_csv_sidecar(us_pair$paired,
+                        file.path(OUTPUT_DIR, "p1_paired_usa.csv"))
+      write_csv_sidecar(us_fit$bss, file.path(OUTPUT_DIR, "p1_bss_usa.csv"))
+      write_csv_sidecar(us_fit$preds, file.path(OUTPUT_DIR,
+                                                "p1_predictions_usa.csv"))
+      write_csv_sidecar(us_pair$best_sel,
+                        file.path(OUTPUT_DIR, "p1_bestof_selection_usa.csv"))
+      write_csv_sidecar(us_fit$metrics,
+                        file.path(OUTPUT_DIR, "p1_metrics_usa.csv"))
+      cat("\n=== USA transfer check (descriptive) ===\n")
+      print(us_summ[target == "t1" & baseline == "bestof"])
+    }
   }
 
   cat("\nP1 study complete. All outputs written with sidecars.\n")

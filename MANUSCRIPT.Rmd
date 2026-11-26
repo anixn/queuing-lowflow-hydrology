@@ -1,5 +1,5 @@
 ---
-title: "A deficit queue for hydrological drought: one pre-specified test in India and the United States"
+title: "Recession-calibrated storage states for seasonal hydrological-drought and low-flow forecasting in Indian catchments"
 author: "A. Deshmukh"
 date: "26 November 2026"
 output:
@@ -28,346 +28,102 @@ if (!file.exists(file.path(root, ".qdj_root"))) root <- getwd()
 source(file.path(root, "R", "config.R"))
 suppressMessages(library(data.table))
 OUT <- function(f) file.path(OUTPUT_DIR, f)
-summ <- if (file.exists(OUT("region_summary.csv")))
-  fread(OUT("region_summary.csv")) else NULL
-dtab <- if (file.exists(OUT("region_difference.csv")))
-  fread(OUT("region_difference.csv")) else NULL
-getv <- function(tgt, reg, col) {
-  if (is.null(summ)) return(NA_real_)
-  z <- summ[summ$target == tgt & summ$region == reg]
-  if (!nrow(z)) NA_real_ else z[[col]][1]
-}
-f3 <- function(x) sprintf("%+.3f", x)
-f4 <- function(x) sprintf("%+.4f", x)
-fp <- function(x) ifelse(is.na(x), "--", sprintf("%.3f", x))
+rd <- function(f) if (file.exists(OUT(f))) fread(OUT(f)) else NULL
+conf <- rd("p1_confirmatory.csv")
+s1 <- rd("p1_sample_report.csv")
+bss <- rd("p1_bss.csv")
 ```
 
 <!-- =====================================================================
-     FRAGMENT DRAFT. Each bullet is a clause or phrase; join them into
-     sentences. Do not read the bullets as final prose.
+     FRAGMENT DRAFT for Study P1 (PIVOT.md §4.11). Numbers are knitted
+     from output/*.csv written by R/study_p1.R; no number appears here
+     without the script that produced it.
      ===================================================================== -->
 
 # Abstract
 
-- drought read as a queue of unmet irrigation demand
-- arrivals $\lambda(t)$ from climate demand, service $\mu(t)$ from streamflow
-- backlog $Q$, finite capacity $K$, reneging, severe-state threshold $q^\star$
-- queue-state indicators: $\mathbb{E}[Q]$, $\Pr(Q \ge q^\star)$, unmet volume, recovery time
-- one identical protocol in India (CAMELS-IND) and the USA (Caravan-US)
-- catchment unit; catchment SPEI-3 target from own precipitation and Hargreaves ET0
-- same demand ($K_c = 0.8$, $f_{\text{irr}} = 0.10$), same supply (SUP-1), same split (1981--2010 / 2011--2020)
-- same screen, same eight families, same paired Brier contrast, same two-level bootstrap
-- engine verified against exact stationary solution, RK4 and Gillespie simulation (15/15 checks)
-- result India: `r f4(getv("SPEI-3","India","median_delta"))` median $\Delta$Brier, 95% CI [`r f4(getv("SPEI-3","India","boot_lo"))`, `r f4(getv("SPEI-3","India","boot_hi"))`], `r getv("SPEI-3","India","sign_k")`/`r getv("SPEI-3","India","sign_n")` catchments improve
-- result USA: `r f4(getv("SPEI-3","USA","median_delta"))`, 95% CI [`r f4(getv("SPEI-3","USA","boot_lo"))`, `r f4(getv("SPEI-3","USA","boot_hi"))`], `r getv("SPEI-3","USA","sign_k")`/`r getv("SPEI-3","USA","sign_n")`
-- region difference: `r f4(dtab[target=="SPEI-3"]$difference)`, 95% CI [`r f4(dtab[target=="SPEI-3"]$diff_lo)`, `r f4(dtab[target=="SPEI-3"]$diff_hi)`]
-- SPI-3 sensitivity target: India `r f4(getv("SPI-3","India","median_delta"))`, USA `r f4(getv("SPI-3","USA","median_delta"))`
-- no general calibrated-probability advantage; a small, target-consistent signal in the larger US sample
-- contributions: one common protocol; one verified engine; one small, sample-dependent signal; one zero-flow data-quality warning
+*Fragment.* Hydrological drought and low-flow forecasting at sub-seasonal to
+seasonal leads is a memory problem: fresh indices decay while catchment
+storage persists. We evaluate a recession-calibrated storage-deficit state —
+fitted per catchment from its own training-year recessions (baseflow index,
+recession constant, storage-outflow inversion for the storage scale) and
+propagated by a mass-balance-verified fluid water balance — as a forecasting
+feature across the CAMELS-IND large sample. The confirmatory question,
+pre-registered before any test-year scoring, is whether the storage state
+added to lagged standard indices beats the best of persistence, lagged
+indices and an antecedent precipitation index at 3- and 6-month leads,
+measured as paired per-gauge Brier differences on identical held-out months
+(2011–2020) with a two-level block bootstrap. `[result sentence filled from
+output/p1_confirmatory.csv once H1/H2 are scored.]` All state estimation is
+verified by an exact three-way agreement (analytic recession solution,
+fluid propagator, per-day ledger to 1e−9) and a 21-check battery; all
+thresholds, screens, standardisation and tuning use training years only.
 
-# Introduction
+# Why the queue study retired
 
-## Drought as a deficit, not only an index
+*Fragment.* The predecessor design read drought as a deficit queue. Its
+confirmatory result (+0.002 Brier over SSI-3, 1–3 % relative; India arm
+unresolvable at n = 12 of 472) was diagnosed as a design artefact: the queue
+carried no information its benchmark lacked; the M/M/1/K class imported
+artefact parameters (reneging, a service boost, blocking) with no
+hydrological referent; and the utilisation screen selected catchments where
+five assumed constants self-agree. The corrected re-run (Gate G2), with
+dataset PET, a measured irrigated fraction, training-only thresholds and
+honest memory baselines, is recorded in `STUDY.Rmd`; the queue is retired
+from the forecasting path and retained only for climate-projection
+reliability (Study P3), where its quantities are the product rather than a
+benchmark contest.
 
-- drought is a persistent water deficit with meteorological, agricultural, hydrological and socio-economic faces (Wilhite & Glantz, 1985; Mishra & Singh, 2010)
-- hydrological drought is the slowest to develop and the slowest to recover (Tallaksen & Van Lanen, 2004; Van Loon, 2015)
-- operational practice compresses the deficit into an index
-- SPI from precipitation (McKee et al., 1993)
-- SPEI from precipitation minus potential evapotranspiration (Vicente-Serrano et al., 2010)
-- SSI from streamflow; review in Heim (2002)
-- indices answer "how dry", not "how much demand is unmet, for how long, and how close to failure"
-- the missing object is the accumulated deficit state and its capacity
+# The storage state
 
-## The queue analogy is old, and that matters
+*Fragment.* The state is millimetres of catchment storage:
+$S(t+1) = \mathrm{clip}(S + P_e - E_a - Q_g, 0, S_{cap})$ with effective
+input $P_e = \max(P - \varphi_m P, 0)$, supply-limited actual
+evaporation $E_a = \min(\mathrm{PET}\,K_{c,m}, S + P_e)$ and a recession
+release $Q_g = \min((K_a S)^{b_s}, S)$. $k$, $p$ (hence $b_s = 1/(2-p)$ and
+$K_a = a/b_s$) and $S_{cap}$ come from censored recession segments of the
+training record (Brutsaert-type inversion; 95th percentile of implied
+storage); gauges with fewer than 20 segments borrow basin medians and are
+flagged. Zero-flow days are censored: the state sits at its floor through a
+zero-flow spell. Observed discharge never enters as a daily input — Q enters
+only through the fitted recession law, which is what keeps the state's
+memory different from a smoothed flow.
 
-- storage theory was framed as queueing theory by Langbein (1958)
-- reservoir storage as a queue, inflow as arrivals, release as service
-- the analogy was reclaimed, not discovered, here
-- queueing returned to hydrology through runoff--runon (Harel & Mouche, 2013, 2014; Mouche & Harel, 2016; Jones et al., 2016)
-- groundwater management as a queue (Batabyal, 1996)
-- irrigation allocation as a queue (Prajamwong et al., 1997; Yang et al., 2016)
-- time-varying and correlated arrival queues are well developed (Bogachev et al., 2023, 2024)
-- learning and control for queues is a mature field (Asanjarani et al., 2021)
-- therefore the novelty is not "queues in hydrology" and not "learning queues"
-- the open junction is hydrological parameterisation + deficit interpretation + exact validation + pre-specified drought tests
+# Confirmatory design
 
-## What this paper does
-
-- reads drought as a finite-capacity queue of unmet irrigation demand
-- estimates $\lambda(t)$ from catchment climate (precipitation and Hargreaves ET0) and $\mu(t)$ from observed streamflow
-- reports queue-state quantities as drought quantities
-- tests the queue against SSI-3 on a catchment SPEI-3 target
-- applies exactly one protocol in two regions
-- reports a small US signal, a null in India, and no regional difference
-- reports the engine as a reusable contribution
-- reports a zero-flow data-quality warning
-- the frozen scope statement (21 November 2026, quoted verbatim):
-  "Within Crossref, OpenAlex, the complete WoS S1--S5 / Extra A/B/C screens (142 records) and the completed Scopus S1--S5 / Extra A/C screens (295 records), plus the citation traces, we found no study that puts all four of these together: (1) drought as an accumulated unmet-demand backlog with a finite-capacity state; (2) queue-state indicators reported as drought quantities; (3) non-stationary rates estimated from hydroclimatic covariates; (4) validation against exact reference solutions and pre-specified drought tests."
-- hypotheses, fixed before the common run
-- H1: adding queue state to SSI-3 lowers the paired Brier score for SPEI-3 drought
-- H2 (exploratory): the improvement is larger where utilisation $\rho$ is higher
-- H3: the result is the same in both regions
-
-# Data
-
-- India: CAMELS-IND, 472 gauges, daily precipitation, minimum/maximum/mean temperature and streamflow (Mangukiya et al., 2025)
-- USA: Caravan-US, 671 gauges, the same variables (Kratzert et al., 2023)
-- unit: gauge catchment in both regions
-- catchment area explicit: $A_{\text{cmd}} = f_{\text{irr}} A_{\text{catchment}}$, $f_{\text{irr}} = 0.10$
-- one claim is $d = 20$ mm over $A_{\text{cmd}}$
-- no district soil-moisture product
-- no US Drought Monitor
-- no reservoir record
-- no remote-sensing evapotranspiration
-- period 1981--2020; training 1981--2010, test 2011--2020
-
-# Methods
-
-## Demand rate
-
-- Hargreaves--Samani reference ET0 from temperature range and extraterrestrial radiation (Hargreaves & Samani, 1985)
-- no radiation input, so the same equation is valid in both regions
-- daily unmet depth: $\text{need}(t) = \max[K_c \mathrm{ET}_0(t) - \phi P(t), 0]$
-- common crop coefficient $K_c = 0.8$ [assumption]
-- effective-rain fraction $\phi = 0.7$ [assumption]
-- arrival rate $\lambda(t) = \text{need}(t)/d$, in claims per day
-
-## Supply rate
-
-- observed flow $Q(t)$ in m$^3$ s$^{-1}$
-- firm share $s_{\text{firm}} = 0.5$ [assumption]
-- delivery cap 10 mm day$^{-1}$ [assumption]
-- $\mu(t) = d^{-1}\min\{Q(t)\,86400\,s_{\text{firm}} A_{\text{cmd}}^{-1} 1000,\ \text{cap}\}$
-
-## Queue state
-
-- finite-capacity continuous-time birth--death chain on $Q \in \{0,\dots,K\}$
-- Poisson arrivals and exponential service [assumption]
-- reneging at rate $\eta$ above threshold $\theta$
-- service boost $\alpha$ above $\theta$
-- thresholds: $q^\star = \lceil 60\bar\lambda\rceil$, $K = \min\{80,\max(25,\lceil 365\bar\lambda\rceil)\}$, $\theta = \lceil 1.5 q^\star\rceil$
-- parameters $\alpha = 1.5$, $\eta = 1/60$ day$^{-1}$
-- solved by RK4 with the stability cap $\Delta t\,\max|\text{eigenvalue}| \le 2.78$
-- exact stationary solution from the product form
-- discrete-event Gillespie/thinning simulation as the third check
-- 15/15 verification checks in `R/verify.R`
-
-## Target and benchmark indices
-
-- SPEI-3 from the catchment's own $P$ and $\mathrm{ET}_0$ (Vicente-Serrano et al., 2010)
-- three-month accumulation $D_3(t) = \sum_{i=0}^{2}[P(t-i) - \mathrm{ET}_0(t-i)]$
-- standardized per calendar month on training years only
-- target $Y(t) = 1[\text{SPEI-3}(t) \le -1]$
-- SPI-3 from precipitation, gamma fit per calendar month on training years (McKee et al., 1993)
-- SSI-3 from $\log(1+Q)$, standardized per calendar month on training years
-- standardization on training years only keeps the target leakage-free
-
-## Screen and design
-
-- utilisation $\rho = \bar\lambda/\bar\mu$ in $[0.15, 1.20]$
-- zero-flow fraction below 0.30
-- largest interior gap at most 30 days
-- at least 1095 training days and 730 test days
-- at least 5 training and 3 test design events
-- at most 3 catchments per basin (US basin = HUC4)
-- at most 60 catchments per region
-- missing days never interpolated
-- a missing day pauses the queue
-- any month containing a missing day is excluded from indices and target
-- eight model families, ridge logistic regression with month dummies
-- standardized on training rows only
-- confirmatory contrast $\Delta_g = \text{Brier}_g(\text{SSI-3}) - \text{Brier}_g(\text{SSI-3 + queue})$
-- paired on identical held-out months
-- median over catchments with a two-level bootstrap (gauges, then years)
-- one-sided sign test reported alongside
-- SPEI-3 primary; SPI-3 sensitivity; families using SPEI-3 as a predictor are descriptive only
+*Fragment.* Two confirmatory contrasts (H1: 3-month lead; H2: 6-month lead),
+each `storage_plus_indices` vs the per-gauge best-of
+{persistence, lagged indices, API} frozen on training-year CV; H0 at
+1-month lead is declared in advance as the parity/null expectation. Screens
+are completeness and event-count only. Headline metric: Brier skill score
+vs climatology; paired per-gauge deltas on identical held-out months;
+two-level block bootstrap; sign test at ≥ 60 % consistency; a declared harm
+bound lists degraded gauges individually. **Announced limitation:** the
+storage state is a different transform of the same record, not independent
+information.
 
 # Results
 
-## Sample
-
-- India: screen and paired counts from `output/india_screen.csv` and `output/india_paired.csv`
-- USA: screen and paired counts from `output/usa_screen.csv` and `output/usa_paired.csv`
-- `r if (!is.null(summ)) sprintf("%d India and %d USA catchments enter the paired test", summ[target=="SPEI-3" & region=="India"]$n, summ[target=="SPEI-3" & region=="USA"]$n)`
-
-```{r map, fig.cap="Study regions. (a) India, full outline and state boundaries from the Drought Intelligence Explorer, with all screened CAMELS-IND gauges (grey) and the paired catchments (blue). (b) Conterminous USA, with all screened Caravan-US gauges (grey) and the paired catchments (orange).", out.width="100%"}
-knitr::include_graphics(file.path(FIG_DIR, "fig_study_map.pdf"))
+```{r results-confirmatory, eval=!is.null(conf), fig.height=4.2}
+knitr::kable(conf[, .(hypothesis, lead, n,
+  median_delta = sprintf("%+.4f", median_delta),
+  CI = sprintf("[%+.4f, %+.4f]", boot_lo, boot_hi),
+  sign = sprintf("%d/%d", sign_k, sign_n), verdict)],
+  caption = "Confirmatory contrasts (India). Source: output/p1_confirmatory.csv.")
 ```
 
-## Primary target: catchment SPEI-3
-
-```{r tab-primary}
-if (!is.null(summ)) {
-  z <- summ[target == "SPEI-3"]
-  z[, `:=`(
-    dB = sprintf("%+.4f", median_delta),
-    ci = sprintf("[%+.4f, %+.4f]", boot_lo, boot_hi),
-    sign = sprintf("%d/%d", sign_k, sign_n),
-    pv = sprintf("%.3f", sign_p),
-    dA = sprintf("%+.4f", median_dauc))]
-  knitr::kable(
-    z[, .(region, n, dB, ci, sign, pv, dA)],
-    format = "latex", booktabs = TRUE,
-    col.names = c("Region", "n", "Median dBrier", "95 pct CI",
-                  "Sign", "p", "Median dAUC"),
-    caption = "Paired improvement for the primary SPEI-3 target. Positive values favour the queue."
-  )
-}
+```{r results-bss, eval=!is.null(bss), fig.height=4.2}
+med <- bss[is.finite(bss), .(bss_med = stats::median(bss)),
+           by = .(family, lead, target)]
+tw <- dcast(med, family + target ~ lead, value.var = "bss_med")
+knitr::kable(tw, digits = 4,
+  caption = "Median Brier skill score vs climatology by family and lead (India). Source: output/p1_bss.csv.")
 ```
 
-- India: `r f4(getv("SPEI-3","India","median_delta"))` median $\Delta$Brier, 95% CI [`r f4(getv("SPEI-3","India","boot_lo"))`, `r f4(getv("SPEI-3","India","boot_hi"))`]
-- India sign test `r getv("SPEI-3","India","sign_k")`/`r getv("SPEI-3","India","sign_n")`, $p = `r fp(getv("SPEI-3","India","sign_p"))`$
-- India median $\Delta$AUC `r f4(getv("SPEI-3","India","median_dauc"))`
-- USA: `r f4(getv("SPEI-3","USA","median_delta"))`, 95% CI [`r f4(getv("SPEI-3","USA","boot_lo"))`, `r f4(getv("SPEI-3","USA","boot_hi"))`]
-- USA sign test `r getv("SPEI-3","USA","sign_k")`/`r getv("SPEI-3","USA","sign_n")`, $p = `r fp(getv("SPEI-3","USA","sign_p"))`$
-- USA median $\Delta$AUC `r f4(getv("SPEI-3","USA","median_dauc"))`
-- harmful catchments ($\Delta$Brier $< -0.005$): India `r getv("SPEI-3","India","harm")`, USA `r getv("SPEI-3","USA","harm")`
-- region difference `r f4(dtab[target=="SPEI-3"]$difference)`, 95% CI [`r f4(dtab[target=="SPEI-3"]$diff_lo)`, `r f4(dtab[target=="SPEI-3"]$diff_hi)`]
-- the difference interval includes zero
+# What remains open
 
-## Sensitivity target: catchment SPI-3
-
-- India: `r f4(getv("SPI-3","India","median_delta"))`, 95% CI [`r f4(getv("SPI-3","India","boot_lo"))`, `r f4(getv("SPI-3","India","boot_hi"))`], `r getv("SPI-3","India","sign_k")`/`r getv("SPI-3","India","sign_n")`
-- USA: `r f4(getv("SPI-3","USA","median_delta"))`, 95% CI [`r f4(getv("SPI-3","USA","boot_lo"))`, `r f4(getv("SPI-3","USA","boot_hi"))`], `r getv("SPI-3","USA","sign_k")`/`r getv("SPI-3","USA","sign_n")`
-- region difference `r f4(dtab[target=="SPI-3"]$difference)`, 95% CI [`r f4(dtab[target=="SPI-3"]$diff_lo)`, `r f4(dtab[target=="SPI-3"]$diff_hi)`]
-- the SPI-3 target is a precipitation-only deficit; SPEI-3 also includes the evaporative demand that drives $\lambda(t)$
-
-```{r fig-region, fig.cap="Regional median paired improvement for the primary SPEI-3 target and the SPI-3 sensitivity target. Bars are two-level bootstrap 95\\% intervals; dashed line is no improvement.", out.width="92%"}
-knitr::include_graphics(file.path(FIG_DIR, "fig_region.pdf"))
-```
-
-```{r fig-paired, fig.cap="Per-catchment paired Brier improvement for the primary SPEI-3 target. Diamonds are regional medians; values above zero favour the queue.", out.width="92%"}
-knitr::include_graphics(file.path(FIG_DIR, "fig_paired_brier.pdf"))
-```
-
-## Utilisation
-
-- the utilisation window is a screening rule, not a result
-- exploratory link between $\rho$ and $\Delta$Brier within each region
-
-```{r util-corr}
-corr_one <- function(reg) {
-  s <- fread(OUT(sprintf("%s_screen.csv", reg)))
-  p <- fread(OUT(sprintf("%s_paired.csv", reg)))
-  m <- merge(
-    s[, .(gauge_id = as.character(gauge_id), rho)],
-    p[, .(gauge_id = as.character(gauge_id), delta_brier)],
-    by = "gauge_id")
-  m <- m[is.finite(rho) & is.finite(delta_brier)]
-  if (nrow(m) < 5) return(c(estimate = NA_real_, p.value = NA_real_, n = nrow(m)))
-  ct <- suppressWarnings(stats::cor.test(m$rho, m$delta_brier, method = "spearman"))
-  c(estimate = unname(ct$estimate), p.value = ct$p.value, n = nrow(m))
-}
-ci <- corr_one("india"); cu <- corr_one("usa")
-```
-
-- India Spearman $\rho_s = `r sprintf("%+.2f", ci["estimate"])`$, $p = `r fp(ci["p.value"])`$, $n = `r ci["n"]`$
-- USA Spearman $\rho_s = `r sprintf("%+.2f", cu["estimate"])`$, $p = `r fp(cu["p.value"])`$, $n = `r cu["n"]`$
-- this is descriptive and was not part of the confirmatory contrast
-
-```{r fig-utilisation, fig.cap="Distribution of catchment utilisation $\\rho = \\bar\\lambda/\\bar\\mu$ in the two regions. Shaded band is the predeclared admissible window 0.15--1.20.", out.width="92%"}
-knitr::include_graphics(file.path(FIG_DIR, "fig_utilisation.pdf"))
-```
-
-# Discussion
-
-## What the result says
-
-- under one common protocol the queue does not add a general calibrated-probability gain
-- a small positive signal appears in the larger US sample for SPEI-3
-- the same contrast is null in the 12-catchment India sample
-- the region difference is not distinguishable from zero
-- the sign is consistent with target alignment: SPEI-3 is a climate water deficit, and the queue demand is also a climate water deficit
-- the effect is small: about `r f4(getv("SPEI-3","USA","median_delta"))` Brier units
-- ranking changes little: median $\Delta$AUC `r f4(getv("SPEI-3","USA","median_dauc"))` in the USA
-
-## Why the earlier larger signal does not survive
-
-- earlier work on the same data used a district soil-moisture target and a kharif demand envelope
-- both choices are region-specific and were removed here
-- the common protocol uses a constant $K_c = 0.8$ and a catchment SPEI-3 target
-- once the method is identical, the large target-dependent gain disappears
-- this is the point of the comparability test, not a failure of the queue
-
-## What the queue still gives
-
-- an explicit backlog state $Q$
-- severe-state probability $\Pr(Q \ge q^\star)$
-- unmet-volume accounting through the conservation ledger
-- recovery time from first passage
-- these are descriptive quantities that indices do not provide
-- Langbein's storage analogy is thereby made operational at catchment scale
-- the engine is reusable beyond this test (Harel & Mouche, 2013; Mouche & Harel, 2016)
-
-## Assumptions and limits
-
-- demand is a Stage-A envelope, not measured irrigation
-- $K_c$, $\phi$, $s_{\text{firm}}$ and the cap are stated assumptions
-- Poisson arrivals and exponential service
-- Hargreaves ET0 is temperature-based
-- SPEI-3 and SSI-3 are catchment-scale proxies, not management records
-- 12 India catchments give a wide interval
-- the 60-catchment US cap trades power for balance
-- zero-flow days in CAMELS-IND may be measured no-flow or a coding convention
-- zeros are used as recorded; the alternative must be reported alongside
-
-## What would change the answer
-
-- measured irrigation deliveries for $\lambda(t)$
-- independent canal and reservoir operation records for $\mu(t)$ and $K$
-- a strictly external drought benchmark not derived from the same climate inputs
-- a larger paired sample in India
-- a pre-specified test in a third region
-
-# Conclusion
-
-- a deficit queue is a coherent way to state what drought costs in unmet demand
-- it is not a general replacement for calibrated SPI, SPEI or SSI probabilities
-- under one identical protocol, the gain is small in the USA and absent in India
-- the durable contributions are the common protocol, the verified engine and the data-quality warning
-- the frozen novelty sentence is unchanged
-- the result is reported as a small, sample-dependent signal, not a universal win
-
-# References
-
-\noindent\hangindent=1.2em Asanjarani, A., Nazarathy, Y., & Taylor, P. (2021). A survey of parameter and state estimation in queues. \emph{Queueing Systems, 97}(1--2), 39--80. <https://doi.org/10.1007/s11134-021-09688-w>
-
-\noindent\hangindent=1.2em Batabyal, A. A. (1996). The queuing theoretic approach to groundwater management. \emph{Ecological Modelling, 85}(2--3), 219--227. <https://doi.org/10.1016/0304-3800(94)00178-2>
-
-\noindent\hangindent=1.2em Bogachev, M. I., Kuzmenko, A. V., Markelov, O. A., Pyko, N. S., & Pyko, S. A. (2023). Approximate waiting times for queuing systems with variable long-term correlated arrival rates. \emph{Physica A, 614}, 128513. <https://doi.org/10.1016/j.physa.2023.128513>
-
-\noindent\hangindent=1.2em Bogachev, M. I., Pyko, N. S., Tymchenko, N., Pyko, S. A., & Markelov, O. A. (2024). Approximate waiting times for queuing systems with variable cross-correlated arrival rates. \emph{Physica A, 654}, 130152. <https://doi.org/10.1016/j.physa.2024.130152>
-
-\noindent\hangindent=1.2em Harel, M.-A., & Mouche, E. (2013). 1-D steady state runoff production in light of queuing theory: Heterogeneity, connectivity, and scale. \emph{Water Resources Research, 49}(12), 7973--7991. <https://doi.org/10.1002/2013WR013596>
-
-\noindent\hangindent=1.2em Harel, M.-A., & Mouche, E. (2014). Is the connectivity function a good indicator of soil infiltrability distribution and runoff flow dimension? \emph{Earth Surface Processes and Landforms, 39}(11), 1514--1525. <https://doi.org/10.1002/esp.3604>
-
-\noindent\hangindent=1.2em Hargreaves, G. H., & Samani, Z. A. (1985). Reference crop evapotranspiration from temperature. \emph{Applied Engineering in Agriculture, 1}(2), 96--99. <https://doi.org/10.13031/2013.26773>
-
-\noindent\hangindent=1.2em Heim, R. R. (2002). A review of twentieth-century drought indices used in the United States. \emph{Bulletin of the American Meteorological Society, 83}(8), 1149--1165.
-
-\noindent\hangindent=1.2em Jones, O. D., Lane, P. N. J., & Sheridan, G. J. (2016). The stochastic runoff-runon process: Extending its analysis to a finite hillslope. \emph{Journal of Hydrology, 541}, 677--688. <https://doi.org/10.1016/j.jhydrol.2016.06.056>
-
-\noindent\hangindent=1.2em Kratzert, F., Nearing, G., Addor, N., Erickson, T., Gauch, M., Gilon, O., Gudmundsson, L., Hassidim, A., Klotz, D., Nevo, S., Shalev, G., & Matias, Y. (2023). Caravan: A global community dataset for large-sample hydrology. \emph{Scientific Data, 10}, 61. <https://doi.org/10.1038/s41597-023-01975-w>
-
-\noindent\hangindent=1.2em Langbein, W. B. (1958). Queuing theory and water storage. \emph{Journal of the Hydraulics Division, 84}(5), 1--24. <https://doi.org/10.1061/JYCEAJ.0000222>
-
-\noindent\hangindent=1.2em Mangukiya, N. K., Kumar, K. B., Dey, P., Sharma, S., Bejagam, V., Mujumdar, P. P., & Sharma, A. (2025). CAMELS-IND: Hydrometeorological time series and catchment attributes for 228 catchments in Peninsular India. \emph{Earth System Science Data, 17}(2), 461--491. <https://doi.org/10.5194/essd-17-461-2025>
-
-\noindent\hangindent=1.2em McKee, T. B., Doesken, N. J., & Kleist, J. (1993). The relationship of drought frequency and duration to time scales. In \emph{Proceedings of the 8th Conference on Applied Climatology} (pp. 179--184). American Meteorological Society.
-
-\noindent\hangindent=1.2em Mishra, A. K., & Singh, V. P. (2010). A review of drought concepts. \emph{Journal of Hydrology, 391}(1--2), 202--216. <https://doi.org/10.1016/j.jhydrol.2010.07.012>
-
-\noindent\hangindent=1.2em Mouche, E., & Harel, M.-A. (2016). Overland flow as a queueing process: The B/D/1 queue with an arbitrary service time. \emph{Performance Evaluation, 106}, 19--29. <https://doi.org/10.1016/j.peva.2016.10.001>
-
-\noindent\hangindent=1.2em Prajamwong, S., Merkley, G. P., & Allen, R. G. (1997). Decision support model for irrigation water management. \emph{Journal of Irrigation and Drainage Engineering, 123}(2), 106--113. <https://doi.org/10.1061/(ASCE)0733-9437(1997)123:2(106)>
-
-\noindent\hangindent=1.2em Tallaksen, L. M., & Van Lanen, H. A. J. (Eds.). (2004). \emph{Hydrological drought: Processes and estimation methods for streamflow and groundwater}. Elsevier.
-
-\noindent\hangindent=1.2em Van Loon, A. F. (2015). Hydrological drought explained. \emph{WIREs Water, 2}(4), 359--392. <https://doi.org/10.1002/wat2.1085>
-
-\noindent\hangindent=1.2em Vicente-Serrano, S. M., Beguería, S., & López-Moreno, J. I. (2010). A multiscalar drought index sensitive to global warming: The standardized precipitation evapotranspiration index. \emph{Journal of Climate, 23}(7), 1696--1718. <https://doi.org/10.1175/2009JCLI2909.1>
-
-\noindent\hangindent=1.2em Wilhite, D. A., & Glantz, M. H. (1985). Understanding the drought phenomenon: The role of definitions. \emph{Water International, 10}(3), 111--120. <https://doi.org/10.1080/02508068508686328>
-
-\noindent\hangindent=1.2em Yang, G., Guo, P., Li, R., & Li, M. (2016). Optimal allocation model of surface water and groundwater based on queuing theory in irrigation district. \emph{Transactions of the Chinese Society of Agricultural Engineering, 32}(6). <https://doi.org/10.11975/j.issn.1002-6819.2016.06.016>
+*Fragment.* Lead-time skill structure by basin and climate class; zero-flow
+and PET-source sensitivities; the US transfer arm as a descriptive check;
+Study P3 (CAMELS-IND-Proj) as the follow-up where the frozen queue engine
+publishes transient backlog probabilities and recovery times that no
+standard index produces.

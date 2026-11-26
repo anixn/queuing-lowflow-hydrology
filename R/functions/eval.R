@@ -123,11 +123,15 @@ cv_ridge_lambda <- function(X, y, fold_id, grid = RIDGE_GRID) {
 
 # Brier skill score vs the climatology family on IDENTICAL months
 # (FS1 fix, PIVOT.md §3 change 7 / §4.8). Positive = better than
-# climatology. Returns one row per gauge per family.
+# climatology. The join keys include every design column present
+# (target, lead) so different endpoints never multiply rows.
 bss_vs_climatology <- function(preds) {
-  clim <- preds[family == "climatology", .(gauge_id, date, y_clim = y, p_clim = p)]
+  keycols <- intersect(c("gauge_id", "target", "lead"), names(preds))
+  clim <- preds[family == "climatology"]
+  clim <- clim[, .SD, .SDcols = c(keycols, "date", "y", "p")]
+  setnames(clim, c("y", "p"), c("y_clim", "p_clim"))
   others <- preds[family != "climatology"]
-  m <- merge(others, clim, by = c("gauge_id", "date"))
+  m <- merge(others, clim, by = c(keycols, "date"))
   m[, brier := (p - y)^2]
   m[, brier_clim := (p_clim - y_clim)^2]
   out <- m[, .(
@@ -135,7 +139,7 @@ bss_vs_climatology <- function(preds) {
     brier = mean(brier),
     brier_clim = mean(brier_clim),
     bss = 1 - mean(brier) / pmax(mean(brier_clim), 1e-12)
-  ), by = .(gauge_id, family)]
+  ), by = c(keycols, "family")]
   out
 }
 

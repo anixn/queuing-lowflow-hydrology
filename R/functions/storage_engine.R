@@ -183,6 +183,11 @@ propagate_storage <- function(dates, prcp_mm, pet_mm, month,
   assert_true(is.finite(b_s) && b_s >= 0.5 && b_s <= 2, "b_s out of range")
   n <- length(dates)
   pr <- as.numeric(prcp_mm); pe_in <- as.numeric(pet_mm)
+  # Declared handling of missing climate inputs: a missing day carries no
+  # information, so its input enters the balance as zero and the MONTH is
+  # excluded from features downstream by the complete-month rule
+  # (missing_day already flags it in common_rates). No interpolation.
+  pr[is.na(pr)] <- 0; pe_in[is.na(pe_in)] <- 0
   mo <- as.integer(month)
   kc <- kc_month(mo, region); phm <- phi_month(mo, region)
   if (is.null(zero_day)) zero_day <- rep(FALSE, n)
@@ -227,8 +232,11 @@ propagate_storage <- function(dates, prcp_mm, pet_mm, month,
 
 # --- Features from the state (PIVOT.md §4.6) ----------------------------
 # Days since flow last exceeded the training Q10 threshold, capped at 365.
+# If the threshold itself is not finite (degenerate record), the feature
+# is NA everywhere -- never a guessed number.
 days_since_high_flow <- function(q_mm, q10) {
   n <- length(q_mm)
+  if (!is.finite(q10)) return(rep(NA_integer_, n))
   out <- integer(n); last <- -1L
   for (i in seq_len(n)) {
     if (is.finite(q_mm[i]) && q_mm[i] > q10) last <- i

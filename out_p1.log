@@ -1,0 +1,31 @@
+=== P1 region India ===
+driver built; ids: 472 
+run_region_p1 done: params=2 rows, monthly=2, screens=2
+Sample report (India):
+   region n_read n_complete n_events_t1 n_events_t2 n_recession_ok n_borrowed
+   <char>  <int>      <int>       <int>       <int>          <int>      <int>
+1:  India      2          2           2           2              2          0
+=== P1 fitting and scoring (India) ===
+=== paired contrasts (India) ===
+
+=== P1 confirmatory (India) ===
+                          hypothesis  lead     n  median_delta boot_lo boot_hi
+                              <char> <int> <int>         <num>   <num>   <num>
+1: H0 (descriptive: parity expected)     1     1 -0.0133312636      NA      NA
+2:                 H1 (confirmatory)     3     1  0.0015059374      NA      NA
+3:                 H2 (confirmatory)     6     1  0.0006778545      NA      NA
+   sign_share                                           verdict
+        <num>                                            <char>
+1:          0 descriptive (H0): report as predicted parity/null
+2:          1                                              <NA>
+3:          1                                              <NA>
+=== P1 region USA ===
+driver built; ids: 671 
+run_region_p1 done: params=6 rows, monthly=6, screens=6
+Sample report (USA):
+   region n_read n_complete n_events_t1 n_events_t2 n_recession_ok n_borrowed
+   <char>  <int>      <int>       <int>       <int>          <int>      <int>
+1:    USA      6          6           6           6              6          0
+=== P1 fitting and scoring (USA transfer arm) ===
+
+=== USA transfer check (descriptive) ===
