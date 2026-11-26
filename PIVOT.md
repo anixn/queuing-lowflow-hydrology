@@ -484,6 +484,28 @@ The 15-check battery is rebuilt as a **new battery with the same rigidity**
 | P1-H1 | BSS(delta) median > 0, CI excludes 0, sign ≥ 60% gauges, 3-month lead | headline result; manuscript as §4.11 | H0-parity result reported honestly; paper reframed around the lead-time structure (1-month parity, 3/6-month gains) if present, else around the verified null + P3 |
 | P1-H2 | same at 6-month lead | strengthens H1 | reported; does not gate the manuscript |
 
+> **RESOLVED 26 November 2026.** P1-fit: the rebuilt battery is 22/22
+> (V1–V15 legacy + V16–V22 storage-engine checks); the working sample is
+> **231 Indian catchments** (257 prepared; 136 storage-scored; 111 borrowing
+> basin-median parameters) plus the **USA transfer arm at 639 scored
+> gauges** — far beyond the 12-gauge sample of the retired design. The
+> confirmatory contrasts, scored once under the frozen protocol
+> (`output/p1_confirmatory.csv`): **H0 (h = 1): parity confirmed exactly as
+> pre-registered** — median ΔBrier −0.0003, sign 47 % (the predicted
+> outcome); **H1 (h = 3): FAIL** — median −0.0015, sign 56/130 (43 %);
+> **H2 (h = 6): FAIL** — median −0.0007, sign 54/131 (41 %). The exploratory
+> k-class cut (`output/p1_bss_by_kclass.csv`, labelled post-hoc) shows no
+> benefit even at 10–30-day recessions, and the slow class has n = 1:
+> these Indian catchments drain too fast for the fluid state to carry
+> seasonal memory the indices lack. **The absolute falsifier fires: the
+> claim "storage states add seasonal skill" is dead in this data.** The
+> centre of gravity moves to **Study P3** (climate-projection queue
+> reliability), where no ML benchmark exists. The positive deliverables
+> that survive: the lead-time skill curves for India (BSS 0.42–0.50 at
+> 1 month → 0.01–0.08 at 3 → ≤0.02 at 6 — the first India-wide benchmark
+> of its kind, `output/p1_bss.csv`), the confirmed pre-registration, the
+> verified engine and the 22-check battery, and the trustworthy G2 null.
+
 **Absolute falsifier:** if the storage family does not beat the frozen
 best baseline at any lead ≥ 3 months on the primary target, the claim
 "storage states add seasonal skill" is dead in this data and the project's

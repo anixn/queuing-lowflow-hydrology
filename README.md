@@ -85,9 +85,22 @@ Rscript -e "rmarkdown::render('MANUSCRIPT.Rmd')"
 
 ## Result
 
-Filled from `output/p1_confirmatory.csv` and `output/p1_summary.csv` — see
-`STUDY.Rmd` for the full tables with provenance. The retired study's numbers
-remain exactly as published in `output/region_summary.csv` and git history.
+**Gate G2 (recorded 26 Nov 2026): NULL** — the corrected queue *loses* to the
+honest memory baselines (USA median ΔBrier −0.0059 [−0.0187, +0.0026], sign
+25/60); the retired design's null is now trustworthy
+(`output/gateG2_summary.csv`).
+
+**Study P1 (scored 26 Nov 2026, once, under the frozen protocol):** the
+pre-registered H0-parity at 1-month lead is confirmed exactly as predicted;
+the confirmatory contrasts **H1 (3-month) and H2 (6-month) FAIL** — the
+recession-calibrated storage state adds no skill beyond lagged indices and
+persistence for Indian catchments (`output/p1_confirmatory.csv`). What the
+study delivers instead is the **first India-wide lead-time skill benchmark**:
+BSS vs climatology of 0.42–0.50 at 1 month collapsing to 0.01–0.08 at 3 and
+≤ 0.02 at 6 months across 231 catchments, with the US transfer arm scored on
+639 gauges. The centre of gravity moves to Study P3 (climate-projection
+queue reliability), per the absolute falsifier frozen in `PIVOT.md` §4.10.
+Full tables: `STUDY.html`.
 
 ## Data
 

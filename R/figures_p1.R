@@ -113,14 +113,14 @@ local({
     fam_order <- c("climatology", "persistence", "api", "lagged_indices",
                    "storage", "storage_plus_indices")
     med[, family := factor(family, levels = fam_order)]
-    lab <- c(T1 = "T1: hydrological drought (SSI-3 \u2264 \u22121)",
-             T2 = "T2: low flow (monthly mean < training Q90)")
+    lab <- c(t1 = "T1: hydrological drought (SSI-3 <= -1)",
+             t2 = "T2: low flow (monthly mean < training Q90)")
     p_lead <- ggplot(med, aes(lead, bss_med, colour = family, group = family)) +
       geom_hline(yintercept = 0, linetype = "dashed", colour = grey) +
       geom_line(linewidth = 0.7, alpha = 0.9) +
       geom_point(aes(size = family == "storage_plus_indices"), show.legend = FALSE) +
       scale_size_manual(values = c(`FALSE` = 1.7, `TRUE` = 3.1)) +
-      facet_wrap(~target, labeller = labeller(target = lab)) +
+      facet_wrap(~target, labeller = as_labeller(lab)) +
       scale_colour_manual(values = fam_cols, name = NULL) +
       scale_x_continuous(breaks = c(1, 3, 6), labels = c("1", "3", "6")) +
       labs(x = "forecast lead (months)",
