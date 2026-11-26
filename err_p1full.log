@@ -1,0 +1,6 @@
+Error in family == "climatology" : 
+  comparison (==) is possible only for atomic and list types
+Calls: local ... tryCatchList -> tryCatchOne -> <Anonymous> -> .checkTypos
+In addition: Warning message:
+package 'data.table' was built under R version 4.5.3 
+Execution halted

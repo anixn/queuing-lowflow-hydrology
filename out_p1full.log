@@ -1,0 +1,21 @@
+=== P1 region India ===
+driver built; ids: 472 
+  fits 150/472
+  fits 250/472
+  fits 300/472
+  fits 350/472
+  fits 450/472
+  propagated 50/257
+  propagated 100/257
+  propagated 150/257
+  propagated 200/257
+  propagated 250/257
+run_region_p1 done: params=257 rows, monthly=257, screens=257
+Sample report (India):
+   region n_read n_complete n_events_t1 n_events_t2 n_recession_ok n_borrowed
+   <char>  <int>      <int>       <int>       <int>          <int>      <int>
+1:  India    257        231         218         231            136        111
+=== P1 fitting and scoring (India) ===
+  scored 25/231
+  scored 50/231
+  scored 75/231

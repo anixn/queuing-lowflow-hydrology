@@ -414,6 +414,12 @@ stage7_meta <- function(delta_by_year) {
 # be used for a confirmatory claim.
 stage7_paired_stats <- function(all_preds, a_fam = "ssi3",
                                 b_fam = "ssi3_plus_queue") {
+  empty <- data.table(gauge_id = character(), n_months = integer(),
+                      brier_a = numeric(), brier_b = numeric(),
+                      delta_brier = numeric(), auc_a = numeric(),
+                      auc_b = numeric(), delta_auc = numeric())
+  if (is.null(all_preds) || !nrow(all_preds) || !"family" %in% names(all_preds))
+    return(empty)
   # Join keys include every design column present (target, lead) so that
   # different endpoints are never mixed or multiplied in the pairing.
   keycols <- intersect(c("gauge_id", "target", "lead"), names(all_preds))
@@ -443,6 +449,8 @@ stage7_paired_stats <- function(all_preds, a_fam = "ssi3",
 stage7_paired_bootstrap <- function(all_preds, a_fam = "ssi3",
                                     b_fam = "ssi3_plus_queue",
                                     B = 2000L, seed = P$seed) {
+  if (is.null(all_preds) || !nrow(all_preds) || !"family" %in% names(all_preds))
+    return(c(estimate = NA_real_, lo = NA_real_, hi = NA_real_))
   keycols <- intersect(c("gauge_id", "target", "lead"), names(all_preds))
   a <- all_preds[family == a_fam]
   a <- a[, .SD, .SDcols = c(keycols, "date", "year", "y", "p")]

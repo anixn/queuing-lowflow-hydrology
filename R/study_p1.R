@@ -379,10 +379,12 @@ local({
           ft$predictions[, `:=`(gauge_id = g, region = region, target = tgt,
                                 lead = h, balance_ok = balance_ok)]
           metric_rows[[length(metric_rows) + 1L]] <- ft$metrics
-          bss_rows[[length(bss_rows) + 1L]] <- bss_vs_climatology(
-            ft$predictions)[, `:=`(gauge_id = g, region = region,
-                                   target = tgt, lead = h)]
-          pred_rows[[length(pred_rows) + 1L]] <- ft$predictions
+          if (nrow(ft$predictions)) {
+            bss_rows[[length(bss_rows) + 1L]] <- bss_vs_climatology(
+              ft$predictions)[, `:=`(gauge_id = g, region = region,
+                                     target = tgt, lead = h)]
+            pred_rows[[length(pred_rows) + 1L]] <- ft$predictions
+          }
         }
       }
       if (!(gi %% 25)) cat(sprintf("  scored %d/%d\n", gi, length(gauges_ok)))

@@ -1,0 +1,11 @@
+=== India: rates and screen (G2) ===
+  300/472
+India gauges read: 279; PET source: shipped_gleam=279
+=== USA: rates and screen (G2) ===
+  200/671
+  400/671
+  600/671
+USA gauges read: 671
+Completeness-only sample: India 34 of 279 ; USA 615 of 671 
+Gate sample: India 5; USA 60
+=== queue and G2 fit ===

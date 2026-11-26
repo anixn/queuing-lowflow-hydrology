@@ -126,6 +126,11 @@ cv_ridge_lambda <- function(X, y, fold_id, grid = RIDGE_GRID) {
 # climatology. The join keys include every design column present
 # (target, lead) so different endpoints never multiply rows.
 bss_vs_climatology <- function(preds) {
+  empty <- data.table(gauge_id = character(), family = character(),
+                      n_months = integer(), brier = numeric(),
+                      brier_clim = numeric(), bss = numeric())
+  if (is.null(preds) || !nrow(preds) || !"family" %in% names(preds))
+    return(empty)
   keycols <- intersect(c("gauge_id", "target", "lead"), names(preds))
   clim <- preds[family == "climatology"]
   clim <- clim[, .SD, .SDcols = c(keycols, "date", "y", "p")]
