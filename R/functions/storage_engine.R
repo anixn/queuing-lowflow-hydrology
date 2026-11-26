@@ -21,10 +21,12 @@
 # =====================================================================
 
 # --- Baseflow index ---------------------------------------------------
-# Lyne-Hollick single-pass digital filter on daily flow (mm/day).
-# b(t) = alpha * b(t-1) + (1 - alpha) * q(t), seeded with the first
-# FINITE flow (a leading gap in the record must not poison the filter;
-# NA days are skipped without updating the state).
+# Lyne-Hollick single-pass digital filter on daily flow (mm/day), with
+# the standard smoothing constraint b(t) <= q(t) (the raw filter can
+# exceed the observed flow and produce BFI > 1).
+# b(t) = min(alpha * b(t-1) + (1 - alpha) * q(t), q(t)), seeded with the
+# first FINITE flow (a leading gap must not poison the filter; NA days
+# are skipped without updating the state).
 # BFI = sum(b) / sum(q) over the requested rows (NA rows excluded).
 bfi_lyne_hollick <- function(q_mm, alpha = 0.925, mask = NULL) {
   assert_true(alpha >= 0 && alpha < 1, "Lyne-Hollick alpha must lie in [0,1)")
@@ -35,7 +37,7 @@ bfi_lyne_hollick <- function(q_mm, alpha = 0.925, mask = NULL) {
   for (i in seq_len(n)) {
     if (is.finite(q[i])) {
       if (is.na(prev)) prev <- q[i]
-      else prev <- alpha * prev + (1 - alpha) * q[i]
+      else prev <- min(alpha * prev + (1 - alpha) * q[i], q[i])
       b[i] <- prev
     }
   }
