@@ -391,10 +391,11 @@ v20_leakage_tripwire <- function() {
   Xmat <- cbind(1, st$X)
   folds <- rep(1:5, length.out = n_tr)
   lam <- cv_ridge_lambda(Xmat[mask, , drop = FALSE], y[mask], folds)
-  ok_cv <- lam %in% RIDGE_GRID
+  ok_cv <- lam$lambda %in% RIDGE_GRID && is.finite(lam$cv_brier)
   verif_result("V20", "Leakage tripwire (train-only moments, CV folds)",
                ok_std && ok_cv,
-               sprintf("mu/sd exact on training only; lambda=%.1f in grid", lam))
+               sprintf("mu/sd exact on training only; lambda=%.1f in grid",
+                       lam$lambda))
 }
 
 # V21: Brier skill score vs climatology on identical months.

@@ -347,7 +347,8 @@ stage7_fit <- function(design, target_col = "target_sma", endpoint = "E1",
     if (sum(ok_train) < 40 || sum(ok_test) < 10 || length(unique(y[ok_train])) < 2) {
       metrics[[fam]] <- data.table::data.table(
         family = fam, n_train = sum(ok_train), n_test = sum(ok_test),
-        brier = NA_real_, auc = NA_real_, logloss = NA_real_, lambda = NA_real_)
+        brier = NA_real_, auc = NA_real_, logloss = NA_real_,
+        lambda = NA_real_, cv_brier = NA_real_)
       next
     }
     sel <- ok_train | ok_test
@@ -361,15 +362,17 @@ stage7_fit <- function(design, target_col = "target_sma", endpoint = "E1",
     colnames(Xmat)[1] <- "intercept"
     # FS3 fix: ridge penalty tuned per family by calendar-block CV inside
     # the training years, then one final refit on all training rows.
-    lam <- cv_ridge_lambda(Xmat[tr, , drop = FALSE], y[ok_train],
-                           Xd$fold_id[tr], grid = RIDGE_GRID)
-    fit <- fit_ridge_logistic(Xmat[tr, , drop = FALSE], y[ok_train], lambda = lam)
+    lam_obj <- cv_ridge_lambda(Xmat[tr, , drop = FALSE], y[ok_train],
+                               Xd$fold_id[tr], grid = RIDGE_GRID)
+    fit <- fit_ridge_logistic(Xmat[tr, , drop = FALSE], y[ok_train],
+                              lambda = lam_obj$lambda)
     p <- predict_ridge_logistic(fit$beta, Xmat[te, , drop = FALSE])
     yt <- y[ok_test]
     metrics[[fam]] <- data.table::data.table(
       family = fam, n_train = sum(ok_train), n_test = sum(ok_test),
       brier = brier_score(yt, p), auc = auc_score(yt, p),
-      logloss = log_loss(yt, p), lambda = lam)
+      logloss = log_loss(yt, p), lambda = lam_obj$lambda,
+      cv_brier = lam_obj$cv_brier)
     preds[[fam]] <- data.table::data.table(
       date = Xd$date[te], year = Xd$year[te], y = yt, p = p, family = fam)
   }
@@ -434,4 +437,59 @@ stage7_paired_bootstrap <- function(all_preds, a_fam = "ssi3",
   m[, delta := (p_a - y)^2 - (p_b - y)^2]
   two_level_bootstrap(m$gauge_id, m$year, m$delta, stat = mean,
                       B = B, seed = seed)
+}
+
+# ---------------------------------------------------------------------
+# P1 -- storage-state forecasting (PIVOT.md §4.5-§4.8)
+# ---------------------------------------------------------------------
+
+# Frozen P1 family feature lists (PIVOT.md §4.6). T1 = SSI-3 <= -1
+# (confirmatory target); T2 = monthly mean flow below the training Q90
+# (descriptive). `persistence` = the target index at issue time t; the
+# confirmatory family is `storage_plus_indices`; the frozen best-of
+# baseline is chosen per gauge on training-year CV among {persistence,
+# lagged_indices, api}.
+P1_FAMILY_FEATURES <- list(
+  T1 = list(
+    climatology = character(0),
+    persistence = "ssi3",
+    lagged_indices = c("spi3", "ssi3", "ssi6", "spi6"),
+    api = c("api_p", "api_pet"),
+    storage = c("S_anom", "dS1", "dS3", "dshf_m", "k_days", "BFI", "S_cap_mm"),
+    storage_plus_indices = c("S_anom", "dS1", "dS3", "dshf_m", "k_days",
+                             "BFI", "S_cap_mm", "spi3", "ssi3", "ssi6", "spi6")
+  ),
+  T2 = list(
+    climatology = character(0),
+    persistence = "q90_flag",
+    lagged_indices = c("spi3", "ssi3", "ssi6", "spi6"),
+    api = c("api_p", "api_pet"),
+    storage = c("S_anom", "dS1", "dS3", "dshf_m", "k_days", "BFI", "S_cap_mm"),
+    storage_plus_indices = c("S_anom", "dS1", "dS3", "dshf_m", "k_days",
+                             "BFI", "S_cap_mm", "spi3", "ssi3", "ssi6", "spi6")
+  )
+)
+# The frozen best-of candidate set for the confirmatory contrast.
+P1_BASELINES <- c("persistence", "lagged_indices", "api")
+P1_STORAGE_FAMILIES <- c("storage", "storage_plus_indices")
+
+# P1 design at lead h (PIVOT.md §4.5): a forecast issued at month t uses
+# ONLY information available at t and predicts the target at t+h. The
+# strict prospective split keeps any issue/target pair fully inside its
+# window: training pairs need year(t) in training AND year(t+h) <= last
+# training year; test pairs need year(t) in test AND year(t+h) <= last
+# test year. This kills the end-of-window leakage that a naive
+# issue-month split would admit.
+p1_design_at_lead <- function(m, target_col, lead_h) {
+  stopifnot(lead_h %in% P1_LEADS)
+  m <- copy(m)[order(date)]
+  m[, y := data.table::shift(get(target_col), lead_h, type = "lead")]
+  m[, target_year := data.table::shift(year, lead_h, type = "lead")]
+  last_train <- max(P$train_years); last_test <- max(P$test_years)
+  m[, train := year %in% P$train_years &
+      !is.na(target_year) & target_year <= last_train]
+  m[, test := year %in% P$test_years &
+      !is.na(target_year) & target_year <= last_test]
+  m[!is.finite(y), c("y", "train", "test") := .(NA_real_, FALSE, FALSE)]
+  m
 }

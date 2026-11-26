@@ -114,6 +114,21 @@ P1_LEADS <- c(1L, 3L, 6L)
 G2_FAMILIES <- c("climatology", "ssi3", "queue", "ssi3_plus_queue",
                  "persistence", "ssi6", "api")
 
+# P1 screen and fit criteria (PIVOT.md §4.2, §4.4, §4.7), frozen before
+# any P1 scoring run:
+P1_MIN_SEGMENTS <- 20L        # recession-quality screen (>=20 segments)
+P1_MIN_SEG_DAYS <- 10L        # segment length (days)
+# Rain-day threshold that breaks a recession segment [assumption: a
+# significant-rainfall day is >= 5 mm/day; trace rainfall does not break
+# a recession. Diagnostics on 24 gauges: counts at 1/5/10 mm differ
+# little for perennial gauges; 5 mm is the declared default].
+P1_RAIN_DAY_MM <- 5
+P1_MIN_TRAIN_EVENTS <- 8L     # target events in training years per target
+P1_WARMUP_YEARS <- 2L         # S(0) = S_cap/2 warm-up excluded from features
+P1_FEATURE_START_YEAR <- 1982L  # first year with storage features
+P1_HARM_BOUND <- 0.005        # declared harm bound [assumption: §4.1]
+P1_BOOT_B <- 2000L
+
 # --- Scientific parameters (plan Appendix A) --------------------------
 P <- list(
   # Unit definitions

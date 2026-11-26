@@ -231,12 +231,15 @@ local({
 
   # ---- paired deltas: queue vs each baseline + frozen best-of --------
   NEW_BASELINES <- c("persistence", "ssi6", "api")
+  paired_rows <- list()
   paired_one <- function(p, ids, region, target, base_fam) {
     p <- p[gauge_id %in% ids]
     if (!nrow(p)) return(NULL)
     ps <- stage7_paired_stats(p, base_fam, "ssi3_plus_queue")
     boot <- stage7_paired_bootstrap(p, base_fam, "ssi3_plus_queue")
     st <- sign_test(ps$delta_brier)
+    ps[, `:=`(region = region, target = target, baseline = base_fam)]
+    paired_rows[[length(paired_rows) + 1L]] <<- ps
     data.table(region = region, target = target, baseline = base_fam,
                n = nrow(ps),
                median_delta = median(ps$delta_brier, na.rm = TRUE),
@@ -345,6 +348,8 @@ local({
         ps <- stage7_paired_stats(pbo2, "bestof", "ssi3_plus_queue")
         boot <- stage7_paired_bootstrap(pbo2, "bestof", "ssi3_plus_queue")
         st <- sign_test(ps$delta_brier)
+        ps[, `:=`(region = region, target = tgt, baseline = "bestof")]
+        paired_rows[[length(paired_rows) + 1L]] <- ps
         summ_rows[[length(summ_rows) + 1L]] <- data.table(
           region = region, target = tgt, baseline = "bestof",
           n = nrow(ps),
@@ -357,6 +362,9 @@ local({
   }
   summ <- rbindlist(summ_rows, fill = TRUE)
   write_csv_sidecar(summ, file.path(OUTPUT_DIR, "gateG2_summary.csv"))
+  paired_all <- rbindlist(paired_rows, fill = TRUE)
+  if (nrow(paired_all))
+    write_csv_sidecar(paired_all, file.path(OUTPUT_DIR, "gateG2_paired.csv"))
 
   # ---- the frozen decision rule, applied as written ------------------
   cat("\n=== Gate G2 decision table ===\n")

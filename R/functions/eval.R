@@ -95,10 +95,15 @@ predict_ridge_logistic <- function(beta, X) {
 # --- Per-family CV tuning of the ridge penalty (FS3 fix, PIVOT.md §3
 # change 6 / §4.7). Contiguous calendar-year blocks inside the TRAINING
 # years only; the fold structure and grid are frozen in config.R.
-# Returns the lambda with the lowest mean held-out-fold Brier.
+# Returns list(lambda = chosen penalty, cv_brier = mean held-out-fold
+# Brier at that penalty) -- the cv_brier is the frozen training-year CV
+# selector for the P1 best-of baseline (PIVOT.md §4.6) and must never be
+# replaced by test information.
 cv_ridge_lambda <- function(X, y, fold_id, grid = RIDGE_GRID) {
   folds <- sort(unique(fold_id))
-  if (length(folds) < 2) return(grid[which.min(c(Inf, grid))])  # degenerate: weakest penalty
+  if (length(folds) < 2) {
+    return(list(lambda = grid[1], cv_brier = NA_real_))
+  }
   scores <- numeric(length(grid))
   for (li in seq_along(grid)) {
     b <- numeric(length(folds))
@@ -111,8 +116,9 @@ cv_ridge_lambda <- function(X, y, fold_id, grid = RIDGE_GRID) {
     }
     scores[li] <- if (all(is.finite(b))) mean(b) else NA_real_
   }
-  if (!any(is.finite(scores))) return(1)
-  grid[which.min(scores)]
+  if (!any(is.finite(scores))) return(list(lambda = 1, cv_brier = NA_real_))
+  i <- which.min(scores)
+  list(lambda = grid[i], cv_brier = scores[i])
 }
 
 # Brier skill score vs the climatology family on IDENTICAL months
@@ -205,4 +211,50 @@ sign_test <- function(delta) {
   if (n == 0) return(list(n = 0, k = 0, p = NA_real_, share = NA_real_))
   p <- stats::pbinom(k - 1, n, 0.5, lower.tail = FALSE)
   list(n = n, k = k, p = p, share = k / n)
+}
+
+# Fast two-level block bootstrap with the SAME design and estimand as
+# two_level_bootstrap(): resample gauges with replacement, then years
+# within each drawn gauge with replacement, pool the drawn years' monthly
+# deltas per gauge, take the mean, and the DRAW statistic is the median
+# across drawn gauges. Pre-splits the rows once so each draw is index
+# arithmetic, not table subsetting. Used by Study P1 (hundreds of gauges).
+two_level_bootstrap_fast <- function(gauge, year, delta,
+                                     stat = stats::median,
+                                     B = 2000L, seed = 1L) {
+  set.seed(seed)
+  gauges <- sort(unique(gauge))
+  rows_by_gauge <- split(seq_along(delta), factor(gauge, levels = gauges))
+  years_by_gauge <- lapply(rows_by_gauge, function(ix) unique(year[ix]))
+  rows_by_gauge_year <- lapply(rows_by_gauge, function(ix) {
+    split(ix, year[ix])
+  })
+  est_g <- vapply(rows_by_gauge, function(ix) {
+    d <- delta[ix]
+    d <- d[is.finite(d)]
+    if (!length(d)) NA_real_ else mean(d)
+  }, numeric(1))
+  est <- stats::median(est_g, na.rm = TRUE)
+  draws <- numeric(B)
+  for (b in seq_len(B)) {
+    gs <- sample(gauges, length(gauges), replace = TRUE)
+    vals <- numeric(length(gs))
+    for (j in seq_along(gs)) {
+      g <- gs[j]
+      yrs <- years_by_gauge[[g]]
+      if (!length(yrs)) { vals[j] <- NA_real_; next }
+      pick <- sample(yrs, length(yrs), replace = TRUE)
+      parts <- rows_by_gauge_year[[g]][as.character(pick)]
+      d <- unlist(parts)
+      d <- d[is.finite(delta[d])]
+      vals[j] <- if (length(d)) mean(delta[d]) else NA_real_
+    }
+    vals <- vals[is.finite(vals)]
+    draws[b] <- if (length(vals)) stat(vals) else NA_real_
+  }
+  draws <- draws[is.finite(draws)]
+  if (length(draws) < 2) return(c(estimate = est, lo = NA_real_, hi = NA_real_))
+  c(estimate = est,
+    lo = unname(stats::quantile(draws, 0.025)),
+    hi = unname(stats::quantile(draws, 0.975)))
 }

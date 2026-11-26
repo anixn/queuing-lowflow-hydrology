@@ -45,9 +45,10 @@ bfi_lyne_hollick <- function(q_mm, alpha = 0.925, mask = NULL) {
 # --- Recession segments ------------------------------------------------
 # A recession segment is a run of >= min_len consecutive days in which the
 # daily flow change is strictly negative, no day is a rain day
-# (prcp > rain_mm [assumption: 1 mm/day]), and no day or predecessor day
-# is a recorded zero (zero-flow censoring, PIVOT.md §4.2). Segments are
-# identified inside the mask (training years) only.
+# (prcp > rain_mm; the threshold is a declared config value,
+# P1_RAIN_DAY_MM = 5 mm/day), and no day or predecessor day is a recorded
+# zero (zero-flow censoring, PIVOT.md §4.2). Segments are identified
+# inside the mask (training years) only.
 recession_segments <- function(q_mm, prcp_mm, mask = NULL,
                                min_len = 10L, rain_mm = 1.0) {
   q <- as.numeric(q_mm); pr <- as.numeric(prcp_mm)

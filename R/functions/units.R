@@ -93,6 +93,16 @@ claims_to_mm <- function(claims, d_mm) {
   claims * d_mm
 }
 
+# NA-tolerant discharge -> depth conversion. q_m3s_to_mm_day asserts on
+# its inputs; observed records carry NA (never silently filled), so the
+# P1 path uses this wrapper: NA in, NA out, identical arithmetic.
+q_m3s_to_mm_day_na <- function(q_m3s, area_m2) {
+  out <- rep(NA_real_, length(q_m3s))
+  ok <- is.finite(q_m3s) & is.finite(area_m2)
+  out[ok] <- q_m3s_to_mm_day(q_m3s[ok], area_m2)
+  out
+}
+
 # --- PET: Hargreaves with the FAO-56 0.408 radiation conversion -------
 # Extraterrestrial radiation Ra in MJ m^-2 day^-1 (FAO-56 Eqs. 21-25).
 extraterrestrial_radiation <- function(lat_deg, doy) {
