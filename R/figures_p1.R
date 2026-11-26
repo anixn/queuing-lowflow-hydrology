@@ -77,15 +77,15 @@ local({
       pass_recession == TRUE & pass_complete == TRUE & pass_events_t1 == TRUE,
       "3 storage-scored (complete + events + recession)",
       fifelse(pass_complete == TRUE,
-              "2 complete + events", "1 read, excluded by screens"))]
+              "2 completeness screens passed", "1 read, excluded by screens"))]
     pts[, stage := factor(stage, levels = rev(c(
-      "1 read, excluded by screens", "2 complete + events",
+      "1 read, excluded by screens", "2 completeness screens passed",
       "3 storage-scored (complete + events + recession)")))]
     stage_cols <- c("1 read, excluded by screens" = "grey75",
-                    "2 complete + events" = blue,
+                    "2 completeness screens passed" = blue,
                     "3 storage-scored (complete + events + recession)" = red)
     n3 <- sum(pts$stage == "3 storage-scored (complete + events + recession)")
-    n2 <- sum(pts$stage == "2 complete + events")
+    n2 <- sum(pts$stage == "2 completeness screens passed")
     p_map <- ggplot() +
       geom_sf(data = ind_states, fill = "grey95", colour = "white",
               linewidth = 0.18) +
