@@ -1,4 +1,6 @@
 "hypothesis","lead","n_gauges","median_delta","CI","sign_positive","sign_share","sign_p","verdict"
 "H0 (descriptive: parity expected)",1,131,-0.000334,"[-0.0012, +0.0019]","62/131",0.473,0.76,"descriptive (H0): report as predicted parity/null"
+"exploratory (post-hoc lead extension)",2,131,5.89e-05,"[-0.0015, +0.0016]","67/131",0.511,0.43,"descriptive (exploratory lead; not confirmatory)"
 "H1 (confirmatory)",3,130,-0.00152,"[-0.0001, +0.0032]","56/130",0.431,0.95,"FAIL"
 "H2 (confirmatory)",6,131,-0.000733,"[-0.0001, +0.0027]","54/131",0.412,0.98,"FAIL"
+"exploratory (post-hoc lead extension)",12,131,-0.00111,"[-0.0001, +0.0031]","53/131",0.405,0.99,"descriptive (exploratory lead; not confirmatory)"

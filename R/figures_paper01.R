@@ -114,7 +114,11 @@ local({
   # Fig02 -- study map (India; screen stages)
   # =====================================================================
   scr <- rd("p1_sample_report.csv")
-  if (!is.null(scr) && requireNamespace("sf", quietly = TRUE)) {
+  if (!file.exists(INDIA_OUTLINE_FILE) || !file.exists(INDIA_STATES_FILE)) {
+    cat("  Fig02_study_map skipped: boundary file not mounted\n")
+  }
+  if (!is.null(scr) && requireNamespace("sf", quietly = TRUE) &&
+      file.exists(INDIA_OUTLINE_FILE) && file.exists(INDIA_STATES_FILE)) {
     suppressMessages(library(sf))
     ind_outline <- sf::st_read(INDIA_OUTLINE_FILE, quiet = TRUE)
     ind_states <- sf::st_read(INDIA_STATES_FILE, quiet = TRUE)
@@ -133,8 +137,10 @@ local({
     stage_cols <- c("Read, excluded by screens" = "grey75",
                     "Completeness screens passed" = pal$blue,
                     "Storage-scored (complete + events + recession)" = pal$red)
-    n3 <- sum(pts$stage == "Storage-scored (complete + events + recession)")
-    n2 <- sum(pts$stage == "Completeness screens passed")
+    n3 <- sum(scr$pass_complete & scr$pass_events_t1 & scr$pass_recession,
+              na.rm = TRUE)
+    n2 <- sum(scr$pass_complete, na.rm = TRUE)
+    n_plot <- nrow(pts)
     p_map <- ggplot() +
       geom_sf(data = ind_states, fill = "grey95", colour = "white",
               linewidth = 0.18) +
@@ -144,8 +150,9 @@ local({
                  alpha = 0.85) +
       scale_colour_manual(values = stage_cols, name = NULL) +
       coord_sf(xlim = c(68, 98), ylim = c(6, 38), expand = FALSE) +
-      labs(subtitle = sprintf("%d catchments read; %d pass the completeness + event screens; %d additionally pass the recession-quality screen",
-                              nrow(pts), n2, n3)) +
+      labs(subtitle = sprintf(paste0("%d catchments read; %d pass the completeness screens; ",
+                                     "%d of those also pass the event and recession screens (%d plotted)"),
+                              nrow(scr), n2, n3, n_plot)) +
       theme_void(base_size = 11) +
       theme(plot.subtitle = element_text(colour = pal$grey, size = 9.5),
             legend.position = "bottom", legend.text = element_text(size = 8.5))
@@ -153,10 +160,11 @@ local({
   }
 
   # =====================================================================
-  # Fig03 -- CENTREPIECE: lead-time skill curves
+  # Fig03 -- CENTREPIECE: lead-time skill curves (paired benchmark)
   # =====================================================================
-  bss <- rd("p1_bss.csv")
+  bss <- rd("p1_bss_paired.csv")
   if (!is.null(bss) && nrow(bss)) {
+    bss <- bss[region == "India"]
     b <- bss[is.finite(bss)]
     med <- b[, .(bss_med = stats::median(bss)), by = .(family, lead, target)]
     fam_order <- c("climatology", "persistence", "api", "lagged_indices",
@@ -172,10 +180,13 @@ local({
       scale_size_manual(values = c(`FALSE` = 1.8, `TRUE` = 3.2)) +
       facet_wrap(~target, labeller = as_labeller(lab)) +
       scale_colour_manual(values = fam_cols, labels = fam_lab, name = NULL) +
-      scale_x_continuous(breaks = c(1, 3, 6), labels = c("1", "3", "6")) +
+      scale_x_continuous(breaks = P1_LEADS,
+                         labels = as.character(P1_LEADS)) +
       labs(x = "Forecast lead (months)",
            y = "Median Brier skill score vs climatology",
-           subtitle = "Per-gauge BSS, median across catchments; issue month t, target month t+h; training-only fitting") +
+           subtitle = paste0("Every family scored on identical months (one common ",
+                             "sample per gauge); median across catchments; ",
+                             "training-only fitting. Leads 2 and 12 are exploratory.")) +
       base_theme
     save_fig(tag(p_lead, "b"), "Fig03_leadtime_skill", 9.2, 4.8)
   }
@@ -186,8 +197,9 @@ local({
   paired <- rd("p1_paired.csv")
   if (!is.null(paired) && nrow(paired)) {
     pd <- paired[baseline == "bestof" & is.finite(delta_brier)]
-    pd[, lead_f := factor(lead, levels = c(1, 3, 6),
-                          labels = c("1 month", "3 months", "6 months"))]
+    pd[, lead_f := factor(lead, levels = P1_LEADS,
+                          labels = sprintf("%d month%s", P1_LEADS,
+                                           ifelse(P1_LEADS == 1, "", "s")))]
     pd[, tgt := factor(target, levels = c("t1", "t2"),
                        labels = c("T1 hydrological drought", "T2 low flow"))]
     p_pair <- ggplot(pd, aes(lead_f, delta_brier)) +
@@ -223,10 +235,9 @@ local({
       if (is.null(q) || sum(!is.na(q)) < 3000) next
       d <- merge(ff[, .(date, prcp_mm, tmax_c, tmin_c, tavg_c, pet_gleam_mm)],
                  data.table(date = qq$date, q = q), by = "date", all.x = TRUE)
-      r <- common_rates(as.character(g), d$date, d$q, d$prcp_mm, d$tmax_c,
-                        d$tmin_c, d$tavg_c, flow_meta$area_km2[i],
-                        flow_meta$cwc_lat[i], pet_obs = d$pet_gleam_mm,
-                        region = "India", irrigation_frac = 0.2)
+      r <- prepare_daily(as.character(g), d$date, d$q, d$prcp_mm, d$tmax_c,
+                         d$tmin_c, d$tavg_c, flow_meta$cwc_lat[i],
+                         pet_obs = d$pet_gleam_mm, region = "India")
       q_mm <- q_m3s_to_mm_day_na(r$q_used, flow_meta$area_km2[i] * 1e6)
       yr <- as.integer(format(r$date, "%Y"))
       mask <- yr %in% P$train_years & is.finite(q_mm)
@@ -316,23 +327,5 @@ local({
     }
   }
 
-  # =====================================================================
-  # Fig08 -- sign-test power from the G2 variance
-  # =====================================================================
-  pw <- rd("p1_power.csv")
-  if (!is.null(pw) && nrow(pw)) {
-    p_pow <- ggplot(pw, aes(factor(n), power,
-                            group = interaction(region, target),
-                            colour = interaction(region, target))) +
-      geom_hline(yintercept = 0.8, linetype = "dashed", colour = pal$grey) +
-      geom_line(linewidth = 0.7) + geom_point(size = 1.8) +
-      labs(x = "Number of scored catchments",
-           y = "Sign-test power at consistency 0.60",
-           colour = "Region / target",
-           subtitle = "Dashed line: 0.80 target; effect size and SD from the Gate-G2 paired deltas") +
-      base_theme
-    save_fig(tag(p_pow, "g"), "Fig08_power", 7.6, 4.6)
-  }
-
-  cat("figures_paper01.R complete: Fig01-Fig08 in paper01/figures/\n")
+  cat("figures_paper01.R complete: Fig01-Fig07 in paper01/figures/\n")
 })

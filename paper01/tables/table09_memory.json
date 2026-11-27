@@ -1,0 +1,13 @@
+{
+  "file": "table09_memory.csv",
+  "git_hash": "1850657",
+  "code_hash": "5ad10ec6dc75a061edb797a735efef2e",
+  "written": "2026-11-27T13:11:01",
+  "seed": 20261125,
+  "nrow": 14,
+  "ncol": 2,
+  "session": {
+    "R": "R version 4.4.1 (2024-06-14 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  }
+}

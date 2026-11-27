@@ -8,8 +8,10 @@
 #   table03_bss.csv           median BSS vs climatology, family x lead x target
 #   table04_confirmatory.csv  the frozen confirmatory contrasts H0/H1/H2
 #   table05_usa_transfer.csv  descriptive transfer-check contrasts
-#   table06_power.csv         sign-test power curve
-#   table07_kclass.csv        labelled post-hoc k-class cut (appendix)
+#   table06_kclass.csv        labelled post-hoc k-class cut (appendix)
+#   table07_equivalence.csv   TOST at the declared harm bound
+#   table08_bss_paired.csv    skill on one common sample for every family
+#   table09_memory.csv        recession constant and retained memory
 #
 # Usage:  Rscript R/tables_paper01.R
 # =====================================================================
@@ -110,23 +112,53 @@ local({
     wr(t5, "table05_usa_transfer.csv")
   }
 
-  # ---- T6: power curve --------------------------------------------------
-  pw <- rd("p1_power.csv")
-  if (!is.null(pw)) {
-    t6 <- pw[n %in% c(50, 100, 150, 200, 300),
-             .(region, target, n_gauges_obs,
-               sd_delta = signif(sd_delta, 3),
-               median_delta_gate = signif(median_delta, 3),
-               n, power = signif(power, 2), clears_080)]
-    wr(t6, "table06_power.csv")
-  }
-
-  # ---- T7: labelled post-hoc k-class cut (appendix) --------------------
+  # ---- T6: labelled post-hoc k-class cut (appendix) ---------------------
   kc <- rd("p1_bss_by_kclass.csv")
   if (!is.null(kc)) {
     t7 <- dcast(kc, family + lead ~ k_class, value.var = "median_bss")
     t7 <- t7[order(lead, family)]
-    wr(t7, "table07_kclass.csv")
+    wr(t7, "table06_kclass.csv")
+  }
+
+  # ---- T7: equivalence at the declared harm bound ----------------------
+  eq <- rd("p1_equivalence.csv")
+  if (!is.null(eq) && nrow(eq)) {
+    t8 <- eq[, .(region, lead, role, n_gauges, n_months,
+                 margin = signif(margin, 3),
+                 median_delta = signif(median_delta, 3),
+                 ci90 = sprintf("[%+.4f, %+.4f]", lo90, hi90),
+                 ci95 = sprintf("[%+.4f, %+.4f]", lo95, hi95),
+                 p_tost = signif(p_tost, 2), equivalent)]
+    wr(t8, "table07_equivalence.csv")
+  }
+
+  # ---- T8: paired skill benchmark (one sample for every family) --------
+  bp <- rd("p1_bss_paired.csv")
+  if (!is.null(bp) && nrow(bp)) {
+    sm <- bp[, .(bss = signif(stats::median(bss, na.rm = TRUE), 3),
+                 n = uniqueN(gauge_id)),
+             by = .(region, target, lead, family)]
+    t9 <- dcast(sm, region + target + lead ~ family, value.var = "bss")
+    t9 <- t9[order(region, target, lead)]
+    wr(t9, "table08_bss_paired.csv")
+  }
+
+  # ---- T9: the memory budget -------------------------------------------
+  prm <- rd("p1_storage_params.csv")
+  if (!is.null(prm) && nrow(prm)) {
+    kd <- prm$k_days[is.finite(prm$k_days)]
+    q <- stats::quantile(kd, c(0.05, 0.25, 0.5, 0.75, 0.95), names = FALSE)
+    t10 <- data.table(statistic = c("n gauges", "k p05 (d)", "k p25 (d)",
+                                    "k median (d)", "k p75 (d)", "k p95 (d)",
+                                    "max k (d)", "share k < 10 d",
+                                    "share k < 30 d"))
+    t10[, value := c(nrow(prm), signif(q, 3), signif(max(kd), 3),
+                     signif(mean(kd < 10), 3), signif(mean(kd < 30), 3))]
+    t10 <- rbind(t10, data.table(
+      statistic = sprintf("median memory retained at %d mo", P1_LEADS),
+      value = signif(vapply(P1_LEADS, function(h)
+        stats::median(exp(-h * 30.4 / kd)), numeric(1)), 3)))
+    wr(t10, "table09_memory.csv")
   }
 
   cat("tables_paper01.R complete: tables in paper01/tables/\n")

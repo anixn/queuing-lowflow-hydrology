@@ -1,7 +1,7 @@
 # PIVOT.md — Pivot decision and redesign specification
 
 **Version 1.0, 26 November 2026.** Companion to `AGENTS.md` v2.0 (operating rules) and
-`STUDY.Rmd` (current study record). Written from an external expert review
+`paper01/STUDY.Rmd` (current study record). Written from an external expert review
 (queuing theory + water resources hydrology) of the repository as cloned on
 26 November 2026; the full review with page-level detail is
 `Queuing_LowFlow_Expert_Review_and_Pivot.docx/.pdf`.
@@ -11,7 +11,7 @@
 
 This document is the **change record** that `AGENTS.md` §3.8 and §3.9 require
 before the claim convention, the target or the confirmatory endpoint may change.
-It supersedes the study design in `README.md` / `STUDY.Rmd` §"Methods" for all
+It supersedes the study design in `README.md` / `paper01/STUDY.Rmd` §"Methods" for all
 work started after 26 November 2026; it does **not** weaken any rule in
 `AGENTS.md` — the never-list, the always-list, the unit wall, the provenance
 sidecars and the frozen-sentence discipline all remain in force.
@@ -34,6 +34,13 @@ recorded in this file.
 ---
 
 ## 1. Why we pivot (audit verdict, one page)
+
+> **Note on code locations (27 November 2026).** The file:line references
+> below describe the retired code *as audited on 26 November 2026*. That code
+> — `stage5_queue()`, the utilisation screen, `common_rates()`'s demand/μ
+> columns, the gate script and its outputs — was removed from the working
+> tree with the retired study. The findings stand; the line numbers point to
+> git history (`36f1db1` and descendants).
 
 The v2 study is **engineering-grade and question-mis-wired**. The verified
 engine, the unit wall, the conservation ledger, the training-year-only index
@@ -91,7 +98,7 @@ intermittent, water-stressed catchments the deficit story is about.
 | FQ4 | `lam_bar` → `q*`, `K`, `theta` computed over the **full** 1981–2020 record including test years; screen statistics likewise | `pipeline.R` `stage5_queue` lines 51–58; `common_screen` lines 198–213 | All thresholds, screens, standardisation and tuning on training years (1981–2010) only |
 | FQ5 | Features are monthly means of `E[Q]` and `P(Q≥q*)`, near-collinear; `first_passage_mean` computed but never used; E2 lead is 1 month (nowcasting) | `pipeline.R` lines 141–145, 232–250 | Evaluate 1/3/6-month leads; use state-trajectory features; or drop the CTMC for the fluid model (chosen, §4.4) |
 | FQ6 | Hargreaves ET0, fixed `Kc`, fixed `phi`, uniform `f_irr = 0.10` misrepresent monsoon demand; dataset PET and land-cover attributes unused | `units.R` Hargreaves; `config.R` §P | Dataset PET where available; attribute-derived irrigated fraction; seasonal `Kc`; PET choice becomes a declared sensitivity axis |
-| FH1 | Meteorological target (SPEI-3), agricultural mechanism, hydrological benchmark (SSI-3) — three drought types on one causal chain conflated | `STUDY.Rmd` target sections | Retarget to hydrological drought / low-flow endpoints |
+| FH1 | Meteorological target (SPEI-3), agricultural mechanism, hydrological benchmark (SSI-3) — three drought types on one causal chain conflated | `paper01/STUDY.Rmd` target sections | Retarget to hydrological drought / low-flow endpoints |
 | FH2 | Repository is named *queuing-lowflow-hydrology* but contains no low-flow definition (no Q90/Q95, no annual minima, no recession) | whole pipeline | Flow-threshold and low-flow targets (§4.5) |
 | FH3 | Concurrent + 1-month-lag endpoints test the queue where storage states are most redundant and never where memory pays | `stage6_design` E1/E2 | 1/3/6-month leads (§4.5) |
 | FH4 | `zero_frac < 0.30` screen deletes intermittent rivers — the most relevant catchments | `pipeline.R` line 211 | Censoring treatment + explicit reporting (§4.2) |
@@ -108,7 +115,7 @@ frozen asset for P3/P2), `R/functions/units.R` (unit wall, extended not
 rewritten), `R/functions/eval.R` metrics, `R/functions/io.R` provenance
 sidecars, `verify.R` three-way-agreement principle, the split 1981–2010 / 
 2011–2020, the paired two-level bootstrap machinery, `AGENTS.md` discipline,
-and the entire literature audit record under `P01/` and `analysis/P01_literature/`.
+and the entire literature audit record under `paper01/literature/`.
 
 **Deleted from the P1 study path** (kept in git history; `AGENTS.md` §8
 convention of deleting superseded analyses): `rho_window` screening, 
@@ -156,7 +163,7 @@ acceptance gate for the current manuscript and the variance estimate source for
 the P1 power analysis (§4.2).
 
 **Change list (all seven, one commit per `AGENTS.md` §3.8/§3.9, both regions rerun,
-old and new results reported side by side in `STUDY.Rmd`):**
+old and new results reported side by side in `paper01/STUDY.Rmd`):**
 
 1. **PET:** use dataset PET where the shipped forcings contain it
    (`unknown, action: check CAMELS-IND forcing file fields for a PET/PET0
@@ -192,7 +199,7 @@ old and new results reported side by side in `STUDY.Rmd`):**
 
 > **RESOLVED 26 November 2026 (same day as freezing — the gate ran within the
 > pivot session).** The gate ran after all seven changes were implemented and
-> the battery was green. Result (`output/gateG2_summary.csv`): median paired
+> the battery was green. Result: median paired
 > ΔBrier of `ssi3_plus_queue` over the frozen best-of baseline — India n = 5:
 > −0.0250 [−0.0947, +0.0308], sign 1/5; USA n = 58: −0.0059 [−0.0187, +0.0026],
 > sign 25/60 (SPI-3 sens.: −0.0077 [−0.0216, +0.0016]). **NULL RECORDED**: the
@@ -200,14 +207,12 @@ old and new results reported side by side in `STUDY.Rmd`):**
 > baselines once the ridge penalty is tuned and API/persistence exist. The
 > null is final for the concurrent design; the retired manuscript is retired
 > as a negative-result methods note; **Study P1 starts**. The frozen best-of
-> selection chose `api` for 64/65 gauges (`output/gateG2_bestof_cv.csv`) —
-> the antecedent index is the honest concurrent-lead memory baseline. The
-> sign-test power at the G2 effect size is near zero for all n ≤ 300
-> (`output/p1_power.csv`), confirming FS2: no screen size could have
-> resolved the concurrent design.
+> selection chose `api` for 64/65 gauges — the antecedent index is the honest
+> concurrent-lead memory baseline.
 
-**Outputs:** `output/gateG2_summary.csv` (+ sidecar), a decision paragraph
-appended to `STUDY.Rmd`, gate variance table for §4.2.
+**Outputs:** a decision paragraph appended to `paper01/STUDY.Rmd`; the gate's code
+and result files were removed from the working tree with the retired study
+(27 November 2026 cleanup) and stand in git history and in this section.
 
 ---
 
@@ -260,7 +265,9 @@ against the gate-G2 variance table]`.
 
 **Screens (completeness and event-count only; the utilisation window is gone):**
 
-1. `in_window` 1981–2020 record present (`pipeline.R` `common_screen` keeps this).
+1. Record present in the 1981–2020 window (`p1_screen()` reports `n_train`
+   and `n_test`; screen 2 is the operative test — the retired `in_window`
+   flag was removed with the utilisation screen on 27 November 2026).
 2. ≥ 30 complete training months and ≥ 10 complete test months per gauge
    (month complete = no missing day, as today).
 3. ≥ 8 target events in the training years per gauge per target (else the gauge
@@ -288,6 +295,17 @@ at consistency 0.60 and the G2 effect size. If the projected power at the
 achieved n is < 0.80 for H1's declared effect, the design document must say so
 **before** scoring, and H1's wording stays pre-registered anyway
 (negative results remain publishable per `AGENTS.md` §3.4).
+
+> **AMENDED 27 November 2026.** The curve was computed (`R/power_check.R`)
+> from the Gate-G2 variance and withdrawn together with the gate-derived
+> artefacts. Two reasons, recorded so the omission is not silent: the G2
+> effect was negative, so the curve was evaluated at a consistency of 0.50
+> and power *fell* with n (0.10 at n = 50, 0.0003 at n = 300) — a correct
+> computation of a question nobody asked; and the paper's power argument
+> rested on it. P1's confirmatory inference therefore stands on the
+> pre-registered paired contrasts and the bootstrap interval alone. If a
+> power analysis is wanted again it must be rebuilt on P1's own variance
+> (§4.8) and labelled as new.
 
 **Regional framing (FH5 fix).** India is the study. Caravan-US runs the
 identical protocol as a **transfer check** (same code path, `QDJ_REGION=us`),
@@ -321,6 +339,22 @@ Climate projections (P3 only, not P1): CAMELS-IND-Proj daily streamflow,
 `config.R` remains the only place paths and parameters live; add
 `QDJ_PET_SOURCE = {shipped|pm_era5|hargreaves}` and
 `QDJ_TRANSFER_ARM = {on|off}`.
+
+> **AMENDED 27 November 2026 (transfer arm re-scored on the available Caravan
+> release).** The release mounted on this machine is `Caravan_B`: it ships
+> `streamflow` in **mm/day** (Caravan's declared unit) and only the ERA5
+> `potential_evaporation_sum`, not the FAO Penman–Monteith column. Two
+> corrections follow, and both are declared in code:
+> (a) the dataset's discharge unit is now passed explicitly
+> (`prepare_gauge(q_units = )`): the India arm divides m³/s by area, the USA
+> arm does not convert, because mm/day is already the state's unit. The
+> threshold column `q90_m3s` is renamed `q90_obs` — it is in the dataset's own
+> unit, m³/s in India and mm/day in the USA.
+> (b) ERA5 potential evaporation is **not** substituted for PET; with no
+> FAO-PM column the arm runs the declared Hargreaves fallback and prints the
+> source. The US parameters reported before this date were computed with the
+> wrong discharge unit; the re-scored transfer arm supersedes them. The
+> confirmatory contrasts (H1, H2) are India-only and unaffected.
 
 ### 4.4 The storage engine v2 (`R/functions/storage_engine.R`, new)
 
@@ -372,6 +406,15 @@ through the fitted recession law, not as a daily input — this is what keeps th
 state's memory different from a smoothed Q).
 
 ### 4.5 Targets and leads
+
+> **AMENDED 27 November 2026 (declared post-hoc lead extension).** The frozen
+> lead set is 1, 3 and 6 months, and H0/H1/H2 are unchanged. Two further
+> leads, **2 and 12 months**, were added after scoring began, on the owner's
+> instruction, to show the shape of the decay rather than three points on it.
+> They are **descriptive only**: they never enter a confirmatory decision, the
+> confirmatory table labels them `exploratory (post-hoc lead extension)`, and
+> every table and figure marks them `exploratory lead`. Adding them does not
+> change the 1/3/6 results, because each lead is fitted independently.
 
 All targets are computed per gauge from the **training** flow record only:
 
@@ -454,6 +497,22 @@ frozen before scoring, so the contrast is not chosen after seeing test skill.
 - **Harm bound:** as declared in §4.1; gauges beyond it are listed individually
   in the outputs, never hidden behind a median.
 
+> **AMENDED 27 November 2026 (two additions, both declared before they were
+> computed).** "H1 FAIL" says the improvement was not detected; it does not
+> say the improvement is small. Two analyses close that gap, and neither
+> changes a confirmatory decision:
+> (a) **Equivalence at the harm bound.** A two-one-sided-test on the same
+> two-level bootstrap: equivalence is declared when the 90 % interval of the
+> median paired difference lies inside ±`P1_HARM_BOUND`. Script
+> `R/paired_analysis_p1.R`; output `p1_equivalence.csv`; the interval form is
+> the TOST at 5 % per side.
+> (b) **Paired skill benchmark.** `p1_bss.csv` scores each family on its own
+> complete-case months, so its columns are not strictly comparable. The
+> benchmark is recomputed on the months where **every** family has a
+> prediction for that gauge (`p1_bss_paired.csv`), giving one sample per
+> comparison. Per `AGENTS.md` rule 10, only this paired version may carry a
+> comparative sentence in the text.
+
 ### 4.9 Verification battery changes (`R/verify.R`)
 
 The 15-check battery is rebuilt as a **new battery with the same rigidity**
@@ -480,21 +539,22 @@ The 15-check battery is rebuilt as a **new battery with the same rigidity**
 | Gate | Criterion | If passed | If failed |
 |---|---|---|---|
 | G2 (existing study) | see §3 decision rule | queue survives → decision meeting | null recorded; current manuscript retired/limited |
-| P1-fit | storage engine verified 15/15; sample n ≥ 150 after screens, power reported | proceed to scoring | engine or sample fixed first; no scoring |
+| P1-fit | storage engine verified 23/23; sample n ≥ 150 after screens, power reported (withdrawn 27 Nov — see the §4.2 amendment) | proceed to scoring | engine or sample fixed first; no scoring |
 | P1-H1 | BSS(delta) median > 0, CI excludes 0, sign ≥ 60% gauges, 3-month lead | headline result; manuscript as §4.11 | H0-parity result reported honestly; paper reframed around the lead-time structure (1-month parity, 3/6-month gains) if present, else around the verified null + P3 |
 | P1-H2 | same at 6-month lead | strengthens H1 | reported; does not gate the manuscript |
 
-> **RESOLVED 26 November 2026.** P1-fit: the rebuilt battery is 22/22
-> (V1–V15 legacy + V16–V22 storage-engine checks); the working sample is
+> **RESOLVED 26 November 2026.** P1-fit: the rebuilt battery is 23/23
+> (V1–V14 legacy, V15 the two daily builders, V16–V22 storage-engine checks,
+> V23 the provenance sidecar); the working sample is
 > **231 Indian catchments** (257 prepared; 136 storage-scored; 111 borrowing
 > basin-median parameters) plus the **USA transfer arm at 639 scored
 > gauges** — far beyond the 12-gauge sample of the retired design. The
 > confirmatory contrasts, scored once under the frozen protocol
-> (`output/p1_confirmatory.csv`): **H0 (h = 1): parity confirmed exactly as
+> (`paper01/output/p1_confirmatory.csv`): **H0 (h = 1): parity confirmed exactly as
 > pre-registered** — median ΔBrier −0.0003, sign 47 % (the predicted
 > outcome); **H1 (h = 3): FAIL** — median −0.0015, sign 56/130 (43 %);
 > **H2 (h = 6): FAIL** — median −0.0007, sign 54/131 (41 %). The exploratory
-> k-class cut (`output/p1_bss_by_kclass.csv`, labelled post-hoc) shows no
+> k-class cut (`paper01/output/p1_bss_by_kclass.csv`, labelled post-hoc) shows no
 > benefit even at 10–30-day recessions, and the slow class has n = 1:
 > these Indian catchments drain too fast for the fluid state to carry
 > seasonal memory the indices lack. **The absolute falsifier fires: the
@@ -504,8 +564,8 @@ The 15-check battery is rebuilt as a **new battery with the same rigidity**
 > that survive: the lead-time skill curves for India (BSS 0.42-0.50 at
 > 1 month -> 0.01-0.08 at 3 -> at most 0.02 at 6 - no equivalent India-wide
 > large-sample benchmark was identified in the rapid Crossref/OpenAlex
-> screen, `output/p1_bss.csv`), the confirmed pre-registration, the verified
-> engine and the 22-check battery, and the trustworthy G2 null.
+> screen, `paper01/output/p1_bss.csv`), the confirmed pre-registration, the verified
+> engine and the 23-check battery, and the trustworthy G2 null.
 
 **Absolute falsifier:** if the storage family does not beat the frozen
 best baseline at any lead ≥ 3 months on the primary target, the claim
@@ -518,8 +578,8 @@ now so that it cannot be negotiated later.
 Target: **HESS** (methods + large-sample result) or **Journal of Hydrology**
 short communication; the verified null from G2 is either folded in as the
 "why indices are not enough at seasonal leads" motivation or submitted
-separately as a negative-result note. Repository artefacts: `STUDY.Rmd`
-(rewritten around P1), `MANUSCRIPT.Rmd`, figures regenerated by `R/figures.R`
+separately as a negative-result note. Repository artefacts: `paper01/STUDY.Rmd`
+(rewritten around P1), `paper01/MANUSCRIPT_fragment.Rmd`, figures regenerated by `R/figures_paper01.R`
 (lead-time skill curves per basin/climate class as the centrepiece figure),
 one reproducibility page per `AGENTS.md` §8 Phase D.
 
@@ -572,6 +632,12 @@ distributions).
 
 ## 7. Repository surgery plan (file-by-file)
 
+> **EXECUTED; superseded in part.** The plan below was carried out on
+> 26–27 November 2026. Where it says "keep for P3", the code now lives in
+> `R/functions/queue_engine.R` and `R/functions/demand_envelope.R`, which the
+> P1 path never sources. The retired study's own scripts (`study_gate_g2.R`,
+> `power_check.R`) and its gate outputs were deleted on 27 November 2026.
+
 | File | Action | Notes |
 |---|---|---|
 | `R/config.R` | **edit** | delete `rho_window`, `q_days/K_days/theta_mult`, `alpha/eta/c` from the P1 path (keep under a `P3_CTMC` block for P3); add `PET_SOURCE`, `TRANSFER_ARM`, ridge CV grid/folds, API decay `k`, Lyne–Hollick `alpha`, BFI parameters, screen criteria, leads `c(1,3,6)`, targets list |
@@ -581,8 +647,8 @@ distributions).
 | `R/functions/eval.R` | **extend** | add `brier_skill()`; CV-tuned ridge wrapper (grid + folds from config) |
 | `R/study.R` | **edit** | gates: G2 block (both regions, old+new side by side) then P1 block (India primary, US transfer arm behind `QDJ_TRANSFER_ARM`) |
 | `R/verify.R` | **rebuild** | new 15-check battery per §4.9; gate G1 redefined to the new battery |
-| `R/figures.R` | **edit** | centrepiece: lead-time BSS curves by basin/climate class; keep map; drop queue figures from the P1 path |
-| `STUDY.Rmd` / `MANUSCRIPT.Rmd` / `README.md` / `HELP.md` | **rewrite** | same commit as the code change (`AGENTS.md` §3.8/§3.9 protocol); G2 decision paragraph appended to `STUDY.Rmd` |
+| `R/figures_paper01.R` | **edit** | centrepiece: lead-time BSS curves by basin/climate class; keep map; drop queue figures from the P1 path |
+| `paper01/STUDY.Rmd` / `paper01/MANUSCRIPT_fragment.Rmd` / `README.md` / `HELP.md` | **rewrite** | same commit as the code change (`AGENTS.md` §3.8/§3.9 protocol); G2 decision paragraph appended to `paper01/STUDY.Rmd` |
 | `AGENTS.md` | **edit** | §1 and §8 updated to P1/P3 framing; frozen sentence pointer → §9 of this file; never-list items 8–9 satisfied by this document |
 | `PIVOT.md` | **add** | this file, at repository root |
 
@@ -592,12 +658,12 @@ distributions).
 
 | Weeks | Work package | Concrete outputs | Acceptance |
 |---|---|---|---|
-| 1–2 | **Gate G2** (§3): PET, calibrated envelope, leakage fixes, new baselines, tuned ridge, BSS | `output/gateG2_summary.csv` + sidecar; decision paragraph in `STUDY.Rmd`; variance table | decision rule applied as written; both regions rerun; 15/15 on old battery |
-| 3–4 | Sample reconstruction: completeness screens, intermittent-river censoring, power analysis; recession analysis per catchment | `output/sample_report.csv`; per-gauge `(k, b, K_a, S_cap, BFI)` table; power curve | screens documented; n reported per stage; ≥ 20 segments rule enforced or flagged |
-| 5–6 | `storage_engine.R` + new verification battery; targets T1–T3 at leads 1/3/6; design matrices; CV-tuned ridge wrapper | verified engine; frozen evaluation protocol (pre-registration text committed) | new battery 15/15; leakage tripwire green; families frozen |
-| 7–8 | Fitting and scoring: per-gauge BSS, paired deltas, two-level bootstrap; confirmatory contrasts H1/H2 | `output/p1_paired.csv`, `output/p1_summary.csv` + sidecars | scored once; contrast identities match §4.1 exactly |
+| 1–2 | **Gate G2** (§3): PET, calibrated envelope, leakage fixes, new baselines, tuned ridge, BSS | decision paragraph in `paper01/STUDY.Rmd`; gate result recorded in §3 (files since removed) | decision rule applied as written; both regions rerun; battery green |
+| 3–4 | Sample reconstruction: completeness screens, intermittent-river censoring, power analysis; recession analysis per catchment | `paper01/output/p1_sample_report.csv`; per-gauge `(k, b, K_a, S_cap, BFI)` table; power curve (withdrawn 27 Nov — §4.2 amendment) | screens documented; n reported per stage; ≥ 20 segments rule enforced or flagged |
+| 5–6 | `storage_engine.R` + new verification battery; targets T1–T3 at leads 1/3/6; design matrices; CV-tuned ridge wrapper | verified engine; frozen evaluation protocol (pre-registration text committed) | new battery 23/23; leakage tripwire green; families frozen |
+| 7–8 | Fitting and scoring: per-gauge BSS, paired deltas, two-level bootstrap; confirmatory contrasts H1/H2 | `paper01/output/p1_paired.csv`, `paper01/output/p1_summary.csv` + sidecars | scored once; contrast identities match §4.1 exactly |
 | 9–10 | Diagnostics: reliability diagrams, basin/climate-class skill curves, zero-flow and PET-source sensitivities, US transfer arm | robustness appendix; all figures | no table cell without a script (`AGENTS.md` §4.3) |
-| 11–12 | Manuscript + reproducibility page; HESS/JH/WRR short article; G2 null folded in or split | submission-ready draft + green battery | `STUDY.Rmd` knits; every number sourced; session log closed |
+| 11–12 | Manuscript + reproducibility page; HESS/JH/WRR short article; G2 null folded in or split | submission-ready draft + green battery | `paper01/STUDY.Rmd` knits; every number sourced; session log closed |
 
 Weeks 1–2 and 3–4 may overlap only after the G2 decision rule has been applied
 in writing.
@@ -607,7 +673,7 @@ in writing.
 ## 9. Novelty record for the pivot
 
 **Sentence B — FROZEN 27 November 2026 after the rapid P1 screen**
-(`P01/p1_novelty_screen_2026-11-27.md`; 903 relevance-ranked records
+(`paper01/literature/p1_novelty_screen_2026-11-27.md`; 903 relevance-ranked records
 retrieved, 822 deduplicated records screened, 21 candidates manually reviewed,
 103 citing records included; zero gap-changing findings):
 
@@ -628,7 +694,7 @@ stronger claim requires a WoS/Scopus follow-up. The screen supports the P1
 title and the scoped benchmark statement; it does not change the negative
 confirmatory storage-state result.
 
-**Search queries run (screen protocol as in `P01/search_protocol.md`):**
+**Search queries run (screen protocol as in `paper01/literature/search_protocol.md`):**
 `(storage deficit OR "storage state" OR recession OR baseflow) AND (drought forecast* OR "low flow" forecast*) AND (India OR "large sample" OR CAMELS)`; 
 `("catchment memory" AND drought AND forecast)`; 
 `(SPEI OR SSI OR "flow duration" OR Q90) AND (sub-seasonal OR seasonal) AND (forecast* OR prediction) AND India`; 
@@ -649,7 +715,7 @@ S221458182500775X). Standard references named without URL: Moran 1954; Gani
 
 **Never:**
 
-1. Never start P1 scoring before the G2 decision is recorded in `STUDY.Rmd`.
+1. Never start P1 scoring before the G2 decision is recorded in `paper01/STUDY.Rmd`.
 2. Never fit, screen, threshold, standardise or tune on test years — this
    includes "just checking" (FQ4 was found by exactly such a line).
 3. Never let the fluid storage state consume daily observed Q as an input

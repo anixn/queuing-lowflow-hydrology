@@ -34,10 +34,15 @@ write_csv_sidecar <- function(df, path, meta = list()) {
   ensure_dir(dirname(path))
   utils::write.csv(df, path, row.names = FALSE, na = "")
   sidecar <- sub("\\.csv$", ".json", path)
+  # AGENTS.md §4.6: the sidecar carries the git hash, parameters, seed and
+  # R session. The seed is the configured one whenever config.R is loaded;
+  # a caller can override it through `meta$seed`.
+  seed <- if (exists("P", inherits = TRUE) && !is.null(P$seed)) P$seed else NA
   payload <- c(
     list(file = basename(path), git_hash = git_hash(),
          code_hash = code_hash(),
          written = format(Sys.time(), "%Y-%m-%dT%H:%M:%S"),
+         seed = seed,
          nrow = nrow(df), ncol = ncol(df),
          session = list(R = R.version.string,
                         platform = R.version$platform)),

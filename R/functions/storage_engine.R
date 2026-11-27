@@ -191,7 +191,7 @@ propagate_storage <- function(dates, prcp_mm, pet_mm, month,
   # Declared handling of missing climate inputs: a missing day carries no
   # information, so its input enters the balance as zero and the MONTH is
   # excluded from features downstream by the complete-month rule
-  # (missing_day already flags it in common_rates). No interpolation.
+  # (missing_day already flags it in prepare_daily). No interpolation.
   pr[is.na(pr)] <- 0; pe_in[is.na(pe_in)] <- 0
   mo <- as.integer(month)
   kc <- kc_month(mo, region); phm <- phi_month(mo, region)

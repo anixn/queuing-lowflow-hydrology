@@ -1,0 +1,13 @@
+{
+  "file": "p1_attr_merge.csv",
+  "git_hash": "1850657",
+  "code_hash": "0a905c85431c1e02f0df03abf6ce2e0b",
+  "written": "2026-11-27T13:51:46",
+  "seed": 20261125,
+  "nrow": 131,
+  "ncol": 44,
+  "session": {
+    "R": "R version 4.4.1 (2024-06-14 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  }
+}

@@ -12,4 +12,10 @@ __pycache__/
 *.pyc
 
 # Regenerable held-out prediction tables (large; reproducible by study_p1.R)
-output/p1_predictions*.csv
+paper01/output/p1_predictions*.csv
+
+# LaTeX/knitr build detritus (regenerable)
+paper01/*.log
+paper01/*.aux
+paper01/*.out
+paper01/*.tex

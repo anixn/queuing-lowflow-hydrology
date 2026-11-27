@@ -4,7 +4,7 @@
 #
 # Unit      : gauge catchment; storage state S in mm of depth
 # Engine    : fluid water balance, recession-calibrated per gauge
-#             (storage_engine.R); NO queue artefacts, no claims
+#             (storage_engine.R); the state is a depth in mm, not a claim
 # Q enters  : only through fitted recession parameters + the censored
 #             zero-flow indicator (never as a daily input)
 # Targets   : T1 = SSI-3 <= -1 (confirmatory); T2 = monthly mean flow
@@ -33,7 +33,7 @@ local({
   root <- normalizePath("D:/Research/queuing-lowflow-hydrology")
   setwd(root); Sys.setenv(QDJ_ROOT = root)
   source(file.path(root, "R", "config.R"))
-  for (u in c("units.R", "queue_engine.R", "storage_engine.R", "indices.R",
+  for (u in c("units.R", "storage_engine.R", "indices.R",
               "eval.R", "io.R", "audit.R", "pipeline.R")) {
     source(file.path(root, "R", "functions", u))
   }
@@ -43,9 +43,21 @@ local({
   # ===================================================================
   # 1. Per-gauge preparation: recession fits + fluid state + features
   # ===================================================================
+  # q_units declares the unit of the dataset's streamflow column:
+  #   "m3s"    -- CAMELS-IND ships discharge in m^3/s; divide by the
+  #               catchment area to reach mm/day (the unit wall does it).
+  #   "mm_day" -- Caravan ships discharge in mm/day (Kratzert et al. 2023,
+  #               readme: streamflow unit mm/d); no conversion is applied.
+  # Declaring the unit here is what stops the two arms being silently
+  # mixed; the state itself only ever sees mm/day.
   prepare_gauge <- function(g, dates, q_obs, prcp_mm, area_km2, basin,
-                            region) {
-    q_mm <- q_m3s_to_mm_day_na(q_obs, area_km2 * 1e6)
+                            region, q_units = c("m3s", "mm_day")) {
+    q_units <- match.arg(q_units)
+    q_mm <- if (q_units == "m3s") {
+      q_m3s_to_mm_day_na(q_obs, area_km2 * 1e6)
+    } else {
+      as.numeric(q_obs)
+    }
     yr <- as.integer(format(dates, "%Y"))
     # FQ4 discipline: all recession fits on TRAINING years only.
     mask_train <- yr %in% P$train_years & is.finite(q_mm)
@@ -65,10 +77,11 @@ local({
       n_segments = rec$n_segments, BFI = bfi,
       q10 = stats::quantile(q_mm[mask_train], 0.10, na.rm = TRUE,
                             names = FALSE),
-      # q90_m3s: the T2 threshold in the SAME units as the monthly mean
-      # flow that it is compared against (m^3/s daily flow-duration Q90,
-      # training years). q90_mm kept only as a reference column.
-      q90_m3s = stats::quantile(q_obs[mask_train], 0.90, na.rm = TRUE,
+      # q90_obs: the T2 threshold in the SAME units as the monthly mean
+      # flow it is compared against (daily flow-duration Q90 over training
+      # years, in the dataset's discharge unit: m^3/s for India, mm/day for
+      # the USA). q90_mm is kept only as a reference column in mm/day.
+      q90_obs = stats::quantile(q_obs[mask_train], 0.90, na.rm = TRUE,
                                 names = FALSE),
       q90_mm = stats::quantile(q_mm[mask_train], 0.90, na.rm = TRUE,
                                names = FALSE),
@@ -117,7 +130,7 @@ local({
     # Targets (PIVOT.md §4.5). T1: SSI-3 <= -1; T2: monthly mean flow
     # below the TRAINING-period daily Q90 threshold.
     m[, t1 := as.integer(!is.na(ssi3) & ssi3 <= -1)]
-    m[, t2 := as.integer(is.finite(flow) & flow < prm$q90_m3s)]
+    m[, t2 := as.integer(is.finite(flow) & flow < prm$q90_obs)]
     m[, q90_flag := t2]
     # Time-invariant fitted attributes carried as feature columns
     # (they identify nothing within a gauge; they matter for the pooled
@@ -134,8 +147,6 @@ local({
   make_region_driver <- function(region) {
     if (region == "India") {
       flow <- load_flow(); meta <- gauge_meta()
-      attrs <- read_camels_attributes()
-      irr <- setNames(attrs$irrigation_frac, attrs$gauge_id)
       ids <- as.character(meta$gauge_id)
       areas <- setNames(meta$area_km2, ids)
       lats <- setNames(meta$cwc_lat, ids)
@@ -156,41 +167,74 @@ local({
         d <- merge(f[, .(date, prcp_mm, tmax_c, tmin_c, tavg_c)],
                    data.table(date = flow$date, q = q), by = "date",
                    all.x = TRUE)
-        common_rates(g, d$date, d$q, d$prcp_mm, d$tmax_c, d$tmin_c,
-                     d$tavg_c, areas[[g]], lats[[g]], pet_obs = pet_obs,
-                     region = "India", irrigation_frac = irr[[as.character(gi)]])
+        prepare_daily(g, d$date, d$q, d$prcp_mm, d$tmax_c, d$tmin_c,
+                      d$tavg_c, lats[[g]], pet_obs = pet_obs,
+                      region = "India")
       }
     } else {
-      ot <- fread(file.path(CARAVAN_ROOT, "attributes", "camels",
-                            "attributes_other_camels.csv"))
+      # Caravan attributes: the released package ships the catchment
+      # metadata as .xlsx (area, gauge_lat); some redistributions ship a
+      # .csv beside it. Accept either, never guess a value.
+      attr_dir <- file.path(CARAVAN_ROOT, "attributes", "camels")
+      attr_csv <- file.path(attr_dir, "attributes_other_camels.csv")
+      attr_xlsx <- file.path(attr_dir, "attributes_other_camels.xlsx")
+      ot <- if (file.exists(attr_csv)) {
+        fread(attr_csv)
+      } else if (file.exists(attr_xlsx)) {
+        if (!requireNamespace("readxl", quietly = TRUE)) {
+          stop("Caravan attributes are only available as .xlsx; ",
+               "install the readxl package or provide ",
+               "attributes_other_camels.csv", call. = FALSE)
+        }
+        data.table::as.data.table(
+          readxl::read_excel(attr_xlsx, sheet = 1))
+      } else {
+        stop("Caravan attributes not found under ", attr_dir, call. = FALSE)
+      }
       ids <- ot$gauge_id
       areas <- setNames(ot$area, ids)
       lats <- setNames(ot$gauge_lat, ids)
       basins <- setNames(substr(gsub("camels_", "", ot$gauge_id), 1, 4), ids)
+      # PET for the transfer arm. Caravan releases differ: some ship the
+      # FAO Penman-Monteith product
+      # (`potential_evaporation_sum_FAO_PENMAN_MONTEITH`), others only the
+      # ERA5 `potential_evaporation_sum`. The latter is a *different*
+      # quantity (mean ~12 mm/day here) and is NOT the study's PET, so it
+      # is never substituted: when the FAO-PM column is absent the arm runs
+      # the declared Hargreaves fallback from temperature and latitude
+      # (PIVOT.md §4.4, HELP.md §3).
+      ts_dir <- file.path(CARAVAN_ROOT, "timeseries", "camels")
+      probe <- list.files(ts_dir, pattern = "[.]csv$", full.names = TRUE)[1]
+      if (is.na(probe)) stop("No Caravan time series under ", ts_dir,
+                             call. = FALSE)
+      pet_name <- intersect(
+        "potential_evaporation_sum_FAO_PENMAN_MONTEITH",
+        names(fread(probe, nrows = 0)))[1]
+      cat(sprintf("  Caravan PET source: %s\n",
+                  if (is.na(pet_name)) "Hargreaves fallback (no FAO-PM column)"
+                  else pet_name))
       get_rates <- function(g) {
-        f <- tryCatch(fread(file.path(CARAVAN_ROOT, "timeseries", "camels",
-                                      paste0(g, ".csv")),
-                            select = c("date", "streamflow",
-                                       "total_precipitation_sum",
-                                       "temperature_2m_max",
-                                       "temperature_2m_min",
-                                       "temperature_2m_mean",
-                                       "potential_evaporation_sum_FAO_PENMAN_MONTEITH"),
-                            showProgress = FALSE), error = function(e) NULL)
+        sel <- c("date", "streamflow", "total_precipitation_sum",
+                 "temperature_2m_max", "temperature_2m_min",
+                 "temperature_2m_mean")
+        if (!is.na(pet_name)) sel <- c(sel, pet_name)
+        f <- tryCatch(fread(file.path(ts_dir, paste0(g, ".csv")),
+                            select = sel, showProgress = FALSE),
+                      error = function(e) NULL)
         if (is.null(f) || !nrow(f) || sum(!is.na(f$streamflow)) < 300)
           return(NULL)
-        pet_col <- f$potential_evaporation_sum_FAO_PENMAN_MONTEITH
-        pet_frac_missing <- mean(!is.finite(pet_col))
-        pet_mean <- mean(pet_col, na.rm = TRUE)
-        pet_source <- if (is.finite(pet_mean) && pet_mean > 0 &&
-                          pet_mean < 15 && pet_frac_missing < 0.30)
-          "shipped_fao_pm" else "hargreaves_fallback"
-        pet_obs <- if (pet_source == "shipped_fao_pm") pet_col else NULL
-        common_rates(g, f$date, f$streamflow, f$total_precipitation_sum,
-                     f$temperature_2m_max, f$temperature_2m_min,
-                     f$temperature_2m_mean, areas[[g]], lats[[g]],
-                     pet_obs = pet_obs, region = "USA",
-                     irrigation_frac = NA_real_)
+        pet_obs <- NULL
+        if (!is.na(pet_name)) {
+          x <- f[[pet_name]]
+          pet_frac_missing <- mean(!is.finite(x))
+          pet_mean <- mean(x, na.rm = TRUE)
+          if (is.finite(pet_mean) && pet_mean > 0 && pet_mean < 15 &&
+              pet_frac_missing < 0.30) pet_obs <- x
+        }
+        prepare_daily(g, f$date, f$streamflow, f$total_precipitation_sum,
+                      f$temperature_2m_max, f$temperature_2m_min,
+                      f$temperature_2m_mean, lats[[g]],
+                      pet_obs = pet_obs, region = "USA")
       }
     }
     list(ids = ids, basins = basins, areas = areas, get_rates = get_rates)
@@ -236,7 +280,8 @@ local({
       if (is.null(r)) next
       prm <- tryCatch(
         prepare_gauge(g, r$date, r$q_used, r$prcp_mm, drv$areas[[g]],
-                      drv$basins[[g]], region),
+                      drv$basins[[g]], region,
+                      q_units = if (region == "USA") "mm_day" else "m3s"),
         error = function(e) {
           err_msgs <<- c(err_msgs, sprintf("prepare %s: %s",
             g, conditionMessage(e)))
@@ -259,7 +304,7 @@ local({
       out <- tryCatch({
         ms <- propagate_and_monthly(r, prm_row, region)
         mm <- build_monthly(r, prm_row, ms)
-        sc <- common_screen(r, drv$basins[[g]])
+        sc <- p1_screen(r, drv$basins[[g]])
         sc[, n_segments := prm_row$n_segments]
         sc[, region := region]
         sc[, gauge_id := g]
@@ -296,8 +341,8 @@ local({
   screen_table <- function(rg) {
     p <- rg$params
     s <- rg$screens
-    # s (common_screen) already carries zero_frac and n_segments; the
-    # params side adds only the fitted columns, so no duplicate names.
+    # s (p1_screen) already carries zero_frac; the params side adds the
+    # fitted columns and n_segments, so no duplicate names.
     d <- merge(s, p[, .(gauge_id, BFI, k_days, S_cap_mm,
                         borrowed_parameters)],
                by = "gauge_id")
@@ -372,7 +417,7 @@ local({
           setdiff(names(P1_FAMILY_FEATURES[[toupper(tgt)]]), P1_STORAGE_FAMILIES)
         for (h in P1_LEADS) {
           des <- p1_design_at_lead(mm, tgt, h)
-          ft <- stage7_fit(des, target_col = "y", endpoint = "E1",
+          ft <- stage7_fit(des, target_col = "y",
                            features = P1_FAMILY_FEATURES[[toupper(tgt)]][fams])
           ft$metrics[, `:=`(gauge_id = g, region = region, target = tgt,
                             lead = h)]
@@ -497,18 +542,23 @@ local({
   }
 
   # Confirmatory decision table (frozen §4.10 criteria applied as written).
+  # Leads 2 and 12 are the declared post-hoc extension: descriptive only.
   conf <- p1_summ[target == "t1" & baseline == "bestof"]
   if (nrow(conf)) {
-    conf[, hypothesis := fifelse(lead == 3, "H1 (confirmatory)",
-                          fifelse(lead == 6, "H2 (confirmatory)",
-                                  "H0 (descriptive: parity expected)"))]
+    conf[, hypothesis := fifelse(
+      lead == 3, "H1 (confirmatory)",
+      fifelse(lead == 6, "H2 (confirmatory)",
+              fifelse(lead == 1, "H0 (descriptive: parity expected)",
+                      "exploratory (post-hoc lead extension)")))]
     conf[, criterion_median_pos := !is.na(median_delta) & median_delta > 0]
     conf[, criterion_ci_excl0 := !is.na(boot_lo) & boot_lo > 0]
     conf[, criterion_sign60 := !is.na(sign_share) & sign_share >= 0.60]
     conf[, verdict := fifelse(
       lead == 1, "descriptive (H0): report as predicted parity/null",
-      fifelse(criterion_median_pos & criterion_ci_excl0 & criterion_sign60,
-              "PASS", "FAIL"))]
+      fifelse(lead %in% P1_LEADS_EXPLORATORY,
+              "descriptive (exploratory lead; not confirmatory)",
+              fifelse(criterion_median_pos & criterion_ci_excl0 & criterion_sign60,
+                      "PASS", "FAIL")))]
   }
   write_csv_sidecar(p1_summ, file.path(OUTPUT_DIR, "p1_summary.csv"))
   write_csv_sidecar(conf, file.path(OUTPUT_DIR, "p1_confirmatory.csv"))

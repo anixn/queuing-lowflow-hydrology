@@ -30,6 +30,9 @@ local({
   suppressMessages({
     library(data.table)
     library(ggplot2)
+    # patchwork is needed by the state figure; attach it here so the figure
+    # does not depend on the map block having run.
+    if (requireNamespace("patchwork", quietly = TRUE)) library(patchwork)
   })
   ensure_dir(FIG_DIR)
 
@@ -64,7 +67,14 @@ local({
   summ <- rd("p1_summary.csv")
 
   # ---- 1. sample map ---------------------------------------------------
-  if (!is.null(scr) && nrow(scr) && requireNamespace("sf", quietly = TRUE)) {
+  # The map needs the jurisdiction boundary file; when it is not mounted the
+  # figure is skipped with a message rather than failing the whole script.
+  if (!file.exists(INDIA_OUTLINE_FILE) || !file.exists(INDIA_STATES_FILE)) {
+    cat("  fig_p1_map skipped: boundary file not mounted under",
+        DIE_DATA_ROOT, "\n")
+  }
+  if (!is.null(scr) && nrow(scr) && requireNamespace("sf", quietly = TRUE) &&
+      file.exists(INDIA_OUTLINE_FILE) && file.exists(INDIA_STATES_FILE)) {
     suppressMessages(library(sf))
     suppressMessages(library(patchwork))
     ind_outline <- sf::st_read(INDIA_OUTLINE_FILE, quiet = TRUE)
@@ -84,8 +94,10 @@ local({
     stage_cols <- c("1 read, excluded by screens" = "grey75",
                     "2 completeness screens passed" = blue,
                     "3 storage-scored (complete + events + recession)" = red)
-    n3 <- sum(pts$stage == "3 storage-scored (complete + events + recession)")
-    n2 <- sum(pts$stage == "2 completeness screens passed")
+    n3 <- sum(scr$pass_complete & scr$pass_events_t1 & scr$pass_recession,
+              na.rm = TRUE)
+    n2 <- sum(scr$pass_complete, na.rm = TRUE)
+    n_plot <- nrow(pts)
     p_map <- ggplot() +
       geom_sf(data = ind_states, fill = "grey95", colour = "white",
               linewidth = 0.18) +
@@ -96,8 +108,9 @@ local({
       scale_colour_manual(values = stage_cols, name = NULL) +
       coord_sf(xlim = c(68, 98), ylim = c(6, 38), expand = FALSE) +
       labs(title = "Study P1 sample: recession-calibrated storage states across CAMELS-IND",
-           subtitle = sprintf("%d catchments read; %d pass completeness + event screens; %d additionally pass the recession-quality screen",
-                              nrow(pts), n2, n3)) +
+           subtitle = sprintf(paste0("%d catchments read; %d pass the completeness screens; ",
+                                     "%d of those also pass the event and recession screens (%d plotted)"),
+                              nrow(scr), n2, n3, n_plot)) +
       theme_void(base_size = 10) +
       theme(plot.title = element_text(face = "bold", size = 11),
             plot.subtitle = element_text(colour = grey, size = 9),
@@ -122,7 +135,7 @@ local({
       scale_size_manual(values = c(`FALSE` = 1.7, `TRUE` = 3.1)) +
       facet_wrap(~target, labeller = as_labeller(lab)) +
       scale_colour_manual(values = fam_cols, name = NULL) +
-      scale_x_continuous(breaks = c(1, 3, 6), labels = c("1", "3", "6")) +
+      scale_x_continuous(breaks = P1_LEADS, labels = as.character(P1_LEADS)) +
       labs(x = "forecast lead (months)",
            y = "median Brier skill score vs climatology",
            title = "Lead-time skill: storage states vs memory baselines",
@@ -153,8 +166,9 @@ local({
   # ---- 3. paired deltas -------------------------------------------------
   if (!is.null(paired) && nrow(paired)) {
     pd <- paired[baseline == "bestof" & is.finite(delta_brier)]
-    pd[, lead_f := factor(lead, levels = c(1, 3, 6),
-                          labels = c("1 month", "3 months", "6 months"))]
+    pd[, lead_f := factor(lead, levels = P1_LEADS,
+                          labels = sprintf("%d month%s", P1_LEADS,
+                                           ifelse(P1_LEADS == 1, "", "s")))]
     pd[, tgt := factor(target, levels = c("t1", "t2"),
                        labels = c("T1 hydrological drought", "T2 low flow"))]
     p_pair <- ggplot(pd, aes(lead_f, delta_brier)) +
@@ -207,10 +221,9 @@ local({
       if (is.null(qq) || sum(!is.na(qq)) < 3000) next
       d <- merge(ff[, .(date, prcp_mm, tmax_c, tmin_c, tavg_c, pet_gleam_mm)],
                  data.table(date = flow$date, q = qq), by = "date", all.x = TRUE)
-      r <- common_rates(as.character(g), d$date, d$q, d$prcp_mm, d$tmax_c,
-                        d$tmin_c, d$tavg_c, meta$area_km2[i], meta$cwc_lat[i],
-                        pet_obs = d$pet_gleam_mm, region = "India",
-                        irrigation_frac = 0.2)
+      r <- prepare_daily(as.character(g), d$date, d$q, d$prcp_mm, d$tmax_c,
+                         d$tmin_c, d$tavg_c, meta$cwc_lat[i],
+                         pet_obs = d$pet_gleam_mm, region = "India")
       q_mm <- q_m3s_to_mm_day_na(r$q_used, meta$area_km2[i] * 1e6)
       yr <- as.integer(format(r$date, "%Y"))
       mask <- yr %in% P$train_years & is.finite(q_mm)
@@ -258,11 +271,11 @@ local({
     if (nrow(px)) {
       px[, family := factor(family, levels = c("climatology", "bestof",
                                                "storage_plus_indices"))]
+      px[, bin := cut(p, breaks = seq(0, 1, by = 0.1),
+                      include.lowest = TRUE, labels = FALSE)]
       bins <- px[, .(n = .N, mean_p = mean(p), obs = mean(y)),
-                 by = .(family, cut(p, breaks = seq(0, 1, by = 0.1),
-                                    include.lowest = TRUE,
-                                    labels = FALSE))]
-      bins[, bin_centre := (cut - 0.5) / 10 + 0.05]
+                 by = .(family, bin)]
+      bins[, bin_centre := (bin - 0.5) / 10 + 0.05]
       p_rel <- ggplot(bins[n > 30], aes(mean_p, obs)) +
         geom_abline(slope = 1, intercept = 0, linetype = "dashed",
                     colour = grey) +

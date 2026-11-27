@@ -3,10 +3,12 @@
 #
 # Usage:  Rscript R/verify.R
 #
-# The 14 checks are defined below; each either passes or stops with a
-# message. V1-V4 pin the queue engine against exact solutions, V5 the
-# discrete-event simulation, V6-V14 the units, indices, metrics, IO,
-# zero classifier and gap rule.
+# The 23 checks are defined below; each either passes or stops with an
+# informative message. V1-V7 and V10 pin the frozen CTMC engine (Study P3
+# only); V8-V9 and V11-V14 the unit wall, indices, metrics, zero classifier
+# and gap rule; V15 the two daily builders; V16-V19 the storage engine and
+# its ledger; V20 the leakage tripwire; V21 the skill score; V22 the BFI
+# filter; V23 the provenance sidecar.
 # =====================================================================
 
 local({
@@ -18,11 +20,12 @@ local({
   source(file.path(root, "R", "config.R"))
   suppressMessages(library(data.table))
   for (u in c("units.R", "queue_engine.R", "storage_engine.R", "indices.R",
-            "eval.R", "io.R", "audit.R", "pipeline.R")) {
+            "eval.R", "io.R", "audit.R", "demand_envelope.R",
+            "pipeline.R")) {
     source(file.path(root, "R", "functions", u))
   }
 # =====================================================================
-# R/verify.R -- the 14-test verification battery (plan ┬º6).
+# R/verify.R -- the 23-test verification battery.
 #
 # Each test is a function returning a one-row data frame. A test either
 # passes or stops with an informative message. run_verification() runs
@@ -259,47 +262,51 @@ v14_gap_rule <- function() {
                        sum(g$pause), sum(g$exclude_month)))
 }
 
-# V15: the G2 rate builder and screen (PIVOT.md §3 changes 1-4).
-# Dataset PET + seasonal envelope + measured irrigated fraction; training-
-# only screen statistics; completeness flag present.
-v15_common_rates <- function() {
-  # 1981-1985 daily series so the completeness thresholds (>=1095 training
-  # days, >=730 test days) are reachable inside the test.
+# V15: the two daily builders, kept apart.
+#   prepare_daily()  -- the P1 path: shipped PET honoured, Hargreaves
+#                       fallback, API recursion, completeness flags.
+#   demand_envelope() -- the P3 path: seasonal Kc_m/phi_m envelope and the
+#                       measured irrigated fraction. No P1 code reads it.
+v15_daily_builders <- function() {
   d <- seq(as.Date("1981-01-01"), as.Date("1985-12-31"), by = "day")
   n <- length(d)
   mo <- as.integer(format(d, "%m"))
   pet_obs <- rep(4, n)
-  r <- common_rates(1L, d, rep(10, n), rep(1, n), rep(30, n), rep(20, n),
-                    rep(25, n), 1000, 20, pet_obs = pet_obs, region = "India",
-                    irrigation_frac = 0.20)
+  r <- prepare_daily(1L, d, rep(10, n), rep(1, n), rep(30, n), rep(20, n),
+                     rep(25, n), 20, pet_obs = pet_obs, region = "India")
+  # Shipped PET is used verbatim, never overwritten by Hargreaves.
+  ok_pet <- max(abs(r$pet_mm - pet_obs)) < 1e-12
+  # Hargreaves fallback when no PET column is supplied.
+  r_h <- prepare_daily(3L, d, rep(10, n), rep(1, n), rep(30, n), rep(20, n),
+                       rep(25, n), 20, pet_obs = NULL, region = "India")
+  ok_fallback <- all(is.finite(r_h$pet_mm)) && any(abs(r_h$pet_mm - 4) > 1e-9)
+  # Completeness: one missing flow day makes exactly that month incomplete.
+  q_bad <- rep(10, n); q_bad[40] <- NA_real_
+  r_bad <- prepare_daily(4L, d, q_bad, rep(1, n), rep(30, n), rep(20, n),
+                         rep(25, n), 20, pet_obs = pet_obs, region = "India")
+  bad_month <- format(d[40], "%Y-%m")
+  ok_complete <- isTRUE(r_bad$month_complete[r_bad$ym == bad_month][1] == FALSE) &&
+    sum(!unique(r_bad$month_complete)) == 1
+  # API recursion: with k = 0.95 and constant P = 1, API -> 1/(1-k) = 20.
+  ok_api <- abs(r$api_p[n] - 20) < 0.5
+  # P3 envelope: need = Kc_m*PET - phi_m*P, lambda = need/d_mm.
   need <- pmax(kc_month(mo, "India") * pet_obs -
                  phi_month(mo, "India") * rep(1, n), 0)
-  mu1 <- 10 * 86400 * P$s_firm / (0.20 * 1000 * 1e6) * 1000 / P$d_mm
-  r2 <- common_rates(2L, d, rep(10, n), rep(1, n), rep(30, n), rep(20, n),
-                     rep(25, n), 2000, 20, pet_obs = pet_obs, region = "India",
-                     irrigation_frac = 0.20)
-  ok_need <- max(abs(r$need_mm - need)) < 1e-10
-  ok_mu <- max(abs(r$mu - mu1)) < 1e-10
-  ok_area <- max(abs(r2$mu - mu1 / 2)) < 1e-10
-  # FQ4 fix: rho uses training years only. Temporary year window so the
-  # completeness thresholds are testable on the synthetic series; P is
-  # replaced in the GLOBAL environment (where common_screen resolves it)
-  # and restored immediately after the screen call.
-  p_orig <- P
-  tmp <- P
-  tmp$train_years <- 1981:1983; tmp$test_years <- 1984:1985
-  assign("P", tmp, envir = globalenv())
-  sc <- common_screen(r, "test")
-  assign("P", p_orig, envir = globalenv())
-  ok_screen <- is.finite(sc$rho) && "complete_only" %in% names(sc) &&
-    isTRUE(sc$complete_only)
-  # API recursion: with k=0.95 and constant P=1, API -> 1/(1-k) = 20.
-  ok_api <- abs(r$api_p[n] - 20) < 0.5
-  ok <- ok_need && ok_mu && ok_area && ok_screen && ok_api
-  verif_result("V15", "G2 rates: dataset PET + seasonal envelope + screen", ok,
-               sprintf("need %.1e; mu %.1e; area-halving %.1e; API@n=%.2f",
-                       max(abs(r$need_mm - need)), max(abs(r$mu - mu1)),
-                       max(abs(r2$mu - mu1 / 2)), r$api_p[n]))
+  env <- demand_envelope(d, rep(10, n), rep(1, n), pet_obs, 1000,
+                         irrigation_frac = 0.20, region = "India")
+  ok_need <- max(abs(env$need_mm - need)) < 1e-10
+  ok_lambda <- max(abs(env$lambda - need / P$d_mm)) < 1e-10
+  # Area halving doubles mu; mu is capped by the infrastructure limit.
+  env2 <- demand_envelope(d, rep(10, n), rep(1, n), pet_obs, 2000,
+                          irrigation_frac = 0.20, region = "India")
+  ok_area <- max(abs(env2$mu - env$mu / 2)) < 1e-10
+  ok <- ok_pet && ok_fallback && ok_complete && ok_api && ok_need &&
+    ok_lambda && ok_area
+  verif_result("V15", "Daily builders: P1 inputs and the P3 envelope", ok,
+               sprintf("pet %.1e; fallback %s; API@n=%.2f; need %.1e; lambda %.1e",
+                       max(abs(r$pet_mm - pet_obs)), ok_fallback,
+                       r$api_p[n], max(abs(env$need_mm - need)),
+                       max(abs(env$lambda - need / P$d_mm))))
 }
 
 # V16: fluid ledger identity on a seasonal run with zero-flow spells.
@@ -433,14 +440,35 @@ v22_bfi <- function() {
                        bfi_gap, bfi_const, bfi_flash))
 }
 
+# V23: provenance sidecar completeness (AGENTS.md §4.6). Every generated
+# CSV's sidecar must carry the git hash, the seed and the R session, and
+# must describe the file it sits beside.
+v23_sidecar <- function() {
+  tmpdir <- tempfile("sidecar_")
+  dir.create(tmpdir, recursive = TRUE)
+  on.exit(unlink(tmpdir, recursive = TRUE), add = TRUE)
+  p <- file.path(tmpdir, "probe.csv")
+  write_csv_sidecar(data.frame(a = 1:3), p)
+  sc <- jsonlite::fromJSON(sub("\\.csv$", ".json", p))
+  need <- c("file", "git_hash", "code_hash", "written", "seed",
+            "nrow", "ncol", "session")
+  ok <- all(need %in% names(sc)) && identical(sc$file, "probe.csv") &&
+    identical(as.integer(sc$nrow), 3L) && identical(as.integer(sc$seed),
+                                                   as.integer(P$seed))
+  verif_result("V23", "Provenance sidecar carries seed and session", ok,
+               sprintf("fields %d/%d; seed %s; nrow %d",
+                       sum(need %in% names(sc)), length(need),
+                       format(sc$seed), as.integer(sc$nrow)))
+}
+
 run_verification <- function(verbose = TRUE) {
   tests <- list(
     v01_mm1k, v02_mmc, v03_rk4_stationary, v04_rk4_des, v05_ledger,
     v06_first_passage, v07_blocking, v08_unit_wall, v09_hargreaves,
     v10_thresholds, v11_indices, v12_metrics, v13_zero_classifier,
-    v14_gap_rule, v15_common_rates, v16_fluid_ledger,
+    v14_gap_rule, v15_daily_builders, v16_fluid_ledger,
     v17_analytic_recession, v18_recession_recovery, v19_storage_scale,
-    v20_leakage_tripwire, v21_bss, v22_bfi
+    v20_leakage_tripwire, v21_bss, v22_bfi, v23_sidecar
   )
   res <- do.call(rbind, lapply(tests, function(f) {
     out <- tryCatch(f(), error = function(e) {

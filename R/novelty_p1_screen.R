@@ -6,11 +6,11 @@
 # DOIs through OpenAlex (top 100 by citation count each).
 #
 # Outputs:
-#   P01/p1_novelty_screen_2026-11-27.csv + JSON (query log)
-#   P01/p1_novelty_records_2026-11-27.csv + JSON (records + decision)
-#   P01/p1_novelty_summary_2026-11-27.csv + JSON (aggregate)
+#   paper01/literature/p1_novelty_screen_2026-11-27.csv + JSON (query log)
+#   paper01/literature/p1_novelty_records_2026-11-27.csv + JSON (records + decision)
+#   paper01/literature/p1_novelty_summary_2026-11-27.csv + JSON (aggregate)
 # The agent manually reviews the candidate records and writes the Markdown
-# decision record P01/p1_novelty_screen_2026-11-27.md.
+# decision record paper01/literature/p1_novelty_screen_2026-11-27.md.
 # =====================================================================
 local({
   args <- commandArgs(trailingOnly = FALSE)
@@ -21,8 +21,8 @@ local({
   source(file.path(root, "R", "config.R"))
   for (u in c("io.R", "pipeline.R")) source(file.path(root, "R", "functions", u))
   suppressMessages(library(data.table))
-  P01_DIR <- file.path(root, "P01")
-  ensure_dir(P01_DIR)
+  LIT_DIR <- file.path(root, "paper01", "literature")
+  ensure_dir(LIT_DIR)
 
   queries <- data.table(
     id = c("P1-S1", "P1-S2", "P1-S3", "P1-S4"),
@@ -212,9 +212,9 @@ local({
   rec <- rec[order(manual_review, decision, -cited_by, year)]
 
   qlog <- rbindlist(query_rows, fill = TRUE)
-  write_csv_sidecar(qlog, file.path(P01_DIR, "p1_novelty_screen_2026-11-27.csv"),
+  write_csv_sidecar(qlog, file.path(LIT_DIR, "p1_novelty_screen_2026-11-27.csv"),
                     meta = list(scope = "rapid Crossref/OpenAlex title-abstract screen, not exhaustive WoS/Scopus"))
-  write_csv_sidecar(rec, file.path(P01_DIR, "p1_novelty_records_2026-11-27.csv"),
+  write_csv_sidecar(rec, file.path(LIT_DIR, "p1_novelty_records_2026-11-27.csv"),
                     meta = list(scope = "top 100 per database/query plus top-100 OpenAlex citation traces"))
   sm <- qlog[, .(raw_hits = sum(raw_hits, na.rm = TRUE),
                  retrieved = sum(retrieved),
@@ -223,7 +223,7 @@ local({
   sm[, candidates_manually_reviewed := sum(rec$manual_review)]
   sm[, gap_changing_findings := sum(rec$gap_changing, na.rm = TRUE)]
   sm[, record_decisions := if (database[1] == "OpenAlex") "see p1_novelty_records CSV" else "combined across both databases"]
-  write_csv_sidecar(sm, file.path(P01_DIR, "p1_novelty_summary_2026-11-27.csv"),
+  write_csv_sidecar(sm, file.path(LIT_DIR, "p1_novelty_summary_2026-11-27.csv"),
                     meta = list(scope = "rapid P1 prior-art screen"))
   cat("Rapid screen complete. Query log:\n"); print(qlog)
   cat("Candidates manually reviewed:\n")

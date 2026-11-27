@@ -42,13 +42,22 @@ QDJ_ROOT <- normalizePath(QDJ_ROOT, winslash = "/", mustWork = FALSE)
 
 # --- Data roots (the ONLY absolute paths; override with env vars) -----
 DATA_ROOT <- Sys.getenv("QDJ_DATA_ROOT", unset = "D:/Datasets")
-CAMELS_ROOT <- Sys.getenv(
-  "QDJ_CAMELS_ROOT",
-  unset = file.path(DATA_ROOT, "CIMP6_India", "data_raw", "camels_ind_forcings")
+# CAMELS-IND has been mounted under more than one layout on this machine.
+# The environment variable wins; otherwise the first existing candidate is
+# used, and the original default is kept as the last resort so a missing
+# dataset fails with a path the operator recognises.
+.camels_candidates <- c(
+  file.path(DATA_ROOT, "CIMP6_India", "data_raw", "camels_ind_forcings"),
+  file.path(DATA_ROOT, "CAMELS-IND", "CAMELS_IND_All_Catchments")
 )
+CAMELS_ROOT <- Sys.getenv("QDJ_CAMELS_ROOT", unset = "")
+if (!nzchar(CAMELS_ROOT)) {
+  hit <- .camels_candidates[dir.exists(.camels_candidates)]
+  CAMELS_ROOT <- if (length(hit)) hit[1] else .camels_candidates[1]
+}
 CARAVAN_ROOT <- Sys.getenv(
   "QDJ_CARAVAN_ROOT",
-  unset = file.path(DATA_ROOT, "Caravan_2025")
+  unset = file.path(DATA_ROOT, "Caravan_B")
 )
 
 # --- Derived input files ----------------------------------------------
@@ -58,16 +67,24 @@ CAMELS_FLOW_FILE <- file.path(CAMELS_ROOT, "streamflow_timeseries",
 CAMELS_ATTR_DIR <- file.path(CAMELS_ROOT, "attributes_csv")
 
 # Map outlines only (figures; no analysis uses these).
-DIE_DATA_ROOT <- Sys.getenv(
-  "QDJ_DIE_ROOT",
-  unset = file.path(DATA_ROOT, "Drought_Intelligence_Explorer_v2", "source",
-                    "anixn-drought-intelligence-explorer-d0b1573", "data"))
+# The repository of the Drought Intelligence Explorer has moved between
+# drafts; the first existing candidate wins, and QDJ_DIE_ROOT overrides all.
+.die_candidates <- c(
+  file.path(DATA_ROOT, "Drought_Intelligence_Explorer_v2", "source",
+            "anixn-drought-intelligence-explorer-d0b1573", "data"),
+  "D:/Websites/drought-intelligence-explorer-v2.0/data"
+)
+DIE_DATA_ROOT <- Sys.getenv("QDJ_DIE_ROOT", unset = "")
+if (!nzchar(DIE_DATA_ROOT)) {
+  hit <- .die_candidates[dir.exists(.die_candidates)]
+  DIE_DATA_ROOT <- if (length(hit)) hit[1] else .die_candidates[1]
+}
 INDIA_OUTLINE_FILE <- file.path(DIE_DATA_ROOT, "boundaries", "india_outline.geojson")
 INDIA_STATES_FILE <- file.path(DIE_DATA_ROOT, "boundaries", "india_states.geojson")
 
 # --- Output directories ------------------------------------------------
-OUTPUT_DIR <- file.path(QDJ_ROOT, "output")
-FIG_DIR <- file.path(QDJ_ROOT, "figures")
+OUTPUT_DIR <- file.path(QDJ_ROOT, "paper01", "output")
+FIG_DIR <- file.path(QDJ_ROOT, "paper01", "figures")
 
 # --- Pivot parameters (PIVOT.md §3 Gate G2 and §4 Study P1) ------------
 # PET source: "shipped" = the dataset PET column carried by the forcings
@@ -108,11 +125,14 @@ RIDGE_FOLDS <- 5L
 API_DECAY <- 0.95
 API_DAYS  <- 90L
 
-# P1 leads in months (PIVOT.md §4.5) and the frozen family list for the
-# G2 gate (§3 change 5): the queue vs honest memory baselines.
-P1_LEADS <- c(1L, 3L, 6L)
-G2_FAMILIES <- c("climatology", "ssi3", "queue", "ssi3_plus_queue",
-                 "persistence", "ssi6", "api")
+# P1 leads in months. 1, 3 and 6 are the FROZEN confirmatory set
+# (PIVOT.md §4.1: H0 at 1, H1 at 3, H2 at 6). 2 and 12 were added on
+# 27 November 2026 as a declared post-hoc extension: they are descriptive
+# only, they never enter a confirmatory decision, and they are labelled as
+# exploratory in every output. The frozen three are unchanged.
+P1_LEADS <- c(1L, 2L, 3L, 6L, 12L)
+P1_LEADS_FROZEN <- c(1L, 3L, 6L)
+P1_LEADS_EXPLORATORY <- c(2L, 12L)
 
 # P1 debug switch: limit the number of gauges per region (0 = all).
 P1_LIMIT <- suppressWarnings(as.integer(Sys.getenv("QDJ_P1_LIMIT", unset = "0")))
@@ -133,67 +153,50 @@ P1_FEATURE_START_YEAR <- 1982L  # first year with storage features
 P1_HARM_BOUND <- 0.005        # declared harm bound [assumption: §4.1]
 P1_BOOT_B <- 2000L
 
-# --- Scientific parameters (plan Appendix A) --------------------------
+# --- Scientific parameters --------------------------------------------
+# Two groups only.
+#
+# (a) Study P1 -- the storage state and the statistical design. The P1
+#     state is a depth in mm over the catchment and has NO demand model;
+#     there is no claim, no utilisation and no capacity on this path.
+#
+# (b) Study P3 -- the frozen CTMC engine (R/functions/queue_engine.R) and
+#     the measured demand envelope it consumes (demand_envelope.R). These
+#     parameters are inert for P1: nothing in study_p1.R reads them.
 P <- list(
-  # Unit definitions
-  d_mm              = 20,          # claim depth: 20 mm over the command area
-  phi               = 0.7,         # effective-rain fraction [assumption]
-  Kc                = 0.8,         # common crop coefficient (both regions)
-  f_irr             = 0.10,        # irrigated fraction of catchment
-  # Supply
-  s_firm            = 0.5,         # firm share of observed flow (SUP-1)
-  cap_mm            = 10,          # infrastructure delivery cap (mm/day)
-  # Catchment-relative queue parameters
-  q_days            = 60,          # q* = ceil(q_days * lam_bar)
-  K_days            = 365,         # K  = min(80, max(25, ceil(K_days * lam_bar)))
-  theta_mult        = 1.5,         # theta = ceil(theta_mult * q*)
-  alpha             = 1.5,         # service boost above theta
-  eta               = 1 / 60,      # reneging rate per day (~60-day tolerance)
-  c                 = 1L,          # servers in the main experiment
-  # Statistical design
-  L2                = 1.0,         # logistic ridge penalty
+  # --- (a) Study P1 ---------------------------------------------------
   train_years       = 1981:2010,
   test_years        = 2011:2020,
   # Data handling
   max_short_gap     = 7L,          # short-gap forward state pause (days)
   long_gap_exclusion = 30L,        # months with a longer gap are excluded
-  # Numerical safety
+  # Reproducibility
+  seed              = 20261125L,
+
+  # --- (b) Study P3: frozen CTMC + demand envelope ---------------------
+  # Unit definitions (the demand envelope's claim depth and the command
+  # area that the measured irrigated fraction scales).
+  d_mm              = 20,          # claim depth: 20 mm over the command area
+  f_irr             = 0.10,        # fallback irrigated fraction [assumption]
+  # Supply
+  s_firm            = 0.5,         # firm share of observed flow (SUP-1)
+  cap_mm            = 10,          # infrastructure delivery cap (mm/day)
+  # Catchment-relative queue parameters (thresholds_from_lambda defaults)
+  q_days            = 60,          # q* = ceil(q_days * lam_bar)
+  K_days            = 365,         # K  = min(80, max(25, ceil(K_days * lam_bar)))
+  theta_mult        = 1.5,         # theta = ceil(theta_mult * q*)
+  c                 = 1L,          # servers in the main experiment
+  # Numerical safety of the RK4 propagator
   rk4_dt            = 0.5,         # max RK4 step (days); 0.1 vs 0.5 differ by 4e-8
   rk4_maxrate       = 0.5,         # dt * max rate cap (convergence-checked)
   block_guard       = 1e-3,        # max P(Q = K) before a blocking rerun
-  # Screening
-  rho_window        = c(0.15, 1.20),
-  # Minimum design events per catchment in the paired set.
-  min_test_events   = 3L,
-  min_train_events  = 5L,
-  # G2 measured demand envelope (FQ6 fix): per-catchment irrigated fraction
-  # from CAMELS-IND `irrigation_frac` (HydroATLAS), replacing the flat 0.10
+  # Measured demand envelope: per-catchment irrigated fraction from
+  # CAMELS-IND `irrigation_frac` (HydroATLAS), replacing the flat 0.10
   # [assumption: floor of 0.01 keeps the command area defined where the
   # attribute is 0; the floor is a declared default, not a measurement].
   f_irr_floor       = 0.01,
-  f_irr_cap         = 1.0,
-  # Reproducibility
-  seed              = 20261125L
-  # Note: the transient starts empty at ANALYSIS_START (1981-01-01). The plan's
-  # 1980 warm-up is not implemented; the early-month bias is negligible at the
-  # service rates used here and is disclosed in protocol/CHANGELOG.md.
+  f_irr_cap         = 1.0
 )
-
-# Convenience: the analysis calendar
-ANALYSIS_START <- as.Date("1981-01-01")
-ANALYSIS_END <- as.Date("2020-12-31")
-
-# --- Model families (predeclared) -------------------------------------
-MODEL_FAMILIES <- c(
-  "climatology", "spi3", "spei3", "ssi3", "queue",
-  "ssi3_plus_queue", "spei3_plus_queue", "ssi3_plus_spei3_plus_queue"
-)
-
-# --- Supply and zero-flow variants (predeclared) ----------------------
-SUPPLY_VARIANTS <- c("SUP-1", "SUP-2", "SUP-3")
-ZERO_VARIANTS <- c("V0", "V1", "V2")
-PRIMARY_ZERO_VARIANT <- "V1"
-PRIMARY_SUPPLY_VARIANT <- "SUP-1"
 
 # --- Small helpers ----------------------------------------------------
 ensure_dir <- function(path) {

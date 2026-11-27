@@ -230,7 +230,8 @@ sign_test <- function(delta) {
 # arithmetic, not table subsetting. Used by Study P1 (hundreds of gauges).
 two_level_bootstrap_fast <- function(gauge, year, delta,
                                      stat = stats::median,
-                                     B = 2000L, seed = 1L) {
+                                     B = 2000L, seed = 1L,
+                                     return_draws = FALSE) {
   set.seed(seed)
   gauges <- sort(unique(gauge))
   rows_by_gauge <- split(seq_along(delta), factor(gauge, levels = gauges))
@@ -262,8 +263,18 @@ two_level_bootstrap_fast <- function(gauge, year, delta,
     draws[b] <- if (length(vals)) stat(vals) else NA_real_
   }
   draws <- draws[is.finite(draws)]
-  if (length(draws) < 2) return(c(estimate = est, lo = NA_real_, hi = NA_real_))
-  c(estimate = est,
-    lo = unname(stats::quantile(draws, 0.025)),
-    hi = unname(stats::quantile(draws, 0.975)))
+  if (length(draws) < 2) {
+    if (isTRUE(return_draws)) {
+      return(list(estimate = est, lo = NA_real_, hi = NA_real_, draws = draws))
+    }
+    return(c(estimate = est, lo = NA_real_, hi = NA_real_))
+  }
+  out <- c(estimate = est,
+           lo = unname(stats::quantile(draws, 0.025)),
+           hi = unname(stats::quantile(draws, 0.975)))
+  if (isTRUE(return_draws)) {
+    return(list(estimate = out[["estimate"]], lo = out[["lo"]],
+                hi = out[["hi"]], draws = draws))
+  }
+  out
 }

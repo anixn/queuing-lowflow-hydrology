@@ -1,0 +1,15 @@
+"statistic","value"
+"n gauges",257
+"k p05 (d)",3.63
+"k p25 (d)",5.55
+"k median (d)",9.17
+"k p75 (d)",12.3
+"k p95 (d)",15.4
+"max k (d)",41.3
+"share k < 10 d",0.646
+"share k < 30 d",0.992
+"median memory retained at 1 mo",0.0364
+"median memory retained at 2 mo",0.00132
+"median memory retained at 3 mo",4.81e-05
+"median memory retained at 6 mo",2.31e-09
+"median memory retained at 12 mo",5.34e-18

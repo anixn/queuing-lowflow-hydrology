@@ -1,0 +1,13 @@
+{
+  "file": "p1_sample_report.csv",
+  "git_hash": "1850657",
+  "code_hash": "e56d7926629c5eac7e70481bed49a544",
+  "written": "2026-11-27T11:41:34",
+  "seed": 20261125,
+  "nrow": 257,
+  "ncol": 24,
+  "session": {
+    "R": "R version 4.4.1 (2024-06-14 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  }
+}

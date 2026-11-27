@@ -1,0 +1,132 @@
+---
+title: "Recession-calibrated storage states for seasonal hydrological-drought and low-flow forecasting in Indian catchments"
+author: "A. Deshmukh"
+date: "26 November 2026"
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    number_sections: true
+    fig_caption: true
+geometry: margin=2.4cm
+fontsize: 11pt
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage{setspace}
+  - \onehalfspacing
+  - \usepackage{caption}
+  - \captionsetup{font=small,labelfont=bf}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.width = 7, fig.height = 3.2, dpi = 300,
+                      fig.pos = "H")
+root <- normalizePath(knitr::current_input(dir = TRUE))
+if (!file.exists(file.path(root, ".qdj_root"))) root <- getwd()
+source(file.path(root, "R", "config.R"))
+suppressMessages(library(data.table))
+OUT <- function(f) file.path(OUTPUT_DIR, f)
+rd <- function(f) if (file.exists(OUT(f))) fread(OUT(f)) else NULL
+conf <- rd("p1_confirmatory.csv")
+s1 <- rd("p1_sample_report.csv")
+bss <- rd("p1_bss.csv")
+```
+
+<!-- =====================================================================
+     FRAGMENT DRAFT for Study P1 (PIVOT.md §4.11). Numbers are knitted
+     from output/*.csv written by R/study_p1.R; no number appears here
+     without the script that produced it.
+     ===================================================================== -->
+
+# Abstract
+
+*Fragment.* Hydrological drought and low-flow forecasting at sub-seasonal to
+seasonal leads is a memory problem: fresh indices decay while catchment
+storage persists. We evaluate a recession-calibrated storage-deficit state —
+fitted per catchment from its own training-year recessions (baseflow index,
+recession constant, storage-outflow inversion for the storage scale) and
+propagated by a mass-balance-verified fluid water balance — as a forecasting
+feature across the CAMELS-IND large sample. The confirmatory question,
+pre-registered before any test-year scoring, is whether the storage state
+added to lagged standard indices beats the best of persistence, lagged
+indices and an antecedent precipitation index at 3- and 6-month leads,
+measured as paired per-gauge Brier differences on identical held-out months
+(2011–2020) with a two-level block bootstrap. **Result (scored once,
+26 November 2026):** H0 parity at the 1-month lead is confirmed as predicted
+(median ΔBrier −0.0003, positive in 47 % of gauges); H1 at 3 months
+(−0.0015, sign 43 %) and H2 at 6 months (−0.0007, sign 41 %) fail. All state
+estimation is
+verified by an exact three-way agreement (analytic recession solution,
+fluid propagator, per-day ledger to 1e-9) and a 23-check battery; all
+thresholds, screens, standardisation and tuning use training years only.
+
+# Why the queue study retired
+
+*Fragment.* The predecessor design read drought as a deficit queue. Its
+confirmatory result (+0.002 Brier over SSI-3, 1–3 % relative; India arm
+unresolvable at n = 12 of 472) was diagnosed as a design artefact: the queue
+carried no information its benchmark lacked; the M/M/1/K class imported
+artefact parameters (reneging, a service boost, blocking) with no
+hydrological referent; and the utilisation screen selected catchments where
+five assumed constants self-agree. The corrected re-run (Gate G2), with
+dataset PET, a measured irrigated fraction, training-only thresholds and
+honest memory baselines, recorded a null in `PIVOT.md` §3; the queue is
+retired from the forecasting path and retained only for climate-projection
+reliability (Study P3), where its quantities are the product rather than a
+benchmark contest.
+
+# The storage state
+
+*Fragment.* The state is millimetres of catchment storage:
+$S(t+1) = \mathrm{clip}(S + P_e - E_a - Q_g, 0, S_{cap})$ with effective
+input $P_e = \max(P - \varphi_m P, 0)$, supply-limited actual
+evaporation $E_a = \min(\mathrm{PET}\,K_{c,m}, S + P_e)$ and a recession
+release $Q_g = \min((K_a S)^{b_s}, S)$. $k$, $p$ (hence $b_s = 1/(2-p)$ and
+$K_a = a/b_s$) and $S_{cap}$ come from censored recession segments of the
+training record (Brutsaert-type inversion; 95th percentile of implied
+storage); gauges with fewer than 20 segments borrow basin medians and are
+flagged. Zero-flow days are censored: the state sits at its floor through a
+zero-flow spell. Observed discharge never enters as a daily input — Q enters
+only through the fitted recession law, which is what keeps the state's
+memory different from a smoothed flow.
+
+# Confirmatory design
+
+*Fragment.* Two confirmatory contrasts (H1: 3-month lead; H2: 6-month lead),
+each `storage_plus_indices` vs the per-gauge best-of
+{persistence, lagged indices, API} frozen on training-year CV; H0 at
+1-month lead is declared in advance as the parity/null expectation. Screens
+are completeness and event-count only. Headline metric: Brier skill score
+vs climatology; paired per-gauge deltas on identical held-out months;
+two-level block bootstrap; sign test at >= 60 percent consistency; a declared harm
+bound lists degraded gauges individually. **Announced limitation:** the
+storage state is a different transform of the same record, not independent
+information.
+
+# Results
+
+```{r results-confirmatory, eval=!is.null(conf), fig.height=4.2}
+knitr::kable(conf[, .(hypothesis, lead, n,
+  median_delta = sprintf("%+.4f", median_delta),
+  CI = sprintf("[%+.4f, %+.4f]", boot_lo, boot_hi),
+  sign = sprintf("%d/%d", sign_k, sign_n), verdict)],
+  caption = "Confirmatory contrasts (India). Source: output/p1_confirmatory.csv.")
+```
+
+```{r results-bss, eval=!is.null(bss), fig.height=4.2}
+med <- bss[is.finite(bss), .(bss_med = stats::median(bss)),
+           by = .(family, lead, target)]
+tw <- dcast(med, family + target ~ lead, value.var = "bss_med")
+knitr::kable(tw, digits = 4,
+  caption = "Median Brier skill score vs climatology by family and lead (India). Source: output/p1_bss.csv.")
+```
+
+# What remains open
+
+*Fragment.* Lead-time skill structure by basin and climate class; zero-flow
+and PET-source sensitivities; the US transfer arm as a descriptive check;
+Study P3 (CAMELS-IND-Proj) as the follow-up where the frozen queue engine
+publishes transient backlog probabilities and recovery times that no
+standard index produces.

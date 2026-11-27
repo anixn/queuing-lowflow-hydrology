@@ -34,10 +34,11 @@ the CAMELS-IND large sample (India primary), with Caravan-US as a declared
 **transfer check**, never as a contrast.
 
 **The second paper (Study P3, scheduled after P1).** The frozen, verified
-CTMC queue engine — unchanged, still 15/15-verified — runs on
-CAMELS-IND-Proj (4 SSPs, same 472 catchments) to publish transient backlog
-probabilities, recovery-time quantiles and reliability–resilience–vulnerability
-triples that standard drought indices cannot produce.
+CTMC queue engine — unchanged, and covered by checks V1–V7 and V10 of the
+23-check battery — runs on CAMELS-IND-Proj (4 SSPs, same 472 catchments) to
+publish transient backlog probabilities, recovery-time quantiles and
+reliability–resilience–vulnerability triples that standard drought indices
+cannot produce. P3 is the only part of the repository that reads the engine.
 
 **v3 is R and R Markdown only.** The audited v1 Python code is preserved on
 branch `legacy-python` (tag `v1-audited`).
@@ -57,7 +58,7 @@ It may never be strengthened, weakened, renumbered or reworded; Phase A owns it.
 > pre-specified drought tests."
 
 **Sentence B (FROZEN 27 November 2026; rapid Crossref/OpenAlex screen, see
-`P01/p1_novelty_screen_2026-11-27.md` and `PIVOT.md` §9):**
+`paper01/literature/p1_novelty_screen_2026-11-27.md` and `PIVOT.md` §9):**
 
 > "Within rapid Crossref and OpenAlex title/abstract screens run on
 > 27 November 2026 (four PIVOT queries and two OpenAlex forward-citation
@@ -99,7 +100,7 @@ either junction. We **reclaim** a lineage (Langbein 1958; Moran 1954; Kendall
    confirmatory contrast is `storage_plus_indices` vs the *frozen* best-of
    `{persistence, lagged_indices, api}` baseline on the SSI-3 ≤ −1 target at
    leads 3 and 6 months (H1, H2 of PIVOT.md §4.1). Any change is recorded in
-   `PIVOT.md` §4.10 and `STUDY.Rmd` and forces a rerun with old and new
+   `PIVOT.md` §4.10 and `paper01/STUDY.Rmd` and forces a rerun with old and new
    results side by side.
 9. **Never change the claim convention silently.** On the P1 path there is no
    claim volume at all: the storage state is millimetres of depth over the
@@ -110,7 +111,7 @@ either junction. We **reclaim** a lineage (Langbein 1958; Moran 1954; Kendall
     (`stage7_paired_stats()`); family metrics on family-specific complete-case
     samples are descriptive only.
 11. **Never start P1 scoring before the G2 decision is recorded in
-    `STUDY.Rmd`** (PIVOT.md §10).
+    `paper01/STUDY.Rmd`** (PIVOT.md §10).
 12. **Never fit, screen, threshold, standardise or tune on test years** —
     including "just checking" (leakage FQ4 was found by exactly such a line).
 13. **Never let the fluid storage state consume daily observed Q as an
@@ -127,7 +128,7 @@ either junction. We **reclaim** a lineage (Langbein 1958; Moran 1954; Kendall
 
 1. **Run the R test suite after every change** and before reporting:
    ```powershell
-   Rscript R/verify.R                    # 22 checks; gate G1 requires 22/22
+   Rscript R/verify.R                    # 23 checks; gate G1 requires 23/23
    ```
    Any new feature ships with a new test *before* the first run that uses it.
 2. **Keep the three-way agreement.** On the P1 path it is: analytic recession
@@ -138,8 +139,8 @@ either junction. We **reclaim** a lineage (Langbein 1958; Moran 1954; Kendall
    that produces a number, the number does not go into the draft.
 4. **Report with sources.** Every claim in a session summary carries file +
    line (or table cell) where it came from.
-5. **Update the paper trail.** New findings update `STUDY.Rmd`, `PIVOT.md`
-   (gate tables), `README.md`, `HELP.md` or `P01/literature_audit.md` in the
+5. **Update the paper trail.** New findings update `paper01/STUDY.Rmd`, `PIVOT.md`
+   (gate tables), `README.md`, `HELP.md` or `paper01/literature/literature_audit.md` in the
    same session — the audit trail is part of the deliverable.
 6. **Write generated outputs only through `write_csv_sidecar()`**, so every
    CSV carries a JSON sidecar with the git hash, parameters, seed and R
@@ -154,26 +155,25 @@ either junction. We **reclaim** a lineage (Langbein 1958; Moran 1954; Kendall
 |---|---|---|
 | `README.md` | The study in one page and the run commands | Rewritten for P1 |
 | `HELP.md` | Operator's manual: data, run, outputs, troubleshooting | Rewritten for P1 |
-| `STUDY.Rmd` | Data, methods, results, G2 decision paragraph | Active |
+| `paper01/STUDY.Rmd` | Data, methods, results, gate decision paragraph | Active |
 | `PIVOT.md` | The pivot decision, redesign spec, gate tables, change record | **The change record; gate tables updated in place, never silently** |
 | `AGENTS.md` | This operating manual; frozen sentences | Active |
 | `R/config.R` | **The only place** for paths, seeds and scientific parameters (`P`, `P1_`, `P3_` blocks) | Active |
 | `R/functions/units.R` | The unit wall: mm↔m³, Hargreaves, seasonal curves | Stable, extended |
-| `R/functions/queue_engine.R` | Frozen verified CTMC — reused unchanged by P3/P2 | **Frozen** |
+| `R/functions/queue_engine.R` | Frozen verified CTMC — **Study P3 only**, not on the P1 path | **Frozen** |
+| `R/functions/demand_envelope.R` | Measured demand envelope in claims/day — **Study P3 only** | New, P3 |
 | `R/functions/storage_engine.R` | BFI filter, recession fits, `S_cap` inversion, fluid propagator with ledger | New, P1 |
-| `R/functions/pipeline.R` | Screens, indices, design, fit, paired statistics | Active |
+| `R/functions/pipeline.R` | Daily prep, screen, indices, fit, paired statistics | Active |
 | `R/functions/{indices,eval,io,audit}.R` | Indices, metrics, IO, zero/gap rules | Stable, tested |
-| `R/study_gate_g2.R` | Gate G2 record (corrected re-run, decision applied) | Complete |
 | `R/study_p1.R` | **P1 compute backbone**: India primary, US transfer arm | Active |
 | `R/kclass_exploratory.R` | Exploratory post-hoc k-class cut (labelled, not confirmatory) | Descriptive |
-| `R/power_check.R` | Sign-test power curve from the G2 variance | Complete |
-| `R/figures_p1.R` | P1 figures (PDF + 300-dpi PNG) from `output/*.csv` | Active |
-| `R/verify.R` | 22-check verification battery (gate G1) | Rebuilt for P1 |
-| `output/*.csv` + `.json` | Generated results + provenance | Regenerable; never hand-edit |
-| `figures/*.pdf`, `*.png` | Generated figures | Regenerable |
-| `P01/literature_audit.md`, `P01/search_protocol.md`, `analysis/P01_literature/`, `analysis/novelty_2026-11-25/` | Evidence records | Frozen evidence |
+| `R/figures_p1.R` | P1 figures (PDF + 300-dpi PNG) from `paper01/output/*.csv` | Active |
+| `R/verify.R` | 23-check verification battery (gate G1) | Rebuilt for P1 |
+| `paper01/output/*.csv` + `.json` | Generated results + provenance | Regenerable; never hand-edit |
+| `paper01/figures/*.pdf`, `*.png` | Generated figures | Regenerable |
+| `paper01/literature/` (`literature_audit.md`, `search_protocol.md`, `p1_novelty_*`, `wos_2026-11-21/`, `novelty_2026-11-25/`, `submission/`) | Evidence records | Frozen evidence |
 
-Treat `R/` as the only writable code. Generated `output/` files must always be
+Treat `R/` as the only writable code. Generated `paper01/output/` files must always be
 reproducible by the scripts that wrote them.
 
 ## 6. Coding standards (match what is already here)
@@ -208,9 +208,14 @@ India (CAMELS-IND), primary:
   flow     : streamflow_observed.csv (wide, one column per gauge)
   attributes: irrigation_frac (anth), crops_frac (land), climate indices,
               geology/topography — measured demand envelope and attributes
-USA (Caravan-US), transfer arm only:
-  date, total_precipitation_sum, temperature_2m_{max,min,mean}, streamflow,
-  potential_evaporation_sum_FAO_PENMAN_MONTEITH (GLEAM/FAO PET)
+USA (Caravan), transfer arm only:
+  date, total_precipitation_sum, temperature_2m_{max,min,mean}, streamflow
+  (mm/day — Caravan's unit, declared in `prepare_gauge(q_units=)`),
+  potential_evaporation_sum_FAO_PENMAN_MONTEITH when the release ships it;
+  otherwise the arm uses the declared Hargreaves fallback. ERA5
+  `potential_evaporation_sum` is a different quantity and is never
+  substituted for PET. Attributes come from
+  `attributes/camels/attributes_other_camels{.csv,.xlsx}` (area, gauge_lat).
 Climate projections (P3 only): CAMELS-IND-Proj (Singh et al. 2026), 4 SSPs.
 ```
 
@@ -247,15 +252,17 @@ unchanged.
 **Gate G2 — corrected re-run of the retired design (PIVOT.md §3).** Dataset
 PET, measured `irrigation_frac`, seasonal Kc/φ, training-only thresholds, no-ρ
 probe, honest memory baselines (ssi6/api/persistence), CV-tuned ridge, BSS
-reporting. *Done when:* `output/gateG2_summary.csv` + sidecar written, the
-decision rule applied as written, and the decision paragraph recorded in
-`STUDY.Rmd`.
+reporting. **CLOSED 26 November 2026: NULL RECORDED.** The gate's script and
+result files were removed from the working tree on 27 November 2026 with the
+retired study; the decision and its numbers stand in `PIVOT.md` §3, the
+paragraph in `paper01/STUDY.Rmd`, and git history.
 
 **Phase P1 — storage states for seasonal low-flow and hydrological-drought
 forecasting (the headline study).** One method, India primary, US transfer
-check. *Done when:* new battery 15/15, `Rscript R/study_p1.R` writes both
-regions, H1/H2 scored exactly once after the frozen protocol, `STUDY.Rmd`
-knits, figures regenerate, and the owner accepts the framing.
+check. **SCORED 26 November 2026** (H0 parity confirmed; H1/H2 FAIL). *Done
+when:* battery 23/23, `Rscript R/study_p1.R` writes both regions, H1/H2 scored
+exactly once after the frozen protocol, `paper01/STUDY.Rmd` knits, figures regenerate,
+and the owner accepts the framing.
 
 **Phase P3 — climate-projection queue reliability (second paper).** *Done
 when:* CAMELS-IND-Proj ingested, transient queue quantities published per
@@ -273,8 +280,8 @@ Start of session:
    the current **gate** (G2 / P1 / P3) and the single next action.
 2. Run the R suite: `Rscript R/verify.R`; report pass/fail.
 3. State which numbers you will trust today and where they live
-   (`output/p1_summary.csv` for P1; `output/gateG2_summary.csv` for the gate;
-   the retired study's numbers stay in `output/region_summary.csv`).
+   (`paper01/output/p1_summary.csv` for P1; `PIVOT.md` §3 for the closed Gate G2;
+   the retired study's numbers survive only in git history).
 
 End of session:
 

@@ -1,12 +1,13 @@
 {
   "file": "table04_confirmatory.csv",
-  "git_hash": "2559d9e",
-  "code_hash": "1450a73d7e4ba82c52a5f543f7210a9a",
-  "written": "2026-11-26T23:47:49",
-  "nrow": 3,
+  "git_hash": "1850657",
+  "code_hash": "5ad10ec6dc75a061edb797a735efef2e",
+  "written": "2026-11-27T13:11:00",
+  "seed": 20261125,
+  "nrow": 5,
   "ncol": 9,
   "session": {
-    "R": "R version 4.5.1 (2025-06-13 ucrt)",
+    "R": "R version 4.4.1 (2024-06-14 ucrt)",
     "platform": "x86_64-w64-mingw32"
   }
 }

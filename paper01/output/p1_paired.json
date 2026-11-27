@@ -1,0 +1,13 @@
+{
+  "file": "p1_paired.csv",
+  "git_hash": "1850657",
+  "code_hash": "d2637baa69b226fc22e3c6c7766e0569",
+  "written": "2026-11-27T11:56:17",
+  "seed": 20261125,
+  "nrow": 5236,
+  "ncol": 12,
+  "session": {
+    "R": "R version 4.4.1 (2024-06-14 ucrt)",
+    "platform": "x86_64-w64-mingw32"
+  }
+}
